@@ -251,18 +251,30 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 export const Main: Story = {
   args: {
-    dataStr: dataStr
+    dataStr: dataStr,
+    graphName: {
+      value: 'urn:graph:data',
+      termType: 'NamedNode'
+    }
   }
 }
 
 export const CatPrez: Story = {
   args: {
-    dataStr: dataStr2
+    dataStr: dataStr2,
+    graphName: {
+      value: 'urn:graph:data',
+      termType: 'NamedNode'
+    }
   }
 }
 
 export const Minimum: Story = {
   args: {
-    dataStr: dataStr3
+    dataStr: dataStr3,
+    graphName: {
+      value: 'urn:graph:data',
+      termType: 'NamedNode'
+    }
   }
 }

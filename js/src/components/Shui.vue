@@ -1,28 +1,37 @@
 <script setup lang="ts">
 import {computed, type ComputedRef, onMounted, ref} from 'vue'
-import n3, { DataFactory } from 'n3'
+import n3, {DataFactory} from 'n3'
 
 import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown'
 
 import { useShui } from '@/composables/shui'
-import Resource from '@/components/Resource.vue'
 import type { DropdownOption } from '@/types'
-import blankNode = DataFactory.blankNode;
 
-const { namedNode, quad } = DataFactory
+const { namedNode, blankNode, quad } = DataFactory
 
-interface Props {
-  dataStr: string
+type GraphName = {
+  value: string,
+  termType: 'NamedNode' | 'BlankNode'
 }
-const { dataStr } = defineProps<Props>()
+interface Props {
+  dataStr: string,
+  graphName: GraphName
+}
+const { dataStr, graphName } = defineProps<Props>()
 const { shui, addQuads, parse, reset } = useShui()
 onMounted(() => {
   reset()
   parse(dataStr)
 })
-// TODO: Handle hardcoded
-const graph = shui.value.toSNamedNode(namedNode('urn:graph:data'))
+
+const toGraph = (graphName: GraphName) => {
+  if (graphName.termType === 'NamedNode') {
+    return shui.value.toSNamedNode(namedNode(graphName.value))
+  }
+  return shui.value.toSBlankNode(blankNode(graphName.value))
+}
+let graph = toGraph(graphName)
 const count = ref(0)
 
 const handleClick = () => {
@@ -85,7 +94,7 @@ const selectedFocusNodeTerm = computed(() => {
 
     <hr class="pb-4" />
 
-    <Resource v-if="selectedFocusNode" :subject="selectedFocusNodeTerm" :graph="graph" />
+<!--  -->
 
     <div class="overflow-x-auto">
       <p class="text-base font-bold">Data</p>

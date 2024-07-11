@@ -235,6 +235,10 @@ export class Shui {
     return new SNamedNode(term.value, this.nodeLabel(term))
   }
 
+  toSBlankNode(term: BlankNode) {
+    return new SBlankNode(term.value, this.nodeLabel(term))
+  }
+
   toSLiteral(term: Literal) {
     return new SLiteral(term.id, new SNamedNode(term.datatype.id, this.nodeLabel(term.datatype)))
   }
