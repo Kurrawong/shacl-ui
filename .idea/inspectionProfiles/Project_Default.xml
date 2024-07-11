@@ -1,0 +1,61 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myValues">
+        <value>
+          <list size="5">
+            <item index="0" class="java.lang.String" itemvalue="hx-boost" />
+            <item index="1" class="java.lang.String" itemvalue="hx-get" />
+            <item index="2" class="java.lang.String" itemvalue="hx-ext" />
+            <item index="3" class="java.lang.String" itemvalue="hx-confirm" />
+            <item index="4" class="java.lang.String" itemvalue="_" />
+          </list>
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
+    <inspection_tool class="HtmlUnknownTag" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myValues">
+        <value>
+          <list size="18">
+            <item index="0" class="java.lang.String" itemvalue="nobr" />
+            <item index="1" class="java.lang.String" itemvalue="noembed" />
+            <item index="2" class="java.lang.String" itemvalue="comment" />
+            <item index="3" class="java.lang.String" itemvalue="noscript" />
+            <item index="4" class="java.lang.String" itemvalue="embed" />
+            <item index="5" class="java.lang.String" itemvalue="script" />
+            <item index="6" class="java.lang.String" itemvalue="sl-textarea" />
+            <item index="7" class="java.lang.String" itemvalue="sl-input" />
+            <item index="8" class="java.lang.String" itemvalue="sl-checkbox" />
+            <item index="9" class="java.lang.String" itemvalue="sl-select" />
+            <item index="10" class="java.lang.String" itemvalue="sl-option" />
+            <item index="11" class="java.lang.String" itemvalue="sl-button" />
+            <item index="12" class="java.lang.String" itemvalue="sl-radio-group" />
+            <item index="13" class="java.lang.String" itemvalue="sl-radio" />
+            <item index="14" class="java.lang.String" itemvalue="sl-tooltip" />
+            <item index="15" class="java.lang.String" itemvalue="sl-alert" />
+            <item index="16" class="java.lang.String" itemvalue="sl-icon" />
+            <item index="17" class="java.lang.String" itemvalue="sl-button-group" />
+          </list>
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="6">
+            <item index="0" class="java.lang.String" itemvalue="pydantic" />
+            <item index="1" class="java.lang.String" itemvalue="colorama" />
+            <item index="2" class="java.lang.String" itemvalue="pillow" />
+            <item index="3" class="java.lang.String" itemvalue="rdflib" />
+            <item index="4" class="java.lang.String" itemvalue="pytz" />
+            <item index="5" class="java.lang.String" itemvalue="openpyxl" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

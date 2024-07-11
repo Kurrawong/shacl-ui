@@ -1,0 +1,28 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+
+tasks:
+  code:
+    cmds:
+      - pnpm run lint
+      - pnpm run format
+
+  format:
+    cmds:
+      - pnpm run format
+
+  build:
+    cmds:
+      - pnpm run build
+
+  storybook:
+    cmds:
+      - pnpm run storybook
+
+  test:
+    cmds:
+      - pnpm run test

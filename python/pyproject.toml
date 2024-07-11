@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "shacl_ui"
+version = "0.1.0"
+description = ""
+authors = ["Edmond Chuc <edmond@kurrawong.ai>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pyshacl = "^0.26.0"
+pydantic = "^2.8.2"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.2"
+ruff = "^0.5.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff.lint]
+select = [
+    "I001",
+    "I002"
+]
