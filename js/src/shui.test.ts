@@ -1,4 +1,4 @@
-import {test, expect} from '@jest/globals'
+import { test, expect } from '@jest/globals'
 import { Shui } from './shui'
 
 test('Instantiate a valid instance of Shui and read quads into the store', () => {

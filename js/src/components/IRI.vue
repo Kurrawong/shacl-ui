@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import InputText from 'primevue/inputtext'
 import type { SNamedNode } from '@/shui'
 import n3 from 'n3'
-import {useShui} from "@/composables/shui";
+import { useShui } from '@/composables/shui'
 
 const { namedNode } = n3.DataFactory
 

@@ -2,9 +2,9 @@
 import { defineModel, ref } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import InputText from 'primevue/inputtext'
-import type {SLiteral, SNamedNode} from '@/shui'
+import type { SLiteral, SNamedNode } from '@/shui'
 import n3 from 'n3'
-import {useShui} from "@/composables/shui";
+import { useShui } from '@/composables/shui'
 
 const { namedNode, literal } = n3.DataFactory
 
@@ -18,11 +18,9 @@ const id = `a${uuidv4()}`
 const handleUpdate = () => {
   if (language.value) {
     model.value = shui.value.toSLiteral(literal(value.value, language.value))
-  }
-  else if (datatype.value) {
+  } else if (datatype.value) {
     model.value = shui.value.toSLiteral(literal(value.value, namedNode(datatype.value)))
-  }
-  else {
+  } else {
     model.value = shui.value.toSLiteral(literal(value.value))
   }
 }
@@ -33,5 +31,10 @@ const handleUpdate = () => {
   <InputText :id="id" v-model="value" class="w-full" @update:model-value="handleUpdate" />
 
   <label :for="`datatype-${id}`" class="text-base">Datatype</label>
-  <InputText :id="`datatype-${id}`" v-model="datatype" class="w-full" @update:model-value="handleUpdate" />
+  <InputText
+    :id="`datatype-${id}`"
+    v-model="datatype"
+    class="w-full"
+    @update:model-value="handleUpdate"
+  />
 </template>
