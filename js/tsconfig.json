@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
@@ -15,5 +16,5 @@
     {
       "path": "./tsconfig.app.json"
     }
-  ],
+  ]
 }

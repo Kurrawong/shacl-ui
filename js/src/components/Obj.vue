@@ -7,7 +7,7 @@ import IRI from '@/components/IRI.vue'
 import { useShui } from '@/composables/shui'
 import n3 from 'n3'
 import Resource from '@/components/Resource.vue'
-import Literal from "@/components/Literal.vue";
+import Literal from '@/components/Literal.vue'
 
 const { quad } = n3.DataFactory
 

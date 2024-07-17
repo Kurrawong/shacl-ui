@@ -228,41 +228,259 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 }
 
 <urn:graph:data> {
-  <https://data.idnau.org/pid/system/catprez>
-      a dcat:Catalog ;
-      dcterms:identifier "catprez"^^xsd:token ;
-      dcterms:identifier "c"^^xsd:token ;
-      dcterms:title "CatPrez System Catalogue" ;
-  .
+    <https://data.idnau.org/pid/system/catprez> a dcat:Catalog ;
+      dcterms:identifier "c"^^xsd:string,
+          "catprez"^^xsd:token ;
+      dcterms:title "CatPrez System Catalogue",
+          "CatPrez System Catalogue in English"@en ;
+      prov:qualifiedAttribution [ a prov:Attribution ;
+              dcat:hadRole isoroles:author,
+                  isoroles:custodian,
+                  isoroles:owner ;
+              prov:agent <https://orcid.org/0000-0002-8742-7730> ] .
 }
 
 <urn:system:graph:shacl> {
-    dcat:Catalog a sh:NodeShape ;
-        rdfs:label "Catalog" ;
-        sh:property [
-            sh:path dcterms:identifier ;
-            sh:datatype xsd:token ;
-            sh:minCount 1 ;
-            sh:maxCount 1 ;
-        ]
-    .
+  dcat:Catalog a rdfs:Class,
+          sh:NodeShape ;
+      rdfs:label "Catalog" ;
+      sh:property [ sh:datatype xsd:token ;
+              sh:group <urn:group:Catalog-metadata> ;
+              sh:path dcterms:identifier ],
+          [ sh:group <urn:group:Catalog-metadata> ;
+              sh:maxCount 1 ;
+              sh:minCount 1 ;
+              sh:path dcterms:identifier ] .
+  
+  <urn:group:Catalog-metadata> a sh:PropertyGroup ;
+      rdfs:label "Metadata" ;
+      sh:order 0 .
 }
 `
 
 export const Main: Story = {
   args: {
-    dataStr: dataStr
+    dataStr: dataStr,
+    graphName: {
+      value: 'urn:graph:data',
+      termType: 'NamedNode'
+    }
   }
 }
 
 export const CatPrez: Story = {
   args: {
-    dataStr: dataStr2
+    dataStr: dataStr2,
+    graphName: {
+      value: 'urn:graph:data',
+      termType: 'NamedNode'
+    }
   }
 }
 
 export const Minimum: Story = {
   args: {
-    dataStr: dataStr3
+    dataStr: dataStr3,
+    graphName: {
+      value: 'urn:graph:data',
+      termType: 'NamedNode'
+    }
+  }
+}
+
+const dataStrNodeShapeOr = `
+prefix ex: <https://example.com/>
+prefix sh: <http://www.w3.org/ns/shacl#>
+
+<urn:graph:data> {
+    ex:Bob a ex:Person .
+}
+
+<urn:system:graph:shacl> {
+  ex:OrConstraintExampleShape
+    a sh:NodeShape ;
+    sh:targetNode ex:Bob ;
+    sh:property [
+      sh:path ex:firstName ;
+      sh:maxLength 10 ;
+    ] ;
+    sh:or (
+      [
+        sh:path ex:firstName ;
+        sh:minCount 1 ;
+      ]
+      [
+        sh:path ex:givenName ;
+        sh:minCount 1 ;
+      ]
+    ) .
+}
+`
+
+export const NodeShapeOr: Story = {
+  args: {
+    dataStr: dataStrNodeShapeOr,
+    graphName: {
+      value: 'urn:graph:data',
+      termType: 'NamedNode'
+    }
+  }
+}
+
+const dataStrHolgerAddressExample = `
+PREFIX aussies: <https://example.com/aussies/>
+PREFIX aushapes: <https://example.com/aushapes/>
+PREFIX dash: <http://datashapes.org/dash#>
+PREFIX schema: <https://schema.org/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+<urn:graph:data> {
+  aussies:Holger
+    a schema:Person ;
+    rdfs:label "Holger Knublach" ;
+    schema:givenName "Holger" ;
+    schema:familyName "Knublach" ;
+    schema:address aussies:HolgersAddress .
+
+  aussies:HolgersAddress
+    a schema:PostalAddress ;
+    schema:streetAddress "3 Teewah Close" ;
+    schema:addressLocality "Kewarra Beach" ;
+    schema:addressRegion "QLD" ;
+    schema:postalCode "4879" ;
+    schema:email "holger@knublauch.com" ;
+    schema:email "holger@topquadrant.com" ;
+    rdfs:label "Holger's Address" .
+}
+
+<urn:system:graph:shacl> {
+  aushapes:AustralianPersonShape
+    a sh:NodeShape ;
+    rdfs:label "Australian person shape" ;
+    rdfs:comment "Defines the structure of persons in Australia, stored using schema.org." ;
+    sh:targetClass schema:Person ;
+    dash:defaultViewForRole dash:all ;
+    sh:property [
+      sh:path schema:givenName ;
+      sh:minCount 1 ;
+      sh:datatype xsd:string ;
+      sh:group aushapes:NamePropertyGroup ;
+      sh:order 0
+    ],
+    [
+      sh:path schema:familyName ;
+      sh:minCount 1 ;
+      sh:maxCount 1 ;
+      sh:datatype xsd:string ;
+      sh:group aushapes:NamePropertyGroup ;
+      sh:order 1
+    ],
+    [
+      sh:path schema:address ;
+      sh:node aushapes:AustralianAddressShape ;
+      sh:group aushapes:AddressPropertyGroup
+    ] .
+    
+  aushapes:NamePropertyGroup
+    a sh:PropertyGroup ;
+    rdfs:label "Name" .
+
+  aushapes:AustralianAddressShape
+    a sh:NodeShape ;
+    rdfs:label "Australian address shape" ;
+    rdfs:comment "Defines the structure of addresses in Australia, stored using schema.org." ;
+    sh:targetClass schema:PostalAddress ;
+    dash:defaultViewForRole dash:all ;
+    sh:property aushapes:AustralianAddressShape-streetAddress ;
+    sh:property aushapes:AustralianAddressShape-addressLocality ;
+    sh:property aushapes:AustralianAddressShape-addressRegion ;
+    sh:property aushapes:AustralianAddressShape-postalCode ;
+    sh:property aushapes:AustralianAddressShape-email ;
+    sh:property aushapes:AustralianAddressShape-telephone .
+  
+  aushapes:AustralianAddressShape-streetAddress
+    a sh:PropertyShape ;
+    sh:path schema:streetAddress ;
+    dash:editor dash:TextAreaEditor ;
+    dash:singleLine false ;
+    sh:datatype xsd:string ;
+    sh:group aushapes:AddressPropertyGroup ;
+    sh:maxCount 1 ;
+    sh:name "street address" ;
+    sh:order "0"^^xsd:decimal .
+  
+  aushapes:AustralianAddressShape-addressLocality
+    a sh:PropertyShape ;
+    sh:path schema:addressLocality ;
+    sh:datatype xsd:string ;
+    sh:group aushapes:AddressPropertyGroup ;
+    sh:maxCount 1 ;
+    sh:name "suburb" ;
+    sh:order "1"^^xsd:decimal .
+  
+  aushapes:AustralianAddressShape-addressRegion
+    a sh:PropertyShape ;
+    sh:path schema:addressRegion ;
+    sh:datatype xsd:string ;
+    sh:description "The abbreviation of the state or territory." ;
+    sh:group aushapes:AddressPropertyGroup ;
+    sh:in ( "ACT" "NSW" "NT" "QLD" "SA" "TAS" "VIC" "WA" ) ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:name "state" ;
+    sh:order "2"^^xsd:decimal .
+    
+  aushapes:AustralianAddressShape-postalCode
+    a sh:PropertyShape ;
+    sh:path schema:postalCode ;
+    sh:datatype xsd:string ;
+    sh:description "An Australian postal code, between 0000 and 9999." ;
+    sh:group aushapes:AddressPropertyGroup ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:minLength 4 ;
+    sh:maxLength 4 ;
+    sh:name "postal code" ;
+    sh:order "3"^^xsd:decimal ;
+    sh:pattern "[0-9][0-9][0-9][0-9]" .
+  
+  aushapes:AustralianAddressShape-email
+    a sh:PropertyShape ;
+    sh:path schema:email ;
+    sh:datatype xsd:string ;
+    sh:group aushapes:ContactPropertyGroup ;
+    sh:name "email" ;
+    sh:nodeKind sh:Literal ;
+    sh:order "1"^^xsd:decimal .
+
+  aushapes:AustralianAddressShape-telephone
+    a sh:PropertyShape ;
+    sh:path schema:telephone ;
+    sh:datatype xsd:string ;
+    sh:group aushapes:ContactPropertyGroup ;
+    sh:name "phone number" ;
+    sh:order "2"^^xsd:decimal .
+  
+  aushapes:AddressPropertyGroup
+    a sh:PropertyGroup ;
+    rdfs:label "Address" ;
+    sh:order "0"^^xsd:decimal .
+    
+  aushapes:ContactPropertyGroup
+    a sh:PropertyGroup ;
+    rdfs:label "Contact" ;
+    sh:order "1"^^xsd:decimal .
+}
+`
+
+export const HolgerAddressExample: Story = {
+  args: {
+    dataStr: dataStrHolgerAddressExample,
+    graphName: {
+      value: 'urn:graph:data',
+      termType: 'NamedNode'
+    }
   }
 }
