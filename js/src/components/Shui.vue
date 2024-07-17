@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, type ComputedRef, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import n3, { DataFactory } from 'n3'
 
 import Button from 'primevue/button'
@@ -77,7 +77,7 @@ const nodes = computed(() => {
         name: nameTerm.value,
         nameTerm: nameTerm,
         code: s.value,
-        codeTerm: s
+        codeTerm: shui.value.toSNamedNode(s)
       }
     })
 })
@@ -89,9 +89,6 @@ const selectedFocusNodeTerm = computed(() => {
   return shui.value.toSNamedNode(selectedFocusNode.value.codeTerm)
 })
 
-// TODO: Implement retrieval function
-// We also need a way to retrieve a list of dropdown options for the available NodeShapes that target the focus node.
-// The function takes in the class type and within Shui, looks up the NodeShapes that target this class.
 const selectedNodeShape = ref<DropdownOption | null>(null)
 const nodeShapes = computed(() => {
   if (!selectedFocusNodeTerm.value) {

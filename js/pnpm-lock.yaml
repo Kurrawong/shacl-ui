@@ -102,6 +102,9 @@ importers:
       '@types/rdfjs__dataset':
         specifier: ^2.0.7
         version: 2.0.7
+      '@types/rdfjs__namespace':
+        specifier: ^2.0.10
+        version: 2.0.10
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0

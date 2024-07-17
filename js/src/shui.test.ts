@@ -1,5 +1,5 @@
 import { test, expect } from '@jest/globals'
-import { Shui } from './shui'
+import { Shui } from '@/shui'
 
 test('Instantiate a valid instance of Shui and read quads into the store', () => {
   const shui = new Shui()

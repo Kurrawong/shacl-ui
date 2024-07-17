@@ -50,6 +50,7 @@
     "@types/rdf-ext": "^2.5.0",
     "@types/rdfjs__data-model": "^2.0.8",
     "@types/rdfjs__dataset": "^2.0.7",
+    "@types/rdfjs__namespace": "^2.0.10",
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-vue": "^5.0.5",
     "@vue/eslint-config-prettier": "^9.0.0",

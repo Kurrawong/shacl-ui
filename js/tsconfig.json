@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
+    "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     },
-    "esModuleInterop": true,
+    "esModuleInterop": true
   },
   "files": [],
   "references": [
@@ -16,5 +16,5 @@
     {
       "path": "./tsconfig.app.json"
     }
-  ],
+  ]
 }
