@@ -328,6 +328,7 @@ export const NodeShapeOr: Story = {
 }
 
 const dataStrHolgerAddressExample = `
+PREFIX ex: <https://example.com/>
 PREFIX aussies: <https://example.com/aussies/>
 PREFIX aushapes: <https://example.com/aushapes/>
 PREFIX dash: <http://datashapes.org/dash#>
@@ -339,9 +340,9 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 <urn:graph:data> {
   aussies:Holger
     a schema:Person ;
-    rdfs:label "Holger Knublach" ;
     schema:givenName "Holger" ;
     schema:familyName "Knublach" ;
+    ex:isMarried true ;
     schema:address aussies:HolgersAddress .
 
   aussies:HolgersAddress
@@ -367,7 +368,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
       sh:minCount 1 ;
       sh:datatype xsd:string ;
       sh:group aushapes:NamePropertyGroup ;
-      sh:order 0
+      sh:order 0 ;
+      sh:name "given name"
     ],
     [
       sh:path schema:familyName ;

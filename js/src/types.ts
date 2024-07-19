@@ -1,7 +1,7 @@
 import type { SBlankNode, SLiteral, SNamedNode } from '@/shui'
 import type { BlankNode, NamedNode, Quad, Term } from 'n3'
 import type { DataFactory } from '@rdfjs/types/data-model'
-import type { DatasetCore, NamedNode as RDFJSNamedNode, Term as RDFJSTerm } from '@rdfjs/types'
+import type { DatasetCore, NamedNode as RDFJSNamedNode } from '@rdfjs/types'
 import type { ConstraintComponent } from '@/core/constraint-components/constraint-component'
 import type { Widgets } from '@/core/widgets/score-widget'
 
@@ -112,11 +112,12 @@ export interface PredicatesShapesMapValues {
 export type PredicatesShapesMap = Map<string, PredicatesShapesMapValues>
 
 export interface PredicateConstraints {
-  group: string | null
+  term: NamedNode
+  group: NamedNode | BlankNode | null
   constraintComponents: ConstraintComponent[]
   values: {
     widgets: Widgets
-    term: RDFJSTerm
+    term: STerm
   }[]
 }
 
@@ -124,6 +125,7 @@ export interface UISchemaValues {
   predicates: {
     [key: string]: PredicateConstraints
   }
+  groups: PropertyGroupsMap
 }
 
 export interface UISchema {

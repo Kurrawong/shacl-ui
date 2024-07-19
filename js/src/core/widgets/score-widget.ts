@@ -60,6 +60,20 @@ const editorWidgets = new Map<
     }
   ],
   [
+    dash.DetailsEditor,
+    (object, constraintComponents) => {
+      // TODO: Handle dash:editor constraint component.
+      // TODO: DetailsEditor needs to be able to fetch
+      //    and expand the graph the data about the new focus node remotely.
+
+      if (object.termType !== 'Literal') {
+        return null
+      }
+
+      return 0
+    }
+  ],
+  [
     dash.LiteralEditor,
     (object, constraintComponents) => {
       // We implement the rules defined in https://datashapes.org/forms.html#LiteralViewer despite this
@@ -106,7 +120,10 @@ const editorWidgets = new Map<
       }
 
       if (object.termType === 'NamedNode') {
-        return null
+        // TODO: dash spec says null, but we've changed it to 1 for testing
+        // to compete with details editor
+        return 1
+        // return null
       }
 
       return 0
