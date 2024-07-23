@@ -106,7 +106,7 @@ function filterPredicateObjectValuesByGroup(group: NamedNode | BlankNode | null)
     </template>
 
     <Fieldset
-      legend="Other properties"
+      legend="Other Properties"
       :pt="{
         legend: {
           class: 'text-lg font-bold'
