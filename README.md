@@ -14,6 +14,12 @@ This is still a work-in-progress. A storybook demo of the SHACL UI processor wil
 
 TBA
 
+## SHACL UI Specification
+
+### Parameter `sh:closed`
+
+The existence of a `sh:ClosedConstraintComponent` with the value `true` disables the ability to add new properties to a focus node in the user-interface.
+
 ## Developer Guide
 
 TBA
