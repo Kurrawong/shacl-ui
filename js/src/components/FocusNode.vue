@@ -4,7 +4,7 @@ import Fieldset from 'primevue/fieldset'
 import { SBlankNode, type SNamedNode } from '@/shui'
 import { useShui } from '@/composables/shui'
 import type { PropertyGroupsMap, UISchema } from '@/types'
-import PredicateObjectValues from '@/components/PredicatesObjectValues.vue'
+import PredicatesObjectValues from '@/components/PredicatesObjectValues.vue'
 
 interface Props {
   focusNode: SNamedNode | SBlankNode
@@ -70,7 +70,7 @@ const propertyGroups = computed(() => {
         }"
       >
         <div class="space-y-4 pt-4">
-          <PredicateObjectValues
+          <PredicatesObjectValues
             :focus-node="focusNode"
             :data-graph="dataGraph"
             :predicate-object-values="predicateObjectValues"
@@ -89,7 +89,7 @@ const propertyGroups = computed(() => {
       }"
     >
       <div class="space-y-2 pt-4">
-        <PredicateObjectValues
+        <PredicatesObjectValues
           :focus-node="focusNode"
           :data-graph="dataGraph"
           :predicate-object-values="predicateObjectValues"
