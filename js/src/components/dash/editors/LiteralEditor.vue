@@ -27,5 +27,7 @@ watch([value, datatype, language], () => emitUpdate())
 </script>
 
 <template>
-  <InputText v-model="value" />
+  <div class="flex">
+    <InputText v-model="value" class="grow max-w-[300px]" />
+  </div>
 </template>
