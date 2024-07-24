@@ -119,6 +119,7 @@ function handleAddNewDefaultValue() {
       aria-label="Submit"
       v-tooltip.bottom="'Add new value'"
       disabled
+      outlined
     />
 
     <Button
