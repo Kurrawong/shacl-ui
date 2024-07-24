@@ -55,7 +55,7 @@ const editors = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-row">
+  <div class="flex flex-row p-3 bg-slate-50 hover:bg-slate-100">
     <div class="content flex-auto">
       <template v-if="widgets.editors.length && editors[0].type.equals(dash.BooleanSelectEditor)">
         <BooleanSelectEditor :term="object as Literal" @update="handleUpdate" />
@@ -86,10 +86,9 @@ const editors = computed(() => {
           severity="danger"
           @click="handleDelete"
           outlined
+          v-tooltip="'Delete value'"
         />
       </div>
     </div>
   </div>
-
-  <div class="flex flex-row-reverse space-x-2 space-x-reverse"></div>
 </template>
