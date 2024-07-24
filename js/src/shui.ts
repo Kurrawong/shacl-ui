@@ -545,24 +545,6 @@ export class Shui {
         const values = store.getObjects(subject, predicate, dataGraphName) as ObjectParam[]
         for (const value of values) {
           const widgets = getWidgets(value, predicatesObject[predicate.value].constraintComponents)
-          const sortFunction = (a: Widget, b: Widget) => {
-            if (a.score === null && b.score === null) {
-              return 0
-            }
-            if (a.score === null) {
-              return 1
-            }
-            if (b.score === null) {
-              return -1
-            }
-            return b.score - a.score
-          }
-          widgets.viewers = widgets.viewers
-            .filter((widget) => widget.score !== 0)
-            .sort(sortFunction)
-          widgets.editors = widgets.editors
-            .filter((widget) => widget.score !== 0)
-            .sort(sortFunction)
           predicatesObject[predicate.value].values.push({
             widgets,
             term: this.toSTerm(value as NamedNode | BlankNode | Literal)

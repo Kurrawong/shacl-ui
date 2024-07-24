@@ -131,6 +131,19 @@ const editorWidgets = new Map<
   ]
 ])
 
+const sortFunction = (a: Widget, b: Widget) => {
+  if (a.score === null && b.score === null) {
+    return 0
+  }
+  if (a.score === null) {
+    return 1
+  }
+  if (b.score === null) {
+    return -1
+  }
+  return b.score - a.score
+}
+
 export function getWidgets(object: ObjectParam, constraintComponents: ConstraintComponent[]) {
   const widgets: Widgets = { viewers: [], editors: [] }
 
@@ -140,6 +153,9 @@ export function getWidgets(object: ObjectParam, constraintComponents: Constraint
       score: value(object, constraintComponents)
     })
   )
+
+  widgets.viewers = widgets.viewers.filter((widget) => widget.score !== 0).sort(sortFunction)
+  widgets.editors = widgets.editors.filter((widget) => widget.score !== 0).sort(sortFunction)
 
   return widgets
 }
