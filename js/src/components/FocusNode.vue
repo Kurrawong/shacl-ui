@@ -37,7 +37,7 @@ watch([shui, nodeShape], async () => {
 })
 
 const propertyGroups = computed(() => {
-  const propertyGroupsMap = uiSchema.value?.[focusNode.value.value].groups as PropertyGroupsMap
+  const propertyGroupsMap = uiSchema.value?.[focusNode.value.value]?.groups as PropertyGroupsMap
   if (!propertyGroupsMap) {
     return []
   }
