@@ -41,7 +41,8 @@ const filteredPredicatesObjectValues = computed(() => {
     <hr v-if="index !== filteredPredicatesObjectValues.length - 1" class="py-2" />
   </template>
 
-  <div>
+  <!-- Only render this on the 'Other Properties' group -->
+  <div v-if="groupFilter === null">
     <hr class="pb-4" />
     <AddNewPredicate :predicate-object-values="predicateObjectValues" />
   </div>
