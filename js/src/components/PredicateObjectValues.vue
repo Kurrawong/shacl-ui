@@ -90,7 +90,7 @@ function handleAddNewDefaultValue() {
 </script>
 
 <template>
-  <div class="flex flex-row">
+  <div class="flex flex-col">
     <div class="min-w-[20%] max-w-[30%]">
       <label class="font-bold">{{ shui.toSNamedNode(predicateObject.term).label }}</label>
     </div>
