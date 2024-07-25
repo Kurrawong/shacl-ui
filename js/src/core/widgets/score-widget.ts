@@ -37,6 +37,15 @@ const editorWidgets = new Map<
   (object: ObjectParam, constraintComponents: ConstraintComponent[]) => number | null
 >([
   [
+    dash.BlankNodeEditor,
+    (object, constraintComponents) => {
+      if (object.termType === 'BlankNode') {
+        return 1
+      }
+      return 0
+    }
+  ],
+  [
     dash.BooleanSelectEditor,
     (object, constraintComponents) => {
       if (object.termType !== 'Literal') {

@@ -14,6 +14,7 @@ import BooleanSelectEditor from '@/components/dash/editors/BooleanSelectEditor.v
 import URIEditor from '@/components/dash/editors/URIEditor.vue'
 import FocusNode from '@/components/FocusNode.vue'
 import ActionMenu from '@/components/core/value-node/ActionMenu.vue'
+import BlankNodeEditor from '@/components/dash/editors/BlankNodeEditor.vue'
 
 interface Props {
   subject: SIdentifiedNode
@@ -53,7 +54,10 @@ const isHoverGreen = computed(() => {
 <template>
   <div class="flex flex-row p-3 bg-slate-50" :class="isHoverGreen ? 'hover:bg-green-100' : ''">
     <div class="content flex-auto">
-      <template v-if="selectedWidget?.type.equals(dash.BooleanSelectEditor)">
+      <template v-if="selectedWidget?.type.equals(dash.BlankNodeEditor)">
+        <BlankNodeEditor :term="object as BlankNode" @update="handleUpdate" />
+      </template>
+      <template v-else-if="selectedWidget?.type.equals(dash.BooleanSelectEditor)">
         <BooleanSelectEditor :term="object as Literal" @update="handleUpdate" />
       </template>
       <template v-else-if="selectedWidget?.type.equals(dash.DetailsEditor)">
