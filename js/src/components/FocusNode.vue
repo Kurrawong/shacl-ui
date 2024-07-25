@@ -56,7 +56,7 @@ const propertyGroups = computed(() => {
 
 <template>
   <template v-if="uiSchema">
-    <div v-if="propertyGroups" class="hover:shadow-lg">
+    <div v-if="propertyGroups" class="hover:shadow-[0_0_35px_-15px_rgba(0,0,0,0.3)]">
       <Fieldset
         v-for="propertyGroup in propertyGroups"
         :key="propertyGroup.term.id"
@@ -81,7 +81,7 @@ const propertyGroups = computed(() => {
       </Fieldset>
     </div>
 
-    <div class="hover:shadow-lg">
+    <div class="hover:shadow-[0_5px_30px_-15px_rgba(0,0,0,0.3)]">
       <Fieldset
         legend="Other Properties"
         :pt="{
