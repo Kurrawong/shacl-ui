@@ -56,18 +56,21 @@ const propertyGroups = computed(() => {
 
 <template>
   <template v-if="uiSchema">
-    <template v-if="propertyGroups">
+    <div v-if="propertyGroups" class="hover:shadow-lg">
       <Fieldset
         v-for="propertyGroup in propertyGroups"
         :key="propertyGroup.term.id"
         :legend="propertyGroup.name"
         :pt="{
           legend: {
-            class: 'text-lg font-bold'
+            class: 'text-lg font-bold pt-4'
+          },
+          root: {
+            class: 'p-4 outline outline-1 outline-gray-100'
           }
         }"
       >
-        <div class="space-y-4 pt-4">
+        <div class="space-y-2 pt-4">
           <PredicatesObjectValues
             :focus-node="focusNode"
             :data-graph="dataGraph"
@@ -76,24 +79,29 @@ const propertyGroups = computed(() => {
           />
         </div>
       </Fieldset>
-    </template>
+    </div>
 
-    <Fieldset
-      legend="Other Properties"
-      :pt="{
-        legend: {
-          class: 'text-lg font-bold'
-        }
-      }"
-    >
-      <div class="space-y-2 pt-4">
-        <PredicatesObjectValues
-          :focus-node="focusNode"
-          :data-graph="dataGraph"
-          :predicate-object-values="predicateObjectValues"
-          :group-filter="null"
-        />
-      </div>
-    </Fieldset>
+    <div class="hover:shadow-lg">
+      <Fieldset
+        legend="Other Properties"
+        :pt="{
+          legend: {
+            class: 'text-lg font-bold pt-4'
+          },
+          root: {
+            class: 'p-4 outline outline-1 outline-gray-100'
+          }
+        }"
+      >
+        <div class="space-y-2 pt-4">
+          <PredicatesObjectValues
+            :focus-node="focusNode"
+            :data-graph="dataGraph"
+            :predicate-object-values="predicateObjectValues"
+            :group-filter="null"
+          />
+        </div>
+      </Fieldset>
+    </div>
   </template>
 </template>
