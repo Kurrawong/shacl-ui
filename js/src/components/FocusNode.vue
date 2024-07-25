@@ -3,7 +3,7 @@ import { computed, onMounted, ref, toRef, watch } from 'vue'
 import Fieldset from 'primevue/fieldset'
 import { SBlankNode, type SNamedNode } from '@/shui'
 import { useShui } from '@/composables/shui'
-import type { PropertyGroupsMap, UISchema } from '@/types'
+import type { PredicateConstraints, PropertyGroupsMap, UISchema } from '@/types'
 import PredicatesObjectValues from '@/components/PredicatesObjectValues.vue'
 
 interface Props {
@@ -17,25 +17,23 @@ const nodeShape = toRef(props, 'nodeShape')
 const dataGraph = toRef(props, 'dataGraph')
 const { shui } = useShui()
 const uiSchema = ref<UISchema>()
+const predicateObjectValues = ref<PredicateConstraints[]>([])
 
-onMounted(async () => {
+async function updateValues() {
   uiSchema.value = await shui.value.getSchema(focusNode.value, dataGraph.value, nodeShape.value)
-  console.log(uiSchema.value)
-})
-watch([shui, nodeShape], async () => {
-  uiSchema.value = await shui.value.getSchema(focusNode.value, dataGraph.value, nodeShape.value)
-  console.log(uiSchema.value)
-})
-
-const predicateObjectValues = computed(() => {
-  if (!uiSchema.value) {
-    return []
-  }
-  return Array.from(
+  predicateObjectValues.value = Array.from(
     Object.entries(uiSchema.value?.[focusNode.value.value].predicates)
       .map((value) => value[1])
       .values()
   )
+  console.log(uiSchema.value)
+}
+
+onMounted(async () => {
+  await updateValues()
+})
+watch([shui, nodeShape], async () => {
+  await updateValues()
 })
 
 const propertyGroups = computed(() => {
