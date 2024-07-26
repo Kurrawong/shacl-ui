@@ -37,6 +37,15 @@ const editorWidgets = new Map<
   (object: ObjectParam, constraintComponents: ConstraintComponent[]) => number | null
 >([
   [
+    dash.BlankNodeEditor,
+    (object, constraintComponents) => {
+      if (object.termType === 'BlankNode') {
+        return 1
+      }
+      return 0
+    }
+  ],
+  [
     dash.BooleanSelectEditor,
     (object, constraintComponents) => {
       if (object.termType !== 'Literal') {
@@ -57,6 +66,20 @@ const editorWidgets = new Map<
       }
 
       return null
+    }
+  ],
+  [
+    dash.DetailsEditor,
+    (object, constraintComponents) => {
+      // TODO: Handle dash:editor constraint component.
+      // TODO: DetailsEditor needs to be able to fetch
+      //    and expand the graph the data about the new focus node remotely.
+
+      if (object.termType !== 'Literal') {
+        return null
+      }
+
+      return 0
     }
   ],
   [
@@ -106,13 +129,29 @@ const editorWidgets = new Map<
       }
 
       if (object.termType === 'NamedNode') {
-        return null
+        // TODO: dash spec says null, but we've changed it to 1 for testing
+        // to compete with details editor
+        return 1
+        // return null
       }
 
       return 0
     }
   ]
 ])
+
+const sortFunction = (a: Widget, b: Widget) => {
+  if (a.score === null && b.score === null) {
+    return 0
+  }
+  if (a.score === null) {
+    return 1
+  }
+  if (b.score === null) {
+    return -1
+  }
+  return b.score - a.score
+}
 
 export function getWidgets(object: ObjectParam, constraintComponents: ConstraintComponent[]) {
   const widgets: Widgets = { viewers: [], editors: [] }
@@ -123,6 +162,9 @@ export function getWidgets(object: ObjectParam, constraintComponents: Constraint
       score: value(object, constraintComponents)
     })
   )
+
+  widgets.viewers = widgets.viewers.filter((widget) => widget.score !== 0).sort(sortFunction)
+  widgets.editors = widgets.editors.filter((widget) => widget.score !== 0).sort(sortFunction)
 
   return widgets
 }

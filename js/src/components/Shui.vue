@@ -7,7 +7,7 @@ import Dropdown from 'primevue/dropdown'
 
 import { useShui } from '@/composables/shui'
 import type { DropdownOption } from '@/types'
-import NodeShape from '@/components/NodeShape.vue'
+import FocusNode from '@/components/FocusNode.vue'
 
 const { namedNode, blankNode, quad } = DataFactory
 
@@ -63,6 +63,9 @@ const rdfStr = computed(() => {
 
 const selectedFocusNode = ref<DropdownOption | null>(null)
 watch(selectedFocusNode, () => {
+  selectedNodeShape.value = null
+})
+watch(shui, () => {
   selectedNodeShape.value = null
 })
 const nodes = computed(() => {
@@ -126,17 +129,15 @@ const size = computed(() => shui.value.store.getQuads(null, null, null, graph).l
       placeholder="Select a node shape"
     />
     <Button @click="handleClick" :disabled="!selectedFocusNode">Add statement</Button>
-    <p>Selected focus node: {{ selectedFocusNode?.codeTerm.value }}</p>
-    <p>Selected node shape: {{ selectedNodeShape?.codeTerm.value }}</p>
     <p>Number of statements: {{ size }}</p>
 
     <hr class="pb-4" />
 
-    <NodeShape
-      v-if="selectedFocusNodeTerm && selectedNodeShape"
-      :subject="selectedFocusNodeTerm"
-      :node-shape="selectedNodeShape.codeTerm"
-      :graph="graph"
+    <FocusNode
+      v-if="selectedFocusNodeTerm"
+      :focus-node="selectedFocusNodeTerm"
+      :node-shape="selectedNodeShape?.codeTerm"
+      :data-graph="graph"
     />
 
     <div class="overflow-x-auto">

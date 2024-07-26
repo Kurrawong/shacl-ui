@@ -45,23 +45,6 @@ export class DatatypeConstraintComponent extends ConstraintComponent {
     shapesGraphName: NamedNode | BlankNode,
     schema: UISchema
   ) {
-    const path = this.shape.path[0].predicates[0].value
-    if (!(focusNode.value in schema)) {
-      schema[focusNode.value] = {
-        predicates: {
-          [path]: {
-            group: null,
-            constraintComponents: [],
-            values: []
-          }
-        }
-      }
-    }
-
-    const predicates = schema[focusNode.value].predicates
-    if (!(path in predicates)) {
-      predicates[path] = { group: null, constraintComponents: [], values: [] }
-    }
-    predicates[path].constraintComponents.push(this)
+    this.addToUISchema(focusNode, schema)
   }
 }

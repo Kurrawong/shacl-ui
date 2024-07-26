@@ -26,7 +26,11 @@ import type {
   UISchema,
   Validator as IValidator
 } from '@/types'
-import type { DatasetCore } from '@rdfjs/types'
+import type {
+  DatasetCore,
+  NamedNode as RDFSNamedNode,
+  BlankNode as RDFJSBlankNode
+} from '@rdfjs/types'
 import { rdfs, sh } from '@/core/namespaces'
 import { visitShape } from '@/core/constraint-components/visit-shape'
 import { getWidgets, type ObjectParam, type Widget } from '@/core/widgets/score-widget'
@@ -217,7 +221,11 @@ export class Shui {
     this.store.addQuads(quads)
   }
 
-  nodeLabel(subject: NamedNode | BlankNode) {
+  quadsToString(graph: NamedNode | BlankNode | null) {
+    return writer.quadsToString(this.store.getQuads(null, null, null, graph))
+  }
+
+  nodeLabel(subject: RDFSNamedNode | RDFJSBlankNode) {
     // TODO: Implement the other methods of retrieving labels.
     // 1. Look in the labels system graph, then look in the entire dataset in case there's a label defined in one of the data graphs.
     // 2. With the current NodeShape, see whether there's a PropertyShape with the dash:propertyRole set to dash:LabelRole. If so, search with the sh:path value of the PropertyShape to retrieve a label.
@@ -242,9 +250,9 @@ export class Shui {
       return new SBlankNode(term.value, this.nodeLabel(term))
     } else if (term.termType === 'Literal') {
       return new SLiteral(term.id, new SNamedNode(term.datatype.id, this.nodeLabel(term.datatype)))
+    } else {
+      throw Error(`Term type ${term.termType} not supported.`)
     }
-
-    throw Error(`Term type ${term.termType} not supported.`)
   }
 
   toSTermSubject(term: Quad_Subject | Quad_Graph) {
@@ -281,7 +289,7 @@ export class Shui {
     return new SQuad(
       this.toSTermSubject(q.subject),
       this.toSTermPredicate(q.predicate),
-      this.toSTerm(q.object),
+      this.toSTerm(q.object as NamedNode | BlankNode | Literal),
       this.toSTermSubject(q.graph)
     )
   }
@@ -512,30 +520,39 @@ export class Shui {
         continue
       }
 
-      for (const [predicateString, predicateObject] of Object.entries(uiSchemaValues.predicates)) {
-        const predicate = namedNode(predicateString)
+      const predicates = store.getPredicates(subject, null, dataGraphName) as NamedNode[]
+      for (const predicate of predicates) {
+        if (!(subject.value in schema)) {
+          schema[subject.value] = {
+            predicates: {
+              [predicate.value]: {
+                term: predicate,
+                group: null,
+                constraintComponents: [],
+                values: []
+              }
+            },
+            groups: new Map()
+          }
+        }
+
+        const predicatesObject = schema[subject.value].predicates
+        if (!(predicate.value in predicatesObject)) {
+          predicatesObject[predicate.value] = {
+            term: predicate,
+            group: null,
+            constraintComponents: [],
+            values: []
+          }
+        }
+
         const values = store.getObjects(subject, predicate, dataGraphName) as ObjectParam[]
         for (const value of values) {
-          const widgets = getWidgets(value, predicateObject.constraintComponents)
-          const sortFunction = (a: Widget, b: Widget) => {
-            if (a.score === null && b.score === null) {
-              return 0
-            }
-            if (a.score === null) {
-              return 1
-            }
-            if (b.score === null) {
-              return -1
-            }
-            return b.score - a.score
-          }
-          widgets.viewers = widgets.viewers
-            .filter((widget) => widget.score !== 0)
-            .sort(sortFunction)
-          widgets.editors = widgets.editors
-            .filter((widget) => widget.score !== 0)
-            .sort(sortFunction)
-          predicateObject.values.push({ widgets, term: value })
+          const widgets = getWidgets(value, predicatesObject[predicate.value].constraintComponents)
+          predicatesObject[predicate.value].values.push({
+            widgets,
+            term: this.toSTerm(value as NamedNode | BlankNode | Literal)
+          })
         }
       }
     }
@@ -543,14 +560,23 @@ export class Shui {
 
   async getSchema(
     subject: NamedNode | BlankNode,
-    nodeShape: NamedNode | BlankNode,
-    dataGraphName: NamedNode | BlankNode
+    dataGraphName: NamedNode | BlankNode,
+    nodeShape?: NamedNode | BlankNode
   ) {
-    const { validator, dataset } = this.createValidator(dataGraphName)
-    const nodeShapePtr = validator.shapesPtr.node([nodeShape])
-    const shape = validator.shape(nodeShapePtr)
-    const schema: UISchema = {}
-    visitShape(subject, shape, this.shaclGraphName, schema)
+    const schema: UISchema = {
+      [subject.value]: {
+        predicates: {},
+        groups: new Map()
+      }
+    }
+
+    if (nodeShape) {
+      const { validator } = this.createValidator(dataGraphName)
+      const nodeShapePtr = validator.shapesPtr.node([nodeShape])
+      const shape = validator.shape(nodeShapePtr)
+      visitShape(subject, shape, this.shaclGraphName, schema)
+    }
+
     this.applySchemaValues(subject, dataGraphName, schema)
     return schema
   }

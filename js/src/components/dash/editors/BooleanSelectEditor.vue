@@ -2,10 +2,9 @@
 import { ref, toRef, watch, defineEmits } from 'vue'
 import { DataFactory } from 'n3'
 import Dropdown from 'primevue/dropdown'
-import { SBlankNode, type SNamedNode } from '@/shui'
-import type { BlankNode, NamedNode, Literal } from 'n3'
+import type { Literal } from 'n3'
 
-const { namedNode } = DataFactory
+const { namedNode, literal } = DataFactory
 const XSD_boolean = namedNode('http://www.w3.org/2001/XMLSchema#boolean')
 
 function lexicalToValue(value: string) {
@@ -25,18 +24,15 @@ function lexicalToValue(value: string) {
 }
 
 interface Props {
-  subject: NamedNode | BlankNode
-  predicate: SNamedNode
-  object: Literal
-  graph: SNamedNode | SBlankNode
+  term: Literal
 }
 
 const props = defineProps<Props>()
-const emit = defineEmits(['change'])
-const valueTerm = toRef(props, 'object')
-const datatype = ref(valueTerm.value.datatype)
+const emit = defineEmits(['update'])
+const term = toRef(props, 'term')
+const datatype = ref(term.value.datatype)
 const errors = ref<string[]>([])
-const selectedValue = ref(lexicalToValue(valueTerm.value.value))
+const selectedValue = ref(lexicalToValue(term.value.value))
 const dropdownOptions = ref([
   {
     name: 'true',
@@ -48,26 +44,36 @@ const dropdownOptions = ref([
   }
 ])
 
-watch(
-  [selectedValue, datatype],
-  () => {
-    emit('change')
-    errors.value = []
-    const value = lexicalToValue(selectedValue.value?.code || '')
-    if (value === null) {
-      errors.value.push(`Invalid lexical boolean value: ${valueTerm.value.value}`)
-    }
-
-    if (!datatype.value.equals(XSD_boolean)) {
-      errors.value.push(`Invalid literal datatype value: ${datatype.value.id}`)
-    }
-  },
-  { immediate: true }
-)
+// TODO: check whether this can be reused when we
+//       have the ability to switch widgets in the UI.
+// watch(
+//   [selectedValue, datatype],
+//   () => {
+//     emit('change')
+//     errors.value = []
+//     const value = lexicalToValue(selectedValue.value?.code || '')
+//     if (value === null) {
+//       errors.value.push(`Invalid lexical boolean value: ${term.value.value}`)
+//     }
+//
+//     if (!datatype.value.equals(XSD_boolean)) {
+//       errors.value.push(`Invalid literal datatype value: ${datatype.value.id}`)
+//     }
+//   },
+//   { immediate: true }
+// )
 
 const applyDatatypeFix = () => {
   datatype.value = XSD_boolean
 }
+
+function emitUpdate() {
+  if (selectedValue.value != null) {
+    emit('update', literal(selectedValue.value.code, datatype.value))
+  }
+}
+
+watch([selectedValue, datatype], () => emitUpdate())
 </script>
 
 <template>

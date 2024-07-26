@@ -27,6 +27,7 @@
     "shacl-engine": "^1.0.0",
     "uuid": "^10.0.0",
     "vue": "^3.4.29",
+    "vue-codemirror": "^6.1.1",
     "vue-router": "^4.3.3"
   },
   "devDependencies": {
