@@ -179,6 +179,8 @@ aussies:HolgersAddress
     label: 'CatPrez Record',
     command: () => {
       shacl.value = `\
+PREFIX gswa: <https://example.com/gswa/>
+PREFIX dash: <http://datashapes.org/dash#>
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX idnth: <https://data.idnau.org/pid/vocab/idn-th/>
@@ -186,27 +188,54 @@ PREFIX idnroles: <https://data.idnau.org/pid/vocab/idn-role-codes/>
 PREFIX isoroles: <https://linked.data.gov.au/def/data-roles/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX sdo: <https://schema.org/>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-dcat:Catalog a rdfs:Class,
-    sh:NodeShape ;
-rdfs:label "Catalog" ;
-sh:property [ sh:datatype xsd:token ;
-        sh:group <urn:group:Catalog-metadata> ;
-        sh:path dcterms:identifier ],
-    [ sh:group <urn:group:Catalog-metadata> ;
-        sh:maxCount 1 ;
-        sh:minCount 1 ;
-        sh:path dcterms:identifier ] .
+dcat:Catalog
+    a
+        rdfs:Class ,
+        sh:NodeShape ;
+    rdfs:label "Catalog" ;
+    sh:property
+        [
+            sh:datatype xsd:token ;
+            sh:group <urn:group:citation> ;
+            sh:path dcterms:identifier
+        ] ,
+        [
+            sh:datatype rdf:langString ;
+            sh:group <urn:group:citation> ;
+            sh:path dcterms:title
+        ] ,
+        [
+            sh:datatype rdf:langString ;
+            sh:group <urn:group:citation> ;
+            sh:path gswa:jurisdiction ;
+        ] ,
+        [
+            dash:editor dash:TextAreaEditor ;
+            sh:datatype rdf:langString ;
+            sh:group <urn:group:description> ;
+            sh:path dcterms:abstract
+        ] ;
+.
 
-<urn:group:Catalog-metadata> a sh:PropertyGroup ;
-    rdfs:label "Metadata" ;
-    sh:order 0 .
-      `
+<urn:group:description>
+    a sh:PropertyGroup ;
+    rdfs:label "Description" ;
+    sh:order 1 ;
+.
+
+<urn:group:citation>
+    a sh:PropertyGroup ;
+    rdfs:label "Citation" ;
+    sh:order 0 ;
+.
+`
       data.value = `\
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
