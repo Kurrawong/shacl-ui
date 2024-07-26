@@ -56,10 +56,12 @@ const propertyGroups = computed(() => {
 
 <template>
   <template v-if="uiSchema">
-    <div v-if="propertyGroups" class="hover:shadow-[0_0_35px_-15px_rgba(0,0,0,0.3)]">
+    <div
+      v-for="propertyGroup in propertyGroups"
+      class="hover:shadow-[0_0_35px_-15px_rgba(0,0,0,0.3)]"
+      :key="propertyGroup.term.id"
+    >
       <Fieldset
-        v-for="propertyGroup in propertyGroups"
-        :key="propertyGroup.term.id"
         :legend="propertyGroup.name"
         :pt="{
           legend: {
