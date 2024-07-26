@@ -16,6 +16,9 @@ const selectedFocusNode = ref<DropdownOption | null>(null)
 watch(selectedFocusNode, () => {
   selectedNodeShape.value = null
 })
+watch(shui, () => {
+  selectedNodeShape.value = null
+})
 const nodes = computed(() => {
   const subjects = shui.value.store.getSubjects(null, null, graph)
   return subjects
@@ -79,6 +82,7 @@ const nodeShapes = computed(() => {
           <p>Statements: {{ shui.store.getQuads(null, null, null, graph).length }}</p>
         </div>
 
+        {{selectedNodeShape?.codeTerm.value}}
         <div class="space-y-4">
           <FocusNode
             v-if="selectedFocusNodeTerm"

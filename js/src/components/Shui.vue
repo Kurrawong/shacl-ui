@@ -65,6 +65,9 @@ const selectedFocusNode = ref<DropdownOption | null>(null)
 watch(selectedFocusNode, () => {
   selectedNodeShape.value = null
 })
+watch(shui, () => {
+  selectedNodeShape.value = null
+})
 const nodes = computed(() => {
   const subjects = shui.value.store.getSubjects(null, null, graph)
   return subjects
