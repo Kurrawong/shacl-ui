@@ -21,7 +21,6 @@ const props = defineProps<Props>()
 const { graph } = props
 const { shui, addQuads, reset } = useShui()
 const toast = useToast()
-const parser = new Parser()
 const error = ref('')
 const graphTerm = namedNode(graph)
 
@@ -37,6 +36,7 @@ function getErrorMessage(error: unknown) {
 function handleSave() {
   updated.value = false
   try {
+    const parser = new Parser()
     const quads = parser
       .parse(model.value)
       .map((q) => quad(q.subject, q.predicate, q.object, graphTerm))
