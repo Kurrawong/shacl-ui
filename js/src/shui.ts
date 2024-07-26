@@ -221,6 +221,10 @@ export class Shui {
     this.store.addQuads(quads)
   }
 
+  quadsToString(graph: NamedNode | BlankNode | null) {
+    return writer.quadsToString(this.store.getQuads(null, null, null, graph))
+  }
+
   nodeLabel(subject: RDFSNamedNode | RDFJSBlankNode) {
     // TODO: Implement the other methods of retrieving labels.
     // 1. Look in the labels system graph, then look in the entire dataset in case there's a label defined in one of the data graphs.

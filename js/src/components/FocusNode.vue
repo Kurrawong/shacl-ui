@@ -32,7 +32,7 @@ async function updateValues() {
 onMounted(async () => {
   await updateValues()
 })
-watch([shui, nodeShape], async () => {
+watch([shui, focusNode, nodeShape], async () => {
   await updateValues()
 })
 

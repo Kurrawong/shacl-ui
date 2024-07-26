@@ -36,7 +36,7 @@ const items = ref([
   {
     label: 'Widgets',
     items: widgets.editors.map((widget, index) => ({
-      label: `${shui.value.toSNamedNode(namedNode(widget.type.value)).label} (${widget.score})`,
+      label: `${shui.value.toSNamedNode(namedNode(widget.type.value)).label} (score ${widget.score})`,
       index,
       command: (event: MenuItemCommandEvent) => {
         const item = event.item as Item
