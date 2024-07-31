@@ -71,6 +71,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         sh:property gswa-shapes:Dataset-spatialCoverage ;
         sh:property gswa-shapes:Dataset-status ;
         sh:property gswa-shapes:Dataset-repeatFrequency ;
+        sh:property gswa-shapes:Dataset-includeInDataCatalog ;
         sh:property gswa-shapes:Dataset-lineage ;
         sh:property gswa-shapes:Dataset-positionalAccuracy ;
         sh:property gswa-shapes:Dataset-attributeAccuracy ;
@@ -184,6 +185,15 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
             ]
         ] ;
         sh:order 8 ;
+        sh:group gswa-shapes:Dataset-metadata-group ;
+    .
+
+    gswa-shapes:Dataset-includeInDataCatalog a sh:PropertyShape ;
+        sh:name "In Data Catalog" ;
+        sh:path sdo:includeInDataCatalog ;
+        sh:minCount 1 ;
+        sh:class sdo:DataCatalog ;
+        sh:order 9 ;
         sh:group gswa-shapes:Dataset-metadata-group ;
     .
 

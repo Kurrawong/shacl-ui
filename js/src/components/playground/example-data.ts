@@ -227,6 +227,7 @@ gswa-shapes:Dataset a sh:NodeShape ;
     sh:property gswa-shapes:Dataset-spatialCoverage ;
     sh:property gswa-shapes:Dataset-status ;
     sh:property gswa-shapes:Dataset-repeatFrequency ;
+    sh:property gswa-shapes:Dataset-includeInDataCatalog ;
     sh:property gswa-shapes:Dataset-lineage ;
     sh:property gswa-shapes:Dataset-positionalAccuracy ;
     sh:property gswa-shapes:Dataset-attributeAccuracy ;
@@ -340,6 +341,15 @@ gswa-shapes:Dataset-repeatFrequency a sh:PropertyShape ;
         ]
     ] ;
     sh:order 8 ;
+    sh:group gswa-shapes:Dataset-metadata-group ;
+.
+
+gswa-shapes:Dataset-includeInDataCatalog a sh:PropertyShape ;
+    sh:name "In Data Catalog" ;
+    sh:path sdo:includeInDataCatalog ;
+    sh:minCount 1 ;
+    sh:class sdo:DataCatalog ;
+    sh:order 9 ;
     sh:group gswa-shapes:Dataset-metadata-group ;
 .
 
