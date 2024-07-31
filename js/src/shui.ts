@@ -34,6 +34,7 @@ import type {
 import { rdfs, sh } from '@/core/namespaces'
 import { visitShape } from '@/core/constraint-components/shape-visitor'
 import { getWidgets, type ObjectParam, type Widget } from '@/core/widgets/score-widget'
+import { DEFAULT_SH_ORDER_VALUE } from './core/constraint-components/constraint-component'
 
 const { namedNode, blankNode, literal, quad } = n3.DataFactory
 const DEFAULT_PROPERTY_GROUP_ORDER = 9999
@@ -526,6 +527,7 @@ export class Shui {
           schema[subject.value] = {
             predicates: {
               [predicate.value]: {
+                order: DEFAULT_SH_ORDER_VALUE,
                 term: predicate,
                 group: null,
                 constraintComponents: [],
@@ -539,6 +541,7 @@ export class Shui {
         const predicatesObject = schema[subject.value].predicates
         if (!(predicate.value in predicatesObject)) {
           predicatesObject[predicate.value] = {
+            order: DEFAULT_SH_ORDER_VALUE,
             term: predicate,
             group: null,
             constraintComponents: [],
