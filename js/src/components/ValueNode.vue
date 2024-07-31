@@ -45,7 +45,10 @@ const handleUpdate = (value: NamedNode | BlankNode | Literal) => {
 }
 
 const isHoverGreen = computed(() => {
-  return object.termType !== 'BlankNode' && !selectedWidget.value?.type.equals(dash.DetailsEditor)
+  return (
+    object.termType !== 'BlankNode' ||
+    (selectedWidget.value?.type && !selectedWidget.value.type.equals(dash.DetailsEditor))
+  )
 })
 
 // TODO: Can we create a computed property for the viewer and editor and assign a component as its value? JSX?
