@@ -32,7 +32,7 @@ import type {
   BlankNode as RDFJSBlankNode
 } from '@rdfjs/types'
 import { rdfs, sh } from '@/core/namespaces'
-import { visitShape } from '@/core/constraint-components/visit-shape'
+import { visitShape } from '@/core/constraint-components/shape-visitor'
 import { getWidgets, type ObjectParam, type Widget } from '@/core/widgets/score-widget'
 
 const { namedNode, blankNode, literal, quad } = n3.DataFactory
