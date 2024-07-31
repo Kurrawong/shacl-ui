@@ -28,6 +28,6 @@ watch([value, datatype, language], () => emitUpdate())
 
 <template>
   <div class="flex">
-    <InputText v-model="value" class="grow max-w-[300px]" />
+    <InputText v-model="value" class="grow" />
   </div>
 </template>
