@@ -4,7 +4,7 @@ import { useShui } from '@/composables/shui'
 import { computed, ref, toRef } from 'vue'
 import { type BlankNode, DataFactory, type Literal, type NamedNode } from 'n3'
 import quad = DataFactory.quad
-import type { ConstraintComponent } from '@/core/constraint-components/constraint-component'
+import { ConstraintComponent } from '@/core/constraint-components/constraint-component'
 import type { Widgets } from '@/core/widgets/score-widget'
 import { dash } from '@/core/namespaces'
 import LiteralEditor from '@/components/dash/editors/LiteralEditor.vue'
@@ -15,6 +15,7 @@ import URIEditor from '@/components/dash/editors/URIEditor.vue'
 import FocusNode from '@/components/FocusNode.vue'
 import ActionMenu from '@/components/core/value-node/ActionMenu.vue'
 import BlankNodeEditor from '@/components/dash/editors/BlankNodeEditor.vue'
+import { NodeConstraintComponent } from '@/core/constraint-components/shape-based/node'
 
 interface Props {
   subject: SIdentifiedNode
@@ -23,14 +24,25 @@ interface Props {
   dataGraph: SIdentifiedNode
   constraintComponents: ConstraintComponent[]
   widgets: Widgets
+  editor: NamedNode | null
+}
+
+function getDefaultWidget() {
+  if (editor !== null) {
+    return {
+      type: editor,
+      score: null
+    }
+  }
+  return widgets.value.editors.length ? widgets.value.editors[0] : null
 }
 
 const props = defineProps<Props>()
-const { subject, predicate, object, dataGraph } = props
+const { subject, predicate, object, dataGraph, constraintComponents, editor } = props
 const widgets = toRef(props, 'widgets')
 // TODO: Only considers editors at the moment.
-const selectedWidget = ref(widgets.value.editors.length ? widgets.value.editors[0] : null)
-const { addQuads, removeQuads } = useShui()
+const selectedWidget = ref(getDefaultWidget())
+const { shui, addQuads, removeQuads } = useShui()
 const newValue = ref()
 const updated = ref(false)
 
@@ -45,7 +57,32 @@ const handleUpdate = (value: NamedNode | BlankNode | Literal) => {
 }
 
 const isHoverGreen = computed(() => {
-  return object.termType !== 'BlankNode' && !selectedWidget.value?.type.equals(dash.DetailsEditor)
+  return (
+    object.termType !== 'BlankNode' ||
+    (selectedWidget.value?.type && !selectedWidget.value.type.equals(dash.DetailsEditor))
+  )
+})
+
+const detailsEditorNodeShapes = computed(() => {
+  for (const constraintComponent of constraintComponents) {
+    if (constraintComponent.type === 'NodeConstraintComponent') {
+      const nodeConstraintComponent = constraintComponent as NodeConstraintComponent
+      const terms = []
+      for (const nodeTerm of nodeConstraintComponent.nodes) {
+        if (nodeTerm.termType === 'NamedNode') {
+          terms.push(shui.value.toSNamedNode(nodeTerm))
+        } else if (nodeTerm.termType === 'BlankNode') {
+          terms.push(shui.value.toSBlankNode(nodeTerm))
+        } else {
+          throw Error(
+            `sh:node values must be NodeShapes. Expecting NamedNodes or BlankNodes, not ${nodeTerm.termType}`
+          )
+        }
+      }
+      return terms
+    }
+  }
+  return undefined
 })
 
 // TODO: Can we create a computed property for the viewer and editor and assign a component as its value? JSX?
@@ -61,7 +98,12 @@ const isHoverGreen = computed(() => {
         <BooleanSelectEditor :term="object as Literal" @update="handleUpdate" />
       </template>
       <template v-else-if="selectedWidget?.type.equals(dash.DetailsEditor)">
-        <FocusNode :focus-node="object as SIdentifiedNode" :data-graph="dataGraph" />
+        <!-- TODO: it's valid to define multiple sh:node values (i.e., multiple NodeShapes) - perhaps FocusNode component will need to support that in the future -->
+        <FocusNode
+          :focus-node="object as SIdentifiedNode"
+          :data-graph="dataGraph"
+          :node-shape="detailsEditorNodeShapes ? detailsEditorNodeShapes[0] : undefined"
+        />
       </template>
       <template v-else-if="selectedWidget?.type.equals(dash.LiteralEditor)">
         <LiteralEditor :term="object as SLiteral" @update="handleUpdate" />

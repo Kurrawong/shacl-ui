@@ -25,11 +25,24 @@ const filteredPredicatesObjectValues = computed(() => {
   }
   return predicateObjectValues.value.filter((value) => value.group?.equals(group))
 })
+
+const orderedPredicateObjectValues = computed(() => {
+  const objectValues = [...filteredPredicatesObjectValues.value]
+  return objectValues.sort((a, b) => {
+    if (a.order < b.order) {
+      return -1
+    }
+    if (a.order > b.order) {
+      return 1
+    }
+    return 0
+  })
+})
 </script>
 
 <template>
   <template
-    v-for="(predicateObject, index) in filteredPredicatesObjectValues"
+    v-for="(predicateObject, index) in orderedPredicateObjectValues"
     :key="predicateObject.term.id"
   >
     <PredicateObjectValues
@@ -38,7 +51,7 @@ const filteredPredicatesObjectValues = computed(() => {
       :predicate-object="predicateObject"
     />
 
-    <hr v-if="index !== filteredPredicatesObjectValues.length - 1" class="py-2" />
+    <hr v-if="index !== orderedPredicateObjectValues.length - 1" class="py-2" />
   </template>
 
   <!-- Only render this on the 'Other Properties' group -->

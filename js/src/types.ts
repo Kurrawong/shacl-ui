@@ -112,9 +112,11 @@ export interface PredicatesShapesMapValues {
 export type PredicatesShapesMap = Map<string, PredicatesShapesMapValues>
 
 export interface PredicateConstraints {
+  order: number
   term: NamedNode
   group: NamedNode | BlankNode | null
   constraintComponents: ConstraintComponent[]
+  editor: NamedNode | null
   values: {
     widgets: Widgets
     term: STerm

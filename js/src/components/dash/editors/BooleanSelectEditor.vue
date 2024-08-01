@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRef, watch, defineEmits } from 'vue'
+import { ref, toRef, watch } from 'vue'
 import { DataFactory } from 'n3'
 import Dropdown from 'primevue/dropdown'
 import type { Literal } from 'n3'

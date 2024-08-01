@@ -2,7 +2,7 @@ import type { NamedNode, BlankNode } from '@rdfjs/types'
 import { ConstraintComponent } from '@/core/constraint-components/constraint-component'
 import type { Shape, UISchema } from '@/types'
 import { sh } from '@/core/namespaces'
-import { visitShape } from '@/core/constraint-components/visit-shape'
+import { visitShape } from '@/core/constraint-components/shape-visitor'
 
 export class PropertyConstraintComponent extends ConstraintComponent {
   _properties

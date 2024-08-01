@@ -1,0 +1,744 @@
+#
+# SHACL Shapes and sample data for GSWA's Data Catalog.
+#
+# Using dash:LabelRole implicitly bundles the dash:singleLine = true constraint component. This should trigger full-text search index for labels where exact hits have the highest score.
+# Using dashIDRole should signal to systems to index those fields as identifiers for full-text search
+# Using dash:DescriptionRole should signal to systems to index those fields as descriptions. This should have the lowest score in full-text search retrieval.
+
+PREFIX : <https://example.com/>
+PREFIX dash: <http://datashapes.org/dash#>
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX freq: <http://purl.org/cld/freq/>
+PREFIX gswa: <https://example.com/gswa/data/>
+PREFIX gswa-shapes: <https://example.com/gswa/shapes/>
+PREFIX gswa-epsg-cc: <https://example.com/gswa/epsg>
+PREFIX gswa-epsg: <https://example.com/gswa/epsg/>
+PREFIX gswa-roles-cc: <https://example.com/gswa/role>
+PREFIX gswa-roles: <https://example.com/gswa/role/>
+PREFIX gswa-status-cc: <https://example.com/gswa/status>
+PREFIX gswa-status: <https://example.com/gswa/status/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sdo: <https://schema.org/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+<urn:system:graph:shacl> {
+    #
+    # DataCatalog NodeShape
+    #
+    gswa-shapes:DataCatalog a sh:NodeShape ;
+        rdfs:label "Data Catalog" ;
+        sh:targetClass sdo:DataCatalog ;
+        sh:property gswa-shapes:DataCatalog-name ;
+        sh:property gswa-shapes:DataCatalog-identifier ;
+    .
+
+    gswa-shapes:DataCatalog-name a sh:PropertyShape ;
+        sh:name "Title" ;
+        sh:path sdo:name ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype rdf:langString ;
+        dash:propertyRole dash:LabelRole ;
+        sh:order 0 ;
+    .
+
+    gswa-shapes:DataCatalog-identifier a sh:PropertyShape ;
+        sh:name "Unique ID" ;
+        sh:path sdo:identifier ;
+        sh:datatype xsd:token ;
+        sh:order 1 ;
+    .
+
+    #
+    # Dataset NodeShape
+    #
+    gswa-shapes:Dataset a sh:NodeShape ;
+        rdfs:label "Dataset" ;
+        sh:targetClass sdo:Dataset ;
+        sh:property gswa-shapes:Dataset-name ;
+        sh:property gswa-shapes:Dataset-identifier ;
+        sh:property gswa-shapes:Dataset-abstract ;
+        sh:property gswa-shapes:Dataset-keywords ;
+        sh:property gswa-shapes:Dataset-publisher ;
+        sh:property gswa-shapes:Dataset-crs ;
+        sh:property gswa-shapes:Dataset-datePublished ;
+        sh:property gswa-shapes:Dataset-dateModified ;
+        sh:property gswa-shapes:Dataset-temporalCoverage ;
+        sh:property gswa-shapes:Dataset-spatialCoverage ;
+        sh:property gswa-shapes:Dataset-status ;
+        sh:property gswa-shapes:Dataset-repeatFrequency ;
+        sh:property gswa-shapes:Dataset-includeInDataCatalog ;
+        sh:property gswa-shapes:Dataset-lineage ;
+        sh:property gswa-shapes:Dataset-positionalAccuracy ;
+        sh:property gswa-shapes:Dataset-attributeAccuracy ;
+        sh:property gswa-shapes:Dataset-logicalConsistency ;
+        sh:property gswa-shapes:Dataset-completeness ;
+        sh:property gswa-shapes:Dataset-credit ;
+        sh:property gswa-shapes:Dataset-qualifiedAttribution ;
+    .
+
+    #
+    # PropertyShapes in the Metadata group
+    #
+    gswa-shapes:Dataset-name a sh:PropertyShape ;
+        sh:name "Title" ;
+        sh:path sdo:name ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype rdf:langString ;
+        dash:propertyRole dash:LabelRole ;
+        sh:order 0 ;
+        sh:group gswa-shapes:Dataset-metadata-group ;
+    .
+
+    gswa-shapes:Dataset-identifier a sh:PropertyShape ;
+        sh:name "Unique ID" ;
+        sh:path sdo:identifier ;
+        sh:datatype xsd:token ;
+        dash:singleLine true ;
+        sh:order 1 ;
+        sh:group gswa-shapes:Dataset-metadata-group ;
+    .
+
+    gswa-shapes:Dataset-abstract a sh:PropertyShape ;
+        sh:name "Abstract" ;
+        sh:path sdo:abstract ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype rdf:langString ;
+        dash:singleLine false ;
+        sh:order 2 ;
+        sh:group gswa-shapes:Dataset-metadata-group ;
+    .
+
+    gswa-shapes:Dataset-keywords a sh:PropertyShape ;
+        sh:name "Search Words" ;
+        sh:path sdo:keywords ;
+        sh:class skos:Concept ;
+        sh:node [
+            sh:property [
+                sh:path skos:inScheme ;
+                sh:hasValue <https://linked.data.gov.au/def/GSWA-vocabulary-themes> ;
+            ]
+        ] ;
+        sh:order 3 ;
+        sh:group gswa-shapes:Dataset-metadata-group ;
+    .
+
+    gswa-shapes:Dataset-publisher a sh:PropertyShape ;
+        sh:name "Publisher" ;
+        sh:path sdo:publisher ;
+        sh:class sdo:Organization ;
+        sh:order 4 ;
+        sh:group gswa-shapes:Dataset-metadata-group ;
+    .
+
+    gswa-shapes:Dataset-datePublished a sh:PropertyShape ;
+        sh:name "Publication Date" ;
+        sh:path sdo:datePublished ;
+        sh:datatype xsd:date ;
+        sh:maxCount 1 ;
+        sh:order 6 ;
+        sh:group gswa-shapes:Dataset-metadata-group ;
+    .
+
+    gswa-shapes:Dataset-dateModified a sh:PropertyShape ;
+        sh:name "Metadata Date" ;
+        sh:path sdo:dateModified ;
+        sh:datatype xsd:date ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:order 7 ;
+        sh:group gswa-shapes:Dataset-metadata-group ;
+    .
+
+    gswa-shapes:Dataset-status a sh:PropertyShape ;
+        sh:name "Status" ;
+        sh:path sdo:status ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class skos:Concept ;
+        sh:node [
+            sh:property [
+                sh:path skos:inScheme ;
+                sh:hasValue gswa-status-cc: ;
+            ]
+        ] ;
+        sh:order 8 ;
+        sh:group gswa-shapes:Dataset-metadata-group ;
+    .
+
+    gswa-shapes:Dataset-repeatFrequency a sh:PropertyShape ;
+        sh:name "Maintenance and Update" ;
+        sh:path sdo:repeatFrequency ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class skos:Concept ;
+        sh:node [
+            sh:property [
+                sh:path skos:inScheme ;
+                sh:hasValue <http://purl.org/cld/freq> ;
+            ]
+        ] ;
+        sh:order 8 ;
+        sh:group gswa-shapes:Dataset-metadata-group ;
+    .
+
+    gswa-shapes:Dataset-includeInDataCatalog a sh:PropertyShape ;
+        sh:name "In Data Catalog" ;
+        sh:path sdo:includeInDataCatalog ;
+        sh:minCount 1 ;
+        sh:class sdo:DataCatalog ;
+        sh:order 9 ;
+        sh:group gswa-shapes:Dataset-metadata-group ;
+    .
+
+    #
+    # PropertyShapes in the Coverage group
+    #
+    gswa-shapes:Dataset-temporalCoverage a sh:PropertyShape ;
+        sh:name "Temporal Coverage" ;
+        sh:path sdo:temporalCoverage ;
+        sh:datatype xsd:string ;
+        # TODO: regex validation with sh:pattern
+        sh:maxCount 1 ;
+        sh:order 0 ;
+        sh:group gswa-shapes:Dataset-coverage-group ;
+    .
+
+    gswa-shapes:Dataset-crs a sh:PropertyShape ;
+        sh:name "Coordinate Reference System" ;
+        sh:path gswa:crs ;
+        sh:class skos:Concept ;
+        sh:maxCount 1 ;
+        sh:node [
+            sh:property [
+                sh:path skos:inScheme ;
+                sh:hasValue gswa-epsg-cc: ;
+            ] ;
+        ] ;
+        sh:order 1 ;
+        sh:group gswa-shapes:Dataset-coverage-group ;
+    .
+
+    gswa-shapes:Dataset-spatialCoverage a sh:PropertyShape ;
+        sh:name "Spatial Coverage" ;
+        sh:path sdo:spatialCoverage ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:BlankNode ;
+        # TODO: potentially a map editor can be used here too
+        dash:editor dash:DetailsEditor ;
+        sh:node [
+            sh:property [
+                sh:name "Geometry" ;
+                sh:path sdo:geo ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+                sh:nodeKind sh:BlankNode ;
+                dash:editor dash:DetailsEditor ;
+                sh:node [
+                    sh:property [
+                        sh:name "Box" ;
+                        sh:path sdo:box ;
+                        sh:datatype xsd:string ;
+                        sh:minCount 1 ;
+                        sh:maxCount 1 ;
+                    ] ;
+                ] ;
+            ] ;
+        ] ;
+        sh:order 2 ;
+        sh:group gswa-shapes:Dataset-coverage-group ;
+    .
+
+    #
+    # PropertyShapes in the Data Quality group
+    #
+    gswa-shapes:Dataset-lineage a sh:PropertyShape ;
+        sh:name "Lineage" ;
+        sh:path gswa:lineage ;
+        sh:datatype rdf:langString ;
+        dash:singleLine false ;
+        sh:maxCount 1 ;
+        sh:order 0 ;
+        sh:group gswa-shapes:Dataset-data-quality-group ;
+    .
+
+    gswa-shapes:Dataset-positionalAccuracy a sh:PropertyShape ;
+        sh:name "Positional Accuracy" ;
+        sh:path gswa:positionalAccuracy ;
+        sh:datatype rdf:langString ;
+        dash:singleLine false ;
+        sh:maxCount 1 ;
+        sh:order 1 ;
+        sh:group gswa-shapes:Dataset-data-quality-group ;
+    .
+
+    gswa-shapes:Dataset-attributeAccuracy a sh:PropertyShape ;
+        sh:name "Attribute Accuracy" ;
+        sh:path gswa:attributeAccuracy ;
+        sh:datatype rdf:langString ;
+        dash:singleLine false ;
+        sh:maxCount 1 ;
+        sh:order 2 ;
+        sh:group gswa-shapes:Dataset-data-quality-group ;
+    .
+
+    gswa-shapes:Dataset-logicalConsistency a sh:PropertyShape ;
+        sh:name "Logical Consistency" ;
+        sh:path gswa:logicalConsistency ;
+        sh:datatype rdf:langString ;
+        dash:singleLine false ;
+        sh:maxCount 1 ;
+        sh:order 3 ;
+        sh:group gswa-shapes:Dataset-data-quality-group ;
+    .
+
+    gswa-shapes:Dataset-completeness a sh:PropertyShape ;
+        sh:name "Completeness" ;
+        sh:path gswa:completeness ;
+        sh:datatype rdf:langString ;
+        dash:singleLine false ;
+        sh:maxCount 1 ;
+        sh:order 4 ;
+        sh:group gswa-shapes:Dataset-data-quality-group ;
+    .
+
+    gswa-shapes:Dataset-credit a sh:PropertyShape ;
+        sh:name "Credit" ;
+        sh:path gswa:credit ;
+        sh:datatype rdf:langString ;
+        dash:singleLine false ;
+        sh:maxCount 1 ;
+        sh:order 5 ;
+        sh:group gswa-shapes:Dataset-data-quality-group ;
+    .
+
+    #
+    # PropertyShapes in the Contact group
+    #
+    gswa-shapes:Dataset-qualifiedAttribution a sh:PropertyShape ;
+        sh:name "Contact Person" ;
+        sh:path prov:qualifiedAttribution ;
+        sh:nodeKind sh:BlankNode ;
+        dash:editor dash:DetailsEditor ;
+        sh:order 0 ;
+        sh:group gswa-shapes:Dataset-contact-group ;
+        sh:node [
+            sh:property [
+                sh:name "Role" ;
+                sh:path dcat:hadRole ;
+                sh:class skos:Concept ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+                sh:node [
+                    sh:property [
+                        sh:path skos:inScheme ;
+                        sh:hasValue gswa-roles-cc: ;
+                    ] ;
+                ] ;
+                sh:order 0 ;
+            ] ;
+            sh:property [
+                sh:name "Contact Information" ;
+                sh:path prov:agent ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+                dash:editor dash:DetailsEditor ;
+                sh:node [
+                    sh:property [
+                        sh:name "Name" ;
+                        sh:path sdo:name ;
+                        dash:propertyRole dash:LabelRole ;
+                        sh:minCount 1 ;
+                        sh:maxCount 1 ;
+                        sh:datatype xsd:string ;
+                        sh:order 0 ;
+                    ] ;
+                    sh:property [
+                        sh:name "Contact Point" ;
+                        sh:path sdo:contactPoint ;
+                        dash:editor dash:DetailsEditor ;
+                        sh:node [
+                            sh:property [
+                                sh:name "Contact Type" ;
+                                sh:path sdo:contactType ;
+                                sh:datatype xsd:string ;
+                                sh:maxCount 1 ;
+                                sh:order 0 ;
+                            ] ;
+                            sh:property [
+                                sh:name "Telephone" ;
+                                sh:path sdo:telephone ;
+                                sh:datatype xsd:string ;
+                                sh:order 1 ;
+                            ] ;
+                            sh:property [
+                                sh:name "Email" ;
+                                sh:path sdo:email ;
+                                sh:datatype xsd:string ;
+                                sh:order 2 ;
+                            ] ;
+                        ] ;
+                        sh:order 1 ;
+                    ] ;
+                    sh:property [
+                        sh:name "Address" ;
+                        sh:path sdo:address ;
+                        dash:editor dash:DetailsEditor ;
+                        sh:node [
+                            sh:property [
+                                sh:name "Street" ;
+                                sh:path sdo:streetAddress ;
+                                sh:minCount 1 ;
+                                sh:maxCount 1 ;
+                                sh:datatype xsd:string ;
+                                sh:order 0 ;
+                            ] ;
+                            sh:property [
+                                sh:name "Suburb" ;
+                                sh:path sdo:addressLocality ;
+                                sh:minCount 1 ;
+                                sh:maxCount 1 ;
+                                sh:datatype xsd:string ;
+                                sh:order 1 ;
+                            ] ;
+                            sh:property [
+                                sh:name "State or Territory" ;
+                                sh:path sdo:addressRegion ;
+                                sh:minCount 1 ;
+                                sh:maxCount 1 ;
+                                sh:datatype xsd:string ;
+                                sh:order 2 ;
+                            ] ;
+                            sh:property [
+                                sh:name "Postcode" ;
+                                sh:path sdo:postalCode ;
+                                sh:minCount 1 ;
+                                sh:maxCount 1 ;
+                                sh:datatype xsd:string ;
+                                sh:order 3 ;
+                            ] ;
+                        ] ;
+                        sh:order 2 ;
+                    ] ;
+                ] ;
+                sh:order 1 ;
+            ] ;
+        ] ;
+    .
+
+    #
+    # Dataset PropertyGroups
+    #
+    gswa-shapes:Dataset-metadata-group a sh:PropertyGroup ;
+        rdfs:label "Metadata" ;
+        sh:order 0 ;
+    .
+
+    gswa-shapes:Dataset-coverage-group a sh:PropertyGroup ;
+        rdfs:label "Temporal and Spatial Coverage" ;
+        sh:order 1 ;
+    .
+
+    gswa-shapes:Dataset-data-quality-group a sh:PropertyGroup ;
+        rdfs:label "Data Quality" ;
+        sh:order 2 ;
+    .
+    gswa-shapes:Dataset-contact-group a sh:PropertyGroup ;
+        rdfs:label "Contact" ;
+        sh:order 3 ;
+    .
+}
+
+<urn:graph:data> {
+    :data-catalog a sdo:DataCatalog ;
+        sdo:name "Department of Energy, Mines, Industry Regulation and Safety Data and Software centre"@en ;
+    .
+
+    <https://linked.data.gov.au/org/gswa> a sdo:Organization ;
+        sdo:name "Geological Survey of Western Australia"@en ;
+    .
+
+    :C1F424F2-DAA2-40BD-8B28-A3B9D7851E17 a sdo:Dataset ;
+        sdo:includeInDataCatalog :data-catalog ;
+        # title
+        sdo:name "1:500 000 State regolith geology of Western Australia"@en ;
+        sdo:identifier "C1F424F2-DAA2-40BD-8B28-A3B9D7851E17"^^xsd:token ;
+        # abstract
+        sdo:abstract "The digital ‘1:500 000 State regolith geology of Western Australia’ is a compilation of existing Geological Survey of Western Australia (GSWA) regolith and surface geology maps. This product supersedes the 1:500 000 State regolith map (Marnham and Morris, 2003). Whereas the 2003 regolith map was largely a synthesis from 1:250 000 map sources, was partly generated by manual drawing and only used generic regolith codes, this new product incorporates all regolith coverage available at 1:100 000 scale, uses a revised regolith classification scheme, and was compiled using an automated algorithm for polygon generalization. Regolith geology from 1:100 000 and 1:250 000 scale maps has been compiled to produce a seamless digital regolith coverage. To produce a compilation readable at 1:500 000 scale, polygon line work had to be modified. The modification included aggregation of small polygons clusters with the same code into larger shapes, elimination of microfeatures, and simplification of polygon contours using the cellular automata (CA) model of the GeoScaler python script for ArcGIS (Huot-Vézina et al., 2012). Following this step, manual editing was required during edge fitting and topology cleaning to improve the polygon line work to comply with GSWA cartographic scale standards. The coding of regolith units in the layer follows GSWA’s regolith classification scheme (GSWA, 2013) with the addition of a suffix representing major physiographic province subdivisions across the State. Earlier maps that did not conform to the current scheme were recoded accordingly. Regolith codes consist of three parts: primary code (landform and landform qualifier), secondary code (compositional information), and physiographic province (major physiographic subdivisions across the State based on Pain et al. (2011)). For the scale of this product, tertiary codes (parent rock or cement) were deemed to be too detailed and were therefore rolled up into higher level codes. Regolith units are assigned to 11 landforms. They comprise areas of outcrop (_X, including bedrock and weathered rock), residual or relict material (_R, representing in situ regolith or remnants deposits from an earlier landscape), and nine transported units: _C, colluvium; _W, sheetwash; _A, alluvial/fluvial; _L, lacustrine; _E, eolian; _S, sandplain; _B, coastal (wave-dominated); _T, coastal (tide-dominated); and _M, marine. Suffixes used for the physiographic provinces are as follows: CAP, Central Australian Ranges Physiographic Province; KIP, Kimberley Physiographic Province; NAP, North Australian Plateaus Physiographic Province; NPP, Nullarbor Plain Physiographic Province; PIP, Pilbara Physiographic Province; SAP, Sandland Physiographic Province; TPP, Barkly–Tanami Plains Physiographic Province; WCP, Western Coastlands Physiographic Province; and YPP, Yilgarn Plateau Physiographic Province. Data are held in GDA 94 decimal degrees. REFERENCES: Geological Survey of Western Australia 2013, Revised classification system for regolith in Western Australia, and the recommended approach to regolith mapping: Geological Survey of Western Australia, Record 2013/7, 26p. | Huot-Vézina, G, Boivin, R, Smirnoff, A and Paradis, SJ, 2012, Geoscaler: Generalization tool: Geological Survey of Canada, Open File 6231, 2nd edition, DOI:10.4095/291993 | Marnham, J and Morris, PA 2003, A seamless digital regolith map of Western Australia: a potential resource for mineral exploration and environmental management: Western Australia Geological Survey, Annual Review 2002–03, p. 27–33 | Pain, C, Gregory, L, Wilson, P and McKenzie, N 2011, The physiographic regions of Australia – Explanatory notes 2011, Australian Collaborative Land Evaluation Program and National Committee on Soil and Terrains."@en ;
+        # search words
+        sdo:keywords <https://linked.data.gov.au/def/GSWA-vocabulary-themesgeology>,
+            <https://linked.data.gov.au/def/GSWA-vocabulary-themesresources-energy>,
+            <https://linked.data.gov.au/def/GSWA-vocabulary-themesresources-mineral> ;
+        sdo:publisher <https://linked.data.gov.au/org/gswa> ;
+        # reference system
+        gswa:crs <https://epsg.io/4283> ;
+        # publication date
+        sdo:datePublished "2020-02-21"^^xsd:date ;
+        # metadata date
+        sdo:dateModified "2023-05-15"^^xsd:date ;
+        # derived from status as ongoing and the creation date
+        sdo:temporalCoverage "2017-02-17/.." ;
+        # geographic extent polygon
+        sdo:spatialCoverage [
+            sdo:geo [
+                sdo:box "[-35.50 112.50], [-35.50 129.00], [-13.50 129.00], [-13.50 112.50]" ;
+            ] ;
+        ] ;
+        # status
+        sdo:status gswa-status:ongoing ;
+        # maintenance and update
+        sdo:repeatFrequency freq:weekly ;
+
+        #
+        # Data Quality
+        #
+        gswa:lineage "Sources for the ‘1:500 000 State regolith geology of Western Australia’ are published GSWA Geological Information Series (GIS) packages that include digital 1:100 000 and 1:250 000 regolith and/or surface geology. The highest levels of reliability are in areas of 1:100 000 and 1:250 000 regolith-only maps, and 1:100 000 surface geology maps. These maps cover most of the southwestern Capricorn Orogen and the Nicholls 1:100 000 sheet from the eastern Capricorn Orogen; most of Pilbara Craton and Paterson Orogen; the Tanami–Arunta region; the Kimberley Basin and Halls Creek Orogen; the west Musgrave Province; and Yilgarn Craton. The minimum area, length and width of geological polygons conform to GSWA’s standards for 1:500 000 scale maps. For performance purposes, large polygons have been split along the boundaries of 1:250 000 tiles, creating long linear lines in the map. This does not affect the interpretation of regolith geology. The nomenclature and hierarchy for the regolith units are based on weekly updates from the Explanatory Notes System (ENS), a database that incorporates a seamless, current summary of the regolith, bedrock, tectonic units, and events of Western Australia."@en ;
+        gswa:positionalAccuracy "This layer has been optimized for display at the nominal scale; viewing at smaller scales will degrade resolution, whereas larger scales will degrade accuracy. The layer has been compiled from maps based on different geodetic systems (Clarke 1858, AGD66 and AGD84). Map boundary alignment has been corrected manually; however, there may still be some misalignment between polygons in the layer and current satellite images."@en ;
+        gswa:attributeAccuracy "Accuracy of attribute information in this dataset is estimated at 95%. Attribute conversion of historical classifications in some regions may contain minor inconsistencies due to generalization of units and merging of polygons."@en ;
+        gswa:logicalConsistency "Data were visually compared with published maps to check capture and attribution. Minor inconsistency of edge matching may be present along data source boundaries with conflicting classifications."@en ;
+        gswa:completeness "This edition is complete and has been verified"@en ;
+        gswa:credit "Geological Survey of Western Australia 2020, 1:500 000 State regolith geology of Western Australia: Geological Survey of Western Australia, digital data layer, <www.dmp.wa.gov.au/geoview>. Compilers of geology: S Jakica and N de Souza Kovacs Compilers GIS: IMT Granado and J Hogen-Esch"@en ;
+
+        #
+        # Contact
+        #
+        
+        # contact information
+        prov:qualifiedAttribution [
+            dcat:hadRole gswa-roles:digital-data-admin ;
+            prov:agent [
+                sdo:name "Digital Data Administrator"@en ;
+                sdo:contactPoint [
+                    sdo:contactType "contact information" ;
+                    sdo:telephone "(08) 9222 3816" ;
+                    sdo:email "gsd.dda@dmirs.wa.gov.au" ;
+                ] ;
+                sdo:address [
+                    sdo:streetAddress "Department of Mines, Industry Regulation and Safety - Geological Survey and Resource Strategy Division 100 Plain Street" ;
+                    sdo:addressLocality "East Perth" ;
+                    sdo:addressRegion "Western Australia" ;
+                    sdo:postalCode "6004" ;
+                ] ;
+            ] ;
+        ] ;
+
+        # resource contact information
+        prov:qualifiedAttribution [
+            dcat:hadRole gswa-roles:chief-geoscientist ;
+            prov:agent [
+                sdo:name "Chief Geoscientist"@en ;
+                sdo:contactPoint [
+                    sdo:contactType "contact information" ;
+                    sdo:telephone "(08) 9222 3816" ;
+                    sdo:email "gsd.dda@dmirs.wa.gov.au" ;
+                ] ;
+                sdo:address [
+                    sdo:streetAddress "Department of Mines, Industry Regulation and Safety - Geological Survey and Resource Strategy Division 100 Plain Street" ;
+                    sdo:addressLocality "East Perth" ;
+                    sdo:addressRegion "Western Australia" ;
+                    sdo:postalCode "6004" ;
+                ] ;
+            ] ;
+        ] ;
+    .
+}
+
+<urn:graph:vocabs> {
+    #
+    # GSWA Roles
+    #
+    gswa-roles-cc: a skos:ConceptScheme ;
+        skos:prefLabel "GSWA Catalog Roles" ;
+        skos:hasTopConcept gswa-roles:digital-data-admin ;
+    .
+
+    gswa-roles:digital-data-admin a skos:Concept ;
+        skos:prefLabel "digital data admin" ;
+        skos:topConceptOf gswa-roles-cc: ;
+        skos:inScheme gswa-roles-cc: ;
+    .
+
+    gswa-roles:chief-geoscientist a skos:Concept ;
+        skos:prefLabel "chief geoscientist" ;
+        skos:topConceptOf gswa-roles-cc: ;
+        skos:inScheme gswa-roles-cc: ;
+    .
+
+    #
+    # GSWA EPSG Codes
+    #
+    gswa-epsg-cc: a skos:ConceptScheme ;
+        skos:prefLabel "GSWA EPSG Codes" ;
+        skos:hasTopConcept <https://epsg.io/4283> ;
+    .
+
+    <https://epsg.io/4283> a skos:Concept ;
+        skos:prefLabel "EPSG 4283" ;
+        skos:topConceptOf gswa-epsg-cc: ;
+        skos:inScheme gswa-epsg-cc: ;
+    .
+
+    #
+    # Status
+    #
+    gswa-status-cc: a skos:ConceptScheme ;
+        skos:prefLabel "GSWA Statuses Codes" ;
+        skos:hasTopConcept gswa-status:ongoing ;
+    .
+
+    gswa-status:ongoing a skos:Concept ;
+        skos:prefLabel "ongoing" ;
+        skos:topConceptOf gswa-status-cc: ;
+        skos:inScheme gswa-status-cc: ;
+    .
+
+    #
+    # Frequency
+    #
+    <http://purl.org/cld/freq> a skos:ConceptScheme ;
+        skos:prefLabel "Frequency Codes" ;
+        skos:hasTopConcept freq:weekly ;
+    .
+
+    freq:weekly a skos:Concept ;
+        skos:topConceptOf freq:weekly ;
+        skos:inScheme <http://purl.org/cld/freq> ;
+    .
+
+    #
+    # Themes
+    #
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geophysics> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources-energy> <http://www.w3.org/2004/02/skos/core#definition> "Vocabularies related to the study, exploration for and exploitation of physical processes and natural concentrations of materials for the main purpose of power generation. Energy resources include (a) concentrations of solid and/or fluid, inorganic or fossilized organic materials naturally occurring on or in the Earth’s crust (e.g. non-renewable fossil fuels such as petroleum, and natural gases); (b) natural physical processes within the Earth’s crust, atmosphere and hydrosphere (i.e. renewable energy resources such as solar, wind, hydro, solar thermal, marine, geothermal) or human-controlled activities (e.g. bioenergy/biomass, energy storage); and (c) nuclear energy. Adapted from Glossary of geology (Neuendorf et. al., 2011, 5th edition revised)."@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geophysics> <http://www.w3.org/2004/02/skos/core#prefLabel> "geology - geophysics"@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-mapping> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources-energy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geochemistry> <http://www.w3.org/2004/02/skos/core#definition> "Vocabularies related to the distribution and amounts of the chemical elements in minerals, ores, rocks, soils, water, and the atmosphere, and the study of the circulation of the elements in nature, on the basis of the properties of their atoms and ions; also, the study of the distribution and abundance of isotopes, including problems of nuclear frequency and stability in the universe. Adapted from Glossary of geology (Neuendorf et. al., 2011, 5th edition revised)."@en .
+    <https://linked.data.g​ov.au/org/gswa> <https://schema.org/name> "Gswa" .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> <http://www.w3.org/2004/02/skos/core#inScheme> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geochronology> <http://www.w3.org/2004/02/skos/core#broader> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> .
+    _:nb311e8c6764c4708af3afc7a28e182f4b4 <https://schema.org/name> "Angela Riganti" .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geochemistry> <http://www.w3.org/2004/02/skos/core#broader> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://www.w3.org/2004/02/skos/core#hasTopConcept> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/data-acquisition> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources-mineral> <http://www.w3.org/2004/02/skos/core#inScheme> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geochronology> <https://schema.org/citation> "https://glossary.americangeosciences.org/term/geochronology"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-paleontology> <http://www.w3.org/2004/02/skos/core#prefLabel> "geology - paleontology"@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> <http://www.w3.org/2004/02/skos/core#definition> "Vocabularies related to the study of the Solid Earth and the materials of which it is made, the processes that act on these materials, the products formed, and the history of the planet and its life forms since its origin, including the study of physical forces that act on the Earth, the chemistry of its constituent materials, and the biology of its past inhabitants as revealed by fossils. Adapted from Glossary of geology (Neuendorf et. al., 2011, 5th edition revised)."@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://www.w3.org/2004/02/skos/core#hasTopConcept> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/sample-acquisition-management> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-mapping> <https://schema.org/citation> "https://www.usgs.gov/programs/national-cooperative-geologic-mapping-program/introduction-geologic-mapping"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-framework> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/sample-acquisition-management> <http://www.w3.org/2004/02/skos/core#inScheme> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    _:nb311e8c6764c4708af3afc7a28e182f4b1 <http://www.w3.org/ns/dcat#hadRole> <https://linked.data.gov.au/def/data-roles/custodian> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://www.w3.org/2002/07/owl#versionIRI> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/1> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/data-acquisition> <http://www.w3.org/2004/02/skos/core#definition> "Vocabularies related to the systematic processes of gathering observations and measurements, and related analytical techniques and methodologies, including sample preparation techniques."@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-paleontology> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> <http://www.w3.org/2004/02/skos/core#narrower> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geochemistry> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/sample-acquisition-management> <http://www.w3.org/2004/02/skos/core#definition> "Vocabularies related to the collection/procurement, handling, tracking, storing, and retrieving of primary geoscience material (typically, but not exclusively, a rock, mineral, fossil or soil) collected in the field or from materials collected in the field (e.g. drillcore), as well as derived specimens from such materials for the purpose of analysis and research. Included are vocabularies related to collections as single entities."@en .
+    _:nb311e8c6764c4708af3afc7a28e182f4b2 <https://schema.org/email> ""^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/administration> <https://schema.org/citation> "https://biz.libretexts.org/Bookshelves/Management/Organizational_Behavior_(OpenStax)/01%3A_Management_and_Organizational_Behavior/1.03%3A_The_Nature_of_Management"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    _:nb311e8c6764c4708af3afc7a28e182f4b2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/Person> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> <http://www.w3.org/2004/02/skos/core#prefLabel> "geology"@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-mapping> <https://schema.org/citation> "https://glossary.americangeosciences.org/term/geodesy"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/administration> <https://schema.org/citation> "https://dictionary.cambridge.org/dictionary/english/administration"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/data-acquisition> <http://www.w3.org/2004/02/skos/core#topConceptOf> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/sample-acquisition-management> <https://schema.org/citation> "https://www.eia.gov/energyexplained/us-energy-facts/"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-framework> <http://www.w3.org/2004/02/skos/core#prefLabel> "geology - framework"@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geophysics> <http://www.w3.org/2004/02/skos/core#inScheme> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-mapping> <http://www.w3.org/2004/02/skos/core#inScheme> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources> <http://www.w3.org/2004/02/skos/core#inScheme> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources-energy> <http://www.w3.org/2004/02/skos/core#inScheme> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://www.w3.org/2004/02/skos/core#historyNote> "Created for the purpose of grouping related vocabularies and to allow easy sorting of published GSWA vocabularies."@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geophysics> <http://www.w3.org/2004/02/skos/core#definition> "Vocabularies related to the physical properties and processes of the Solid Earth and its surrounding space environment, and the use of quantitative methods for their analysis."@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/legislation> <http://www.w3.org/2004/02/skos/core#definition> "Vocabularies related to laws and regulations governing, controlling or affecting the business of the organization, including those the organization is tasked to implement and administer."@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> <http://www.w3.org/2004/02/skos/core#narrower> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geochronology> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/administration> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-framework> <http://www.w3.org/2004/02/skos/core#definition> "Vocabularies related to the fundamental components that in combination define the spatial and temporal geological architecture of a region, i.e. vocabularies related to the definition, classification and modelling of stratigraphic relationships/units, tectonic/physiographic units, geological events and mineral systems."@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://www.w3.org/2004/02/skos/core#hasTopConcept> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://www.w3.org/2004/02/skos/core#definition> "The overarching categorization of vocabularies prepared by the Geological Survey of Western Australia (GSWA)."@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> <https://schema.org/citation> "https://glossary.americangeosciences.org/term/geology"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-paleontology> <http://www.w3.org/2004/02/skos/core#definition> "Vocabularies related to the study of life in past geological time, based on the distribution and form of body fossils and their traces. This includes interpreting their relationships to other organisms both through time and within their original habitat (phylogeny, evolution, paleoecology), their environments (paleoenvironmental reconstruction, paleobiogeography), and the chronology of the Earth's history (biostratigraphy)."@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/administration> <http://www.w3.org/2004/02/skos/core#topConceptOf> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-mapping> <http://www.w3.org/2004/02/skos/core#definition> "Vocabularies related to the compilation of geological maps, i.e. graphic representations of the distribution, composition and structure of geological materials across the Earth's surface and at depth, depicting both observations and interpretations using symbols and colours. Included here are vocabularies related to topography (the practice of accurately and graphically delineating in detail, as on a map or chart or by a model, selected natural and man-made surface features of a region) and geodesy (the science concerned with the determination of the size and shape of the Earth and the precise location of points on its surface and subsurface), which are fundamental for the correct spatial representation of geological information."@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-paleontology> <http://www.w3.org/2004/02/skos/core#inScheme> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources-energy> <http://www.w3.org/2004/02/skos/core#prefLabel> "resources - energy"@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/legislation> <http://www.w3.org/2004/02/skos/core#topConceptOf> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/data-acquisition> <http://www.w3.org/2004/02/skos/core#inScheme> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources> <https://schema.org/citation> "https://glossary.americangeosciences.org/term/resources"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/administration> <http://www.w3.org/2004/02/skos/core#inScheme> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <https://schema.org/creator> <https://linked.data.g​ov.au/org/gswa> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://www.w3.org/2004/02/skos/core#hasTopConcept> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/administration> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geophysics> <http://www.w3.org/2004/02/skos/core#broader> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <https://schema.org/dateModified> "2024-07-12"^^<http://www.w3.org/2001/XMLSchema#date> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> <http://www.w3.org/2004/02/skos/core#narrower> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geophysics> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-mapping> <http://www.w3.org/2004/02/skos/core#prefLabel> "geology - mapping"@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geochemistry> <http://www.w3.org/2004/02/skos/core#prefLabel> "geology - geochemistry"@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> <http://www.w3.org/2004/02/skos/core#topConceptOf> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geophysics> <https://schema.org/citation> "https://en.wikipedia.org/wiki/Geophysics"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <https://schema.org/dateCreated> "2024-06-06"^^<http://www.w3.org/2001/XMLSchema#date> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/sample-acquisition-management> <http://www.w3.org/2004/02/skos/core#prefLabel> "sample acquisition and management"@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> <http://www.w3.org/2004/02/skos/core#narrower> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-paleontology> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/sample-acquisition-management> <http://www.w3.org/2004/02/skos/core#topConceptOf> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> <http://www.w3.org/2004/02/skos/core#narrower> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-mapping> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-framework> <http://www.w3.org/2004/02/skos/core#broader> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources-mineral> <http://www.w3.org/2004/02/skos/core#prefLabel> "resources - mineral"@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-paleontology> <http://www.w3.org/2004/02/skos/core#broader> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources-energy> <http://www.w3.org/2004/02/skos/core#broader> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources> <http://www.w3.org/2004/02/skos/core#prefLabel> "resources"@en .
+    _:nb311e8c6764c4708af3afc7a28e182f4b2 <https://schema.org/name> "Dave Martin" .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources> <http://www.w3.org/2004/02/skos/core#narrower> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources-energy> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geochronology> <http://www.w3.org/2004/02/skos/core#definition> "Vocabularies related to the numerical and relative age determination of geological events, as well as determining the events' time sequence and duration in the history of the Earth. Adapted from Glossary of geology (Neuendorf et. al., 2011, 5th edition revised)."@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geochronology> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geochemistry> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources> <http://www.w3.org/2004/02/skos/core#narrower> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources-mineral> .
+    _:nb311e8c6764c4708af3afc7a28e182f4b4 <https://schema.org/email> ""^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/administration> <https://schema.org/citation> "https://www.geeksforgeeks.org/functions-of-management-planning-organising-staffing-directing-and-controlling/"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    _:nb311e8c6764c4708af3afc7a28e182f4b4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/Person> .
+    _:nb311e8c6764c4708af3afc7a28e182f4b3 <http://www.w3.org/ns/prov#agent> _:nb311e8c6764c4708af3afc7a28e182f4b4 .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources> <http://www.w3.org/2004/02/skos/core#topConceptOf> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geochemistry> <https://schema.org/citation> "https://glossary.americangeosciences.org/term/geochemistry"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/legislation> <http://www.w3.org/2004/02/skos/core#prefLabel> "legislation"@en .
+    _:nb311e8c6764c4708af3afc7a28e182f4b3 <http://www.w3.org/ns/dcat#hadRole> <https://linked.data.gov.au/def/data-roles/custodian> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://www.w3.org/ns/prov#qualifiedAttribution> _:nb311e8c6764c4708af3afc7a28e182f4b1 .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/data-acquisition> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://purl.org/linked-data/registry#status> <https://linked.data.gov.au/def/reg-statuses/stable> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://www.w3.org/2004/02/skos/core#hasTopConcept> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://www.w3.org/2004/02/skos/core#prefLabel> "GSWA vocabulary themes"@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/administration> <http://www.w3.org/2004/02/skos/core#prefLabel> "administration"@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources-mineral> <http://www.w3.org/2004/02/skos/core#broader> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources-mineral> <http://www.w3.org/2004/02/skos/core#definition> "Vocabularies related to the study, exploration for and exploitation of concentrations of natural inorganic or fossilized organic material occurring on or within the Earth’s crust, in sufficient quantity and quality to have reasonable prospects for economic extraction. Mineral resources are non-renewable and include metals (e.g. iron, copper, and aluminium), non-metals (e.g. salt, gypsum, clay, sand, phosphates), and rocks (e.g. dimension stones, basic raw materials)."@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources> <http://www.w3.org/2004/02/skos/core#definition> "Vocabularies related to the study, exploration for and exploitation of concentrations of solid, liquid, or gaseous materials in or on the Earth's crust in such form and amount that economic extraction of a commodity from the concentration is currently or potentially feasible. Adapted from Glossary of geology (Neuendorf et. al., 2011, 5th edition revised)."@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geochemistry> <http://www.w3.org/2004/02/skos/core#inScheme> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-framework> <http://www.w3.org/2004/02/skos/core#inScheme> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geochronology> <http://www.w3.org/2004/02/skos/core#inScheme> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> <https://schema.org/citation> "https://en.wikipedia.org/wiki/Geology"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-mapping> <https://schema.org/citation> "https://glossary.americangeosciences.org/term/topography"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources-mineral> <https://schema.org/citation> "https://www.energyfactsaustralia.org.au/explainers/energy-sources/"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <https://schema.org/publisher> <https://linked.data.g​ov.au/org/gswa> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources-energy> <https://schema.org/citation> "https://glossary.americangeosciences.org/term/resources"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/legislation> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+    <https://linked.data.g​ov.au/org/gswa> <https://schema.org/url> ""^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://www.w3.org/ns/prov#qualifiedAttribution> _:nb311e8c6764c4708af3afc7a28e182f4b3 .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/data-acquisition> <http://www.w3.org/2004/02/skos/core#prefLabel> "data acquisition"@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://www.w3.org/2004/02/skos/core#hasTopConcept> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/legislation> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <https://schema.org/version> "1" .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/administration> <https://schema.org/citation> "https://www.britannica.com/dictionary/administration"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> <http://www.w3.org/2004/02/skos/core#narrower> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-framework> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources-mineral> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geochronology> <http://www.w3.org/2004/02/skos/core#prefLabel> "geology - geochronology"@en .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-mapping> <http://www.w3.org/2004/02/skos/core#broader> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology> .
+    _:nb311e8c6764c4708af3afc7a28e182f4b1 <http://www.w3.org/ns/prov#agent> _:nb311e8c6764c4708af3afc7a28e182f4b2 .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/legislation> <http://www.w3.org/2004/02/skos/core#inScheme> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/sample-acquisition-management> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-mapping> <https://schema.org/citation> "https://geology-hub.com/geologic-mapping-guide-for-professionals-and-students/"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+    <https://linked.data.gov.au/def/GSWA-vocabulary-themes/administration> <http://www.w3.org/2004/02/skos/core#definition> "Vocabularies related to the management of the duties and business of the organization (the Geological Survey of Western Australia), i.e. covering the work involved in planning, organizing, directing, controlling and coordinating resources and operations. It includes management of internal day-to-day operations as well as the external-facing fulfillment of functions and responsibilities."@en .
+    <https://linked.data.g​ov.au/org/gswa> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/Organization> .
+}

@@ -5,7 +5,7 @@ import type { Shape } from '@/types'
 import { sh } from '@/core/namespaces'
 import { DatatypeConstraintComponent } from '@/core/constraint-components/value-type/datatype'
 import namedNode = DataFactory.namedNode
-import { visitShape } from '@/core/constraint-components/visit-shape'
+import { visitShape } from '@/core/constraint-components/shape-visitor'
 
 const SHAPES_GRAPH_NAME = namedNode('urn:system:graph:shacl')
 

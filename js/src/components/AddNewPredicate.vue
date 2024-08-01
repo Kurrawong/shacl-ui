@@ -8,6 +8,7 @@ import { toRef, ref } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { DataFactory } from 'n3'
 import namedNode = DataFactory.namedNode
+import { DEFAULT_SH_ORDER_VALUE } from '@/core/constraint-components/constraint-component'
 
 interface Props {
   predicateObjectValues: PredicateConstraints[]
@@ -26,6 +27,7 @@ function handleAddNewPredicateButtonClick() {
 function handleDialogAddPredicateButtonClick() {
   const predicate = namedNode(predicateInputValue.value)
   const newPredicateObjectValues = {
+    order: DEFAULT_SH_ORDER_VALUE,
     constraintComponents: [],
     group: null,
     term: predicate,

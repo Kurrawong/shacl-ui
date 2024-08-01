@@ -82,7 +82,6 @@ const nodeShapes = computed(() => {
           <p>Statements: {{ shui.store.getQuads(null, null, null, graph).length }}</p>
         </div>
 
-        {{selectedNodeShape?.codeTerm.value}}
         <div class="space-y-4">
           <FocusNode
             v-if="selectedFocusNodeTerm"
