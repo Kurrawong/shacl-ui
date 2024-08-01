@@ -1,6 +1,6 @@
 import type { Shape, UISchema } from '@/types'
 import type { BlankNode, NamedNode } from '@rdfjs/types'
-import { rdfs, sh } from '@/core/namespaces'
+import { dash, rdfs, sh } from '@/core/namespaces'
 import { DataFactory } from 'n3'
 import namedNode = DataFactory.namedNode
 
@@ -38,6 +38,7 @@ export abstract class ConstraintComponent {
       schema[focusNode.value] = {
         predicates: {
           [path]: {
+            editor: null,
             order: DEFAULT_SH_ORDER_VALUE,
             term: namedNode(path),
             group: null,
@@ -52,6 +53,7 @@ export abstract class ConstraintComponent {
     const predicates = schema[focusNode.value].predicates
     if (!(path in predicates)) {
       predicates[path] = {
+        editor: null,
         order: DEFAULT_SH_ORDER_VALUE,
         term: namedNode(path),
         group: null,
@@ -63,26 +65,31 @@ export abstract class ConstraintComponent {
 
     // Find and add SHACL property groups.
     const groups = this.shape.ptr.out([sh.group]).terms || []
-    if (!groups.length) {
-      return
-    }
-    // TODO: Are multiple groups valid for a predicate?
-    const groupTerm = groups[0]
-    if (groupTerm.termType === 'NamedNode' || groupTerm.termType === 'BlankNode') {
-      const order = Number(this.shape.ptr.node([groupTerm]).out([sh.order]).value)
-      const group = {
-        term: groupTerm,
-        name: this.shape.ptr.node([groupTerm]).out([rdfs.label]).value || groupTerm.value,
-        order: Number.isNaN(order) ? DEFAULT_SH_ORDER_VALUE : order
+    if (groups.length) {
+      // TODO: Are multiple groups valid for a predicate?
+      const groupTerm = groups[0]
+      if (groupTerm.termType === 'NamedNode' || groupTerm.termType === 'BlankNode') {
+        const order = Number(this.shape.ptr.node([groupTerm]).out([sh.order]).value)
+        const group = {
+          term: groupTerm,
+          name: this.shape.ptr.node([groupTerm]).out([rdfs.label]).value || groupTerm.value,
+          order: Number.isNaN(order) ? DEFAULT_SH_ORDER_VALUE : order
+        }
+        predicates[path].group = groupTerm
+        schema[focusNode.value].groups.set(groupTerm.id, group)
       }
-      predicates[path].group = groupTerm
-      schema[focusNode.value].groups.set(groupTerm.id, group)
     }
 
     // Find and add SHACL order for the predicate.
     const order = Number(this.shape.ptr.out([sh.order]).value)
     if (!Number.isNaN(order)) {
       predicates[path].order = order
+    }
+
+    // Find and add dash:editor value.
+    const editor = this.shape.ptr.out([dash.editor]).term
+    if (editor && editor.termType === 'NamedNode') {
+      predicates[path].editor = editor
     }
   }
 }

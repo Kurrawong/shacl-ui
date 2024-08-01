@@ -104,6 +104,7 @@ function handleAddNewDefaultValue() {
           :data-graph="dataGraph"
           :constraint-components="predicateObject.constraintComponents"
           :widgets="valueObject.widgets"
+          :editor="predicateObject.editor || null"
         />
       </template>
     </div>

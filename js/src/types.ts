@@ -116,6 +116,7 @@ export interface PredicateConstraints {
   term: NamedNode
   group: NamedNode | BlankNode | null
   constraintComponents: ConstraintComponent[]
+  editor: NamedNode | null
   values: {
     widgets: Widgets
     term: STerm
