@@ -20,7 +20,7 @@ export class NodeConstraintComponent extends ConstraintComponent {
   }
 
   get type() {
-    return 'NodeConstraintComponent'
+    return sh.NodeConstraintComponent
   }
 
   get nodes() {

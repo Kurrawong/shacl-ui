@@ -33,7 +33,7 @@ export class DatatypeConstraintComponent extends ConstraintComponent {
   }
 
   get type() {
-    return 'DatatypeConstraintComponent'
+    return sh.DatatypeConstraintComponent
   }
 
   get datatype() {

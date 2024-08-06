@@ -48,8 +48,8 @@ export class MinCountConstraintComponent extends ConstraintComponent {
     this._minCount = minCount
   }
 
-  get type(): string {
-    return 'MinCountConstraintComponent'
+  get type() {
+    return sh.MinCountConstraintComponent
   }
 
   get minCount() {

@@ -49,7 +49,7 @@ export class MaxCountConstraintComponent extends ConstraintComponent {
   }
 
   get type() {
-    return 'MaxCountConstraintComponent'
+    return sh.MaxCountConstraintComponent
   }
 
   get maxCount() {

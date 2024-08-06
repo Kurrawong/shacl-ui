@@ -17,7 +17,7 @@ export abstract class ConstraintComponent {
     return this._shape
   }
 
-  abstract get type(): string
+  abstract get type(): NamedNode
 
   abstract evaluateUserInterface(
     focusNode: NamedNode | BlankNode,

@@ -43,7 +43,7 @@ export class NodeKindConstraintComponent extends ConstraintComponent {
   }
 
   get type() {
-    return 'NodeKindConstraintComponent'
+    return sh.NodeKindConstraintComponent
   }
 
   get nodeKind() {

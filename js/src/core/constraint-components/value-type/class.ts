@@ -20,7 +20,7 @@ export class ClassConstraintComponent extends ConstraintComponent {
   }
 
   get type() {
-    return 'ClassConstraintComponent'
+    return sh.ClassConstraintComponent
   }
 
   get classes() {
