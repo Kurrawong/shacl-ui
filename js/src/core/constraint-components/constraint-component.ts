@@ -19,11 +19,13 @@ export abstract class ConstraintComponent {
 
   abstract get type(): NamedNode
 
-  abstract evaluateUserInterface(
+  evaluateUserInterface(
     focusNode: NamedNode | BlankNode,
     shapesGraphName: NamedNode | BlankNode,
     schema: UISchema
-  ): void
+  ) {
+    this.addToUISchema(focusNode, schema)
+  }
 
   /**
    * Add the property shape and its path to the UI schema, grouped by the focus node.

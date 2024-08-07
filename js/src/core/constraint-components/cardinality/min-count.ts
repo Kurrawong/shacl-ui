@@ -1,7 +1,6 @@
 import { ConstraintComponent } from '@/core/constraint-components/constraint-component'
-import type { Shape, UISchema } from '@/types'
+import type { Shape } from '@/types'
 import { sh, xsd } from '@/core/namespaces'
-import type { BlankNode, NamedNode } from '@rdfjs/types'
 
 export class MinCountConstraintComponent extends ConstraintComponent {
   _minCount
@@ -54,13 +53,5 @@ export class MinCountConstraintComponent extends ConstraintComponent {
 
   get minCount() {
     return this._minCount
-  }
-
-  evaluateUserInterface(
-    focusNode: NamedNode | BlankNode,
-    shapesGraphName: NamedNode | BlankNode,
-    schema: UISchema
-  ) {
-    this.addToUISchema(focusNode, schema)
   }
 }
