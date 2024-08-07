@@ -7,7 +7,7 @@ import type { Literal } from 'n3'
 const { namedNode, literal } = DataFactory
 const XSD_boolean = namedNode('http://www.w3.org/2001/XMLSchema#boolean')
 
-function lexicalToValue(value: string) {
+function booleanLexicalToValue(value: string) {
   if (value === 'true' || value === '1') {
     return {
       name: 'true',
@@ -32,7 +32,7 @@ const emit = defineEmits(['update'])
 const term = toRef(props, 'term')
 const datatype = ref(term.value.datatype)
 const errors = ref<string[]>([])
-const selectedValue = ref(lexicalToValue(term.value.value))
+const selectedValue = ref(booleanLexicalToValue(term.value.value))
 const dropdownOptions = ref([
   {
     name: 'true',

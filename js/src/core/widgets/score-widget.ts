@@ -1,9 +1,14 @@
 import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
+import { dash, rdf, sh, xsd } from '@/core/namespaces'
 import type { ConstraintComponent } from '@/core/constraint-components/constraint-component'
-import { dash, sh, xsd } from '@/core/namespaces'
 import { DatatypeConstraintComponent } from '@/core/constraint-components/value-type/datatype'
 import { NodeKindConstraintComponent } from '@/core/constraint-components/value-type/node-kind'
 import { ClassConstraintComponent } from '@/core/constraint-components/value-type/class'
+import { SingleLineConstraintComponent } from '../constraint-components/dash/single-line'
+import { booleanLexicalToValue } from '../lexical'
+
+const _RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+const _XSD = 'http://www.w3.org/2001/XMLSchema#'
 
 export interface Widget {
   type: NamedNode
@@ -22,7 +27,7 @@ function containsConstraintComponent(
   constraintComponents: ConstraintComponent[]
 ) {
   for (const constraintComponent of constraintComponents) {
-    // TODO: Add test to ensure this if statement works.
+    // TODO: Add test to ensure this if-statement works.
     if (constraintComponent instanceof constraintComponentClass) {
       return true
     }
@@ -103,6 +108,48 @@ const editorWidgets = new Map<
       }
 
       return 1
+    }
+  ],
+  [
+    dash.TextAreaEditor,
+    (object, constraintComponents) => {
+      const permissibleDatatypes = new Set<String>()
+
+      for (const constraintComponent of constraintComponents) {
+        if (constraintComponent instanceof DatatypeConstraintComponent) {
+          permissibleDatatypes.add(constraintComponent.datatype.value)
+        }
+
+        if (
+          constraintComponent instanceof SingleLineConstraintComponent &&
+          booleanLexicalToValue(constraintComponent.singleLine.value)
+        ) {
+          return 0
+        } else if (
+          constraintComponent instanceof SingleLineConstraintComponent &&
+          !booleanLexicalToValue(constraintComponent.singleLine.value) &&
+          object.termType === 'Literal' &&
+          object.datatype.equals(xsd.string)
+        ) {
+          return 20
+        }
+      }
+
+      if (object.termType === 'Literal' && object.datatype.equals(xsd.string)) {
+        return 5
+      }
+
+      if (permissibleDatatypes.has(xsd.string.value)) {
+        return 2
+      }
+
+      for (const datatype of permissibleDatatypes) {
+        if (!datatype.startsWith(_RDF) && !datatype.startsWith(_XSD)) {
+          return null
+        }
+      }
+
+      return 0
     }
   ],
   [

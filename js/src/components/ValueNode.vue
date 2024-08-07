@@ -1,21 +1,24 @@
 <script setup lang="ts">
-import type { SIdentifiedNode, STerm } from '@/types'
-import { useShui } from '@/composables/shui'
 import { computed, ref, toRef } from 'vue'
+
+import Button from 'primevue/button'
 import { type BlankNode, DataFactory, type Literal, type NamedNode } from 'n3'
 import quad = DataFactory.quad
-import { ConstraintComponent } from '@/core/constraint-components/constraint-component'
+
+import type { SIdentifiedNode, STerm } from '@/types'
 import type { Widgets } from '@/core/widgets/score-widget'
-import { dash } from '@/core/namespaces'
-import LiteralEditor from '@/components/dash/editors/LiteralEditor.vue'
 import type { SLiteral } from '@/shui'
-import Button from 'primevue/button'
+import { useShui } from '@/composables/shui'
+import { NodeConstraintComponent } from '@/core/constraint-components/shape-based/node'
+import { ConstraintComponent } from '@/core/constraint-components/constraint-component'
+import LiteralEditor from '@/components/dash/editors/LiteralEditor.vue'
 import BooleanSelectEditor from '@/components/dash/editors/BooleanSelectEditor.vue'
 import URIEditor from '@/components/dash/editors/URIEditor.vue'
 import FocusNode from '@/components/FocusNode.vue'
 import ActionMenu from '@/components/core/value-node/ActionMenu.vue'
 import BlankNodeEditor from '@/components/dash/editors/BlankNodeEditor.vue'
-import { NodeConstraintComponent } from '@/core/constraint-components/shape-based/node'
+import TextAreaEditor from './dash/editors/TextAreaEditor.vue'
+import { dash, sh } from '@/core/namespaces'
 
 interface Props {
   subject: SIdentifiedNode
@@ -65,7 +68,7 @@ const isHoverGreen = computed(() => {
 
 const detailsEditorNodeShapes = computed(() => {
   for (const constraintComponent of constraintComponents) {
-    if (constraintComponent.type === 'NodeConstraintComponent') {
+    if (constraintComponent.type.equals(sh.NodeConstraintComponent)) {
       const nodeConstraintComponent = constraintComponent as NodeConstraintComponent
       const terms = []
       for (const nodeTerm of nodeConstraintComponent.nodes) {
@@ -91,12 +94,17 @@ const detailsEditorNodeShapes = computed(() => {
 <template>
   <div class="flex flex-row p-3 bg-slate-50" :class="isHoverGreen ? 'hover:bg-green-100' : ''">
     <div class="content flex-auto">
+      <!-- dash:BlankNodeEditor -->
       <template v-if="selectedWidget?.type.equals(dash.BlankNodeEditor)">
         <BlankNodeEditor :term="object as BlankNode" @update="handleUpdate" />
       </template>
+
+      <!-- dash:BooleanSelectEditor -->
       <template v-else-if="selectedWidget?.type.equals(dash.BooleanSelectEditor)">
         <BooleanSelectEditor :term="object as Literal" @update="handleUpdate" />
       </template>
+
+      <!-- dash:DetailsEditor -->
       <template v-else-if="selectedWidget?.type.equals(dash.DetailsEditor)">
         <!-- TODO: it's valid to define multiple sh:node values (i.e., multiple NodeShapes) - perhaps FocusNode component will need to support that in the future -->
         <FocusNode
@@ -105,12 +113,23 @@ const detailsEditorNodeShapes = computed(() => {
           :node-shape="detailsEditorNodeShapes ? detailsEditorNodeShapes[0] : undefined"
         />
       </template>
+
+      <!-- dash:LiteralEditor -->
       <template v-else-if="selectedWidget?.type.equals(dash.LiteralEditor)">
         <LiteralEditor :term="object as SLiteral" @update="handleUpdate" />
       </template>
+
+      <!-- dash:TextAreaEditor -->
+      <template v-else-if="selectedWidget?.type.equals(dash.TextAreaEditor)">
+        <TextAreaEditor :term="object as SLiteral" @update="handleUpdate" />
+      </template>
+
+      <!-- dash:URIEditor -->
       <template v-else-if="selectedWidget?.type.equals(dash.URIEditor)">
         <URIEditor :term="object as NamedNode" @update="handleUpdate" />
       </template>
+
+      <!-- else -->
       <template v-else>
         <p>{{ object.id }}</p>
         <small class="text-yellow-600"
