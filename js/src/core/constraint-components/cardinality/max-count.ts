@@ -24,7 +24,7 @@ export class MaxCountConstraintComponent extends ConstraintComponent {
 
     if (!shape.isPropertyShape) {
       throw Error(
-        `MaxCountConstraintComponent can only be present on a PropertyShape, not a NodeShape. See property shape ${shape.ptr.term.id}`
+        `MaxCountConstraintComponent can only be present on a PropertyShape, not a NodeShape. See shape ${shape.ptr.term.id}`
       )
     }
 

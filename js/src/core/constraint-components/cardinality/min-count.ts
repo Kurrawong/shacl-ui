@@ -24,7 +24,7 @@ export class MinCountConstraintComponent extends ConstraintComponent {
 
     if (!shape.isPropertyShape) {
       throw Error(
-        `MinCountConstraintComponent can only be present on a PropertyShape, not a NodeShape. See property shape ${shape.ptr.term.id}`
+        `MinCountConstraintComponent can only be present on a PropertyShape, not a NodeShape. See shape ${shape.ptr.term.id}`
       )
     }
 
