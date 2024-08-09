@@ -1,11 +1,10 @@
 import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
 import { dash, rdf, sh, xsd } from '@/core/namespaces'
-import type { ConstraintComponent } from '@/core/constraint-components/constraint-component'
+import { ConstraintComponent } from '@/core/constraint-components/constraint-component'
 import { DatatypeConstraintComponent } from '@/core/constraint-components/value-type/datatype'
 import { NodeKindConstraintComponent } from '@/core/constraint-components/value-type/node-kind'
 import { ClassConstraintComponent } from '@/core/constraint-components/value-type/class'
 import { SingleLineConstraintComponent } from '../constraint-components/dash/single-line'
-import { booleanLexicalToValue } from '../lexical'
 
 const _RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 const _XSD = 'http://www.w3.org/2001/XMLSchema#'
@@ -74,6 +73,25 @@ const editorWidgets = new Map<
     }
   ],
   [
+    dash.DatePickerEditor,
+    (object, constraintComponents) => {
+      if (object.termType === 'Literal' && object.datatype.equals(xsd.date)) {
+        return 10
+      }
+
+      for (const constraintComponent of constraintComponents) {
+        if (
+          constraintComponent instanceof DatatypeConstraintComponent &&
+          constraintComponent.datatype.equals(xsd.date)
+        ) {
+          return 5
+        }
+      }
+
+      return 0
+    }
+  ],
+  [
     dash.DetailsEditor,
     (object, constraintComponents) => {
       // TODO: Handle dash:editor constraint component.
@@ -122,12 +140,12 @@ const editorWidgets = new Map<
 
         if (
           constraintComponent instanceof SingleLineConstraintComponent &&
-          booleanLexicalToValue(constraintComponent.singleLine.value)
+          constraintComponent.singleLine
         ) {
           return 0
         } else if (
           constraintComponent instanceof SingleLineConstraintComponent &&
-          !booleanLexicalToValue(constraintComponent.singleLine.value) &&
+          !constraintComponent.singleLine &&
           object.termType === 'Literal' &&
           object.datatype.equals(xsd.string)
         ) {
@@ -146,6 +164,96 @@ const editorWidgets = new Map<
       for (const datatype of permissibleDatatypes) {
         if (!datatype.startsWith(_RDF) && !datatype.startsWith(_XSD)) {
           return null
+        }
+      }
+
+      return 0
+    }
+  ],
+  [
+    dash.TextAreaWithLangEditor,
+    (object, constraintComponents) => {
+      const permissibleDatatypes = new Set<String>()
+
+      for (const constraintComponent of constraintComponents) {
+        if (constraintComponent instanceof DatatypeConstraintComponent) {
+          permissibleDatatypes.add(constraintComponent.datatype.value)
+        }
+
+        if (
+          constraintComponent instanceof SingleLineConstraintComponent &&
+          constraintComponent.singleLine
+        ) {
+          return 0
+        } else if (
+          constraintComponent instanceof SingleLineConstraintComponent &&
+          !constraintComponent.singleLine &&
+          object.termType === 'Literal' &&
+          object.datatype.equals(rdf.langString)
+        ) {
+          return 15
+        }
+      }
+
+      if (object.termType === 'Literal' && object.datatype.equals(rdf.langString)) {
+        return 5
+      }
+
+      for (const datatype of permissibleDatatypes) {
+        if (datatype === rdf.langString.value) {
+          return 5
+        }
+      }
+
+      return 0
+    }
+  ],
+  [
+    dash.TextFieldEditor,
+    (object, constraintComponents) => {
+      if (object.termType != 'Literal') {
+        return 0
+      }
+
+      if (!object.datatype.equals(rdf.langString) && !object.datatype.equals(xsd.boolean)) {
+        return 10
+      }
+
+      return 0
+    }
+  ],
+  [
+    dash.TextFieldWithLangEditor,
+    (object, constraintComponents) => {
+      if (object.termType === 'Literal' && object.datatype.equals(rdf.langString)) {
+        return 11
+      }
+
+      const permissibleDatatypes = new Set<String>()
+      let singleLine: boolean | null = null
+      for (const constraintComponent of constraintComponents) {
+        if (constraintComponent instanceof DatatypeConstraintComponent) {
+          permissibleDatatypes.add(constraintComponent.datatype.value)
+        }
+
+        if (constraintComponent instanceof SingleLineConstraintComponent) {
+          singleLine = constraintComponent.singleLine
+        }
+      }
+
+      if (
+        singleLine === null &&
+        permissibleDatatypes.has(rdf.langString.value) &&
+        permissibleDatatypes.has(xsd.string.value)
+      ) {
+        return 11
+      }
+
+      if (singleLine) {
+        for (const datatype of permissibleDatatypes) {
+          if (datatype === rdf.langString.value) {
+            return 5
+          }
         }
       }
 

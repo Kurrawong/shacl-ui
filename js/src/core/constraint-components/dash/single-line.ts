@@ -1,6 +1,7 @@
 import { dash } from '@/core/namespaces'
 import { ConstraintComponent } from '../constraint-component'
 import type { Shape } from '@/types'
+import { booleanLexicalToValue } from '@/core/lexical'
 
 export class SingleLineConstraintComponent extends ConstraintComponent {
   _singleLine
@@ -35,6 +36,6 @@ export class SingleLineConstraintComponent extends ConstraintComponent {
   }
 
   get singleLine() {
-    return this._singleLine
+    return booleanLexicalToValue(this._singleLine.value)
   }
 }

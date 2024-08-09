@@ -17,7 +17,11 @@ import URIEditor from '@/components/dash/editors/URIEditor.vue'
 import FocusNode from '@/components/FocusNode.vue'
 import ActionMenu from '@/components/core/value-node/ActionMenu.vue'
 import BlankNodeEditor from '@/components/dash/editors/BlankNodeEditor.vue'
-import TextAreaEditor from './dash/editors/TextAreaEditor.vue'
+import TextAreaEditor from '@/components/dash/editors/TextAreaEditor.vue'
+import TextAreaWithLangEditor from '@/components/dash/editors/TextAreaWithLangEditor.vue'
+import TextFieldEditor from '@/components/dash/editors/TextFieldEditor.vue'
+import TextFieldWithLangEditor from '@/components/dash/editors/TextFieldWithLangEditor.vue'
+import DatePickerEditor from './dash/editors/DatePickerEditor.vue'
 import { dash, sh } from '@/core/namespaces'
 
 interface Props {
@@ -104,6 +108,11 @@ const detailsEditorNodeShapes = computed(() => {
         <BooleanSelectEditor :term="object as Literal" @update="handleUpdate" />
       </template>
 
+      <!-- dash:DatePickerEditor -->
+      <template v-else-if="selectedWidget?.type.equals(dash.DatePickerEditor)">
+        <DatePickerEditor :term="object as Literal" @update="handleUpdate" />
+      </template>
+
       <!-- dash:DetailsEditor -->
       <template v-else-if="selectedWidget?.type.equals(dash.DetailsEditor)">
         <!-- TODO: it's valid to define multiple sh:node values (i.e., multiple NodeShapes) - perhaps FocusNode component will need to support that in the future -->
@@ -124,6 +133,21 @@ const detailsEditorNodeShapes = computed(() => {
         <TextAreaEditor :term="object as SLiteral" @update="handleUpdate" />
       </template>
 
+      <!-- dash:TextAreaWithLangEditor -->
+      <template v-else-if="selectedWidget?.type.equals(dash.TextAreaWithLangEditor)">
+        <TextAreaWithLangEditor :term="object as SLiteral" @update="handleUpdate" />
+      </template>
+
+      <!-- dash:TextFieldEditor -->
+      <template v-else-if="selectedWidget?.type.equals(dash.TextFieldEditor)">
+        <TextFieldEditor :term="object as SLiteral" @update="handleUpdate" />
+      </template>
+
+      <!-- dash:TextFieldWithLangEditor -->
+      <template v-else-if="selectedWidget?.type.equals(dash.TextFieldWithLangEditor)">
+        <TextFieldWithLangEditor :term="object as SLiteral" @update="handleUpdate" />
+      </template>
+
       <!-- dash:URIEditor -->
       <template v-else-if="selectedWidget?.type.equals(dash.URIEditor)">
         <URIEditor :term="object as NamedNode" @update="handleUpdate" />
@@ -133,7 +157,8 @@ const detailsEditorNodeShapes = computed(() => {
       <template v-else>
         <p>{{ object.id }}</p>
         <small class="text-yellow-600"
-          ><i class="pi pi-exclamation-triangle pr-1"></i>No suitable widget found.</small
+          ><i class="pi pi-exclamation-triangle pr-1"></i>Widget
+          {{ selectedWidget?.type.value }} not found.</small
         >
       </template>
     </div>
