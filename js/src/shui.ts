@@ -141,15 +141,12 @@ export class SQuad extends n3.Quad {
 export class Shui {
   _store
   _shaclGraphName
-  _labelsGraphName
 
   constructor(
     shaclGraphName: string = 'urn:system:graph:shacl',
-    labelsGraphName: string = 'urn:system:graph:labels'
   ) {
     this._store = new n3.Store()
     this._shaclGraphName = namedNode(shaclGraphName)
-    this._labelsGraphName = namedNode(labelsGraphName)
   }
 
   get store() {
@@ -295,90 +292,6 @@ export class Shui {
     )
   }
 
-  getQuads(
-    subject: NamedNode | BlankNode | null,
-    predicate: NamedNode | null,
-    object: Term | null,
-    graph: NamedNode | BlankNode | null
-  ) {
-    return this.store.getQuads(subject, predicate, object, graph).map((q) => {
-      return this.toSQuad(q)
-    })
-  }
-
-  getPredicates(
-    subject: NamedNode | BlankNode | null,
-    object: Term | null,
-    graph: NamedNode | BlankNode | null
-  ) {
-    return this.store.getPredicates(subject, object, graph).map((term) => {
-      return this.toSTermPredicate(term)
-    })
-  }
-
-  getObjects(
-    subject: NamedNode | BlankNode | null,
-    predicate: NamedNode | null,
-    graph: NamedNode | BlankNode | null
-  ) {
-    return this.store.getObjects(subject, predicate, graph).map((term) => {
-      return this.toSTerm(term)
-    })
-  }
-
-  async getFormTree(
-    focusNode: NamedNode,
-    nodeShape: NamedNode | BlankNode,
-    dataGraphName: NamedNode | BlankNode
-  ) {
-    const quads = this.store
-      .getQuads(null, null, null, this.shaclGraphName)
-      .concat(this.store.getQuads(null, null, null, dataGraphName))
-    const dataset = rdfDataset.dataset(quads)
-
-    const validator = new Validator(dataset, { factory: rdf })
-    // const report = await validator.validate({ dataset })
-
-    const nodeShapePtr = validator.shapesPtr.node([nodeShape])
-    const focusNodePtr = new PathList({ ...{ dataset }, factory: rdf })
-    const predicatesMap = new Map()
-    const context = new Context({
-      factory: rdf,
-      focusNode: focusNodePtr,
-      validator: validator
-    })
-    for (const propShapePtr of nodeShapePtr.out([SH_property])) {
-      const propShape = validator.shape(propShapePtr)
-      propShape.path.forEach((path: { predicates: NamedNode[] }) =>
-        path.predicates.forEach((pred: NamedNode) =>
-          predicatesMap.has(pred.id)
-            ? predicatesMap.get(pred.id).push(propShape)
-            : predicatesMap.set(pred.id, [propShape])
-        )
-      )
-      await propShape.shapeValidator.validateProperty(context)
-      const propShapePredicates = propShape.ptr
-        .out([null])
-        .ptrs.map((ptr: { edge: { quad: Quad } }) => {
-          return ptr.edge.quad
-        })
-      console.log(propShape.ptr.value)
-
-      propShapePredicates.forEach((quad: Quad) => console.log(quad.predicate.id, quad.object.id))
-      propShapePredicates.forEach((quad: Quad) => {
-        // console.log(validator.registry.validations.get(quad.predicate))
-      })
-      // validator.registry.validations.get(namedNode('http://www.w3.org/ns/shacl#maxCount'))
-    }
-
-    // console.log(context.report)
-    console.log(predicatesMap)
-
-    // TODO: Group lookup to get the order
-
-    return {}
-  }
-
   /**
    * Get a shacl-engine validator instance.
    * @param dataGraphName
@@ -426,90 +339,6 @@ export class Shui {
     return nodeShapes
   }
 
-  /**
-   * Get a map of predicates to shapes information.
-   * @param subject
-   * @param nodeShape
-   * @param dataGraphName
-   */
-  async getPredicatesShapesMap(
-    subject: NamedNode | BlankNode,
-    nodeShape: NamedNode | BlankNode,
-    dataGraphName: NamedNode | BlankNode
-  ) {
-    const { validator, dataset } = this.createValidator(dataGraphName)
-    const nodeShapePtr = validator.shapesPtr.node([nodeShape])
-    const focusNodePtr = new PathList({ ...{ dataset }, factory: rdf })
-
-    const propertyGroupsMap: PropertyGroupsMap = new Map()
-    const predicatesMap: PredicatesShapesMap = new Map()
-    const context = new Context({
-      factory: rdf,
-      focusNode: focusNodePtr,
-      validator: validator
-    })
-    for (const propShapePtr of nodeShapePtr.out([SH_property])) {
-      const propShape: Shape = validator.shape(propShapePtr)
-      propShape.path.forEach((path: { predicates: NamedNode[] }) => {
-        const groups = propShape.ptr.out([sh.group]).terms || []
-        const groupTerm =
-          (groups.length && groups[0].termType === 'NamedNode') ||
-          groups[0].termType === 'BlankNode'
-            ? groups[0]
-            : null
-        const group = groupTerm
-          ? {
-              term: groupTerm,
-              name: focusNodePtr.node([groupTerm]).out([rdfs.label]).value ?? groupTerm.value,
-              order:
-                focusNodePtr.node([groupTerm]).out([sh.order]).value ?? DEFAULT_PROPERTY_GROUP_ORDER
-            }
-          : null
-        path.predicates.forEach((pred: NamedNode) => {
-          // TODO: Convert the shapes into a ConstraintComponent - ready for UI to render.
-          const value = predicatesMap.get(pred.id)
-          if (value) {
-            value.shapes.push(propShape)
-            if (!value.group && groupTerm) {
-              value.group = groupTerm
-            }
-          } else {
-            predicatesMap.set(pred.id, {
-              predicate: this.toSNamedNode(pred),
-              shapes: [propShape],
-              group: groupTerm,
-              terms: []
-            })
-            if (groupTerm && group) {
-              propertyGroupsMap.set(groupTerm.id, group)
-            }
-          }
-        })
-      })
-      // TODO: Should we validate the shape here and return the result?
-      // await propShape.shapeValidator.validateProperty(context)
-      const propShapePredicates =
-        propShape.ptr.out([null]).ptrs?.map((ptr) => {
-          return ptr.edge.quad
-        }) || []
-      console.log(propShape.ptr.value)
-
-      propShapePredicates.forEach((quad) => console.log(quad.predicate.id, quad.object.id))
-    }
-
-    // Add values for each predicate to map.
-    for (const predicateShapes of predicatesMap.values()) {
-      const predicate = predicateShapes.predicate
-      const ptr = focusNodePtr.node([subject])
-      const values = ptr.out([predicate]).terms
-      predicateShapes.terms = predicateShapes.terms.concat(values)
-    }
-
-    console.log(predicatesMap)
-    console.log(propertyGroupsMap)
-    return { predicatesMap, propertyGroupsMap }
-  }
-
   applySchemaValues(
     subject: NamedNode | BlankNode,
     dataGraphName: NamedNode | BlankNode,
@@ -531,7 +360,8 @@ export class Shui {
                 term: predicate,
                 group: null,
                 constraintComponents: [],
-                values: []
+                values: [],
+                editor: null
               }
             },
             groups: new Map()
@@ -545,7 +375,8 @@ export class Shui {
             term: predicate,
             group: null,
             constraintComponents: [],
-            values: []
+            values: [],
+            editor: null
           }
         }
 
@@ -561,6 +392,17 @@ export class Shui {
     }
   }
 
+  /**
+   * Traverses the SHACL node shape and extracts constraint components and
+   * other shape metadata such as groups and names. The UI schema properties
+   * are constructed from the discovered constraint components.
+   *
+   * Finally, populate the UI schema properties with the values in the data graph.
+   * @param subject The subject (focus node).
+   * @param dataGraphName Data graph name.
+   * @param nodeShape SHACL node shape.
+   * @returns UI schema.
+   */
   async getSchema(
     subject: NamedNode | BlankNode,
     dataGraphName: NamedNode | BlankNode,
