@@ -41,6 +41,16 @@ const editorWidgets = new Map<
   (object: ObjectParam, constraintComponents: ConstraintComponent[]) => number | null
 >([
   [
+    dash.AutoCompleteEditor,
+    (object, constraintComponents) => {
+      if (object.termType === 'NamedNode') {
+        return 1
+      }
+
+      return 0
+    }
+  ],
+  [
     dash.BlankNodeEditor,
     (object, constraintComponents) => {
       if (object.termType === 'BlankNode') {
@@ -286,8 +296,8 @@ const editorWidgets = new Map<
       if (object.termType === 'NamedNode') {
         // TODO: dash spec says null, but we've changed it to 1 for testing
         // to compete with details editor
-        return 1
-        // return null
+        // return 1
+        return null
       }
 
       return 0

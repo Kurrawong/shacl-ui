@@ -9,19 +9,15 @@ import type {
   Quad_Subject,
   Term
 } from 'n3'
-import n3 from 'n3'
+import n3, { Store } from 'n3'
 // @ts-ignore
 import { PathList } from 'grapoi'
 import rdfDataset from '@rdfjs/dataset'
 // @ts-ignore
 import { Validator } from 'shacl-engine'
-// @ts-ignore
-import Context from 'shacl-engine/lib/Context'
 import fs from 'fs'
+import { QueryEngine } from '@comunica/query-sparql'
 import type {
-  PredicatesShapesMap,
-  PropertyGroupsMap,
-  Shape,
   STerm,
   UISchema,
   Validator as IValidator
@@ -31,13 +27,17 @@ import type {
   NamedNode as RDFSNamedNode,
   BlankNode as RDFJSBlankNode
 } from '@rdfjs/types'
-import { rdfs, sh } from '@/core/namespaces'
 import { visitShape } from '@/core/constraint-components/shape-visitor'
-import { getWidgets, type ObjectParam, type Widget } from '@/core/widgets/score-widget'
-import { DEFAULT_SH_ORDER_VALUE } from './core/constraint-components/constraint-component'
+import { getWidgets, type ObjectParam } from '@/core/widgets/score-widget'
+import {
+  ConstraintComponent,
+  DEFAULT_SH_ORDER_VALUE
+} from './core/constraint-components/constraint-component'
+import { ClassConstraintComponent } from '@/core/constraint-components/value-type/class'
+import { NodeConstraintComponent } from '@/core/constraint-components/shape-based/node'
+import { shapeToSparql, sparqlAutoCompleteRewrite } from '@/core/sparql'
 
-const { namedNode, blankNode, literal, quad } = n3.DataFactory
-const DEFAULT_PROPERTY_GROUP_ORDER = 9999
+const { namedNode, literal } = n3.DataFactory
 
 const parser = new n3.Parser()
 const writer = new n3.Writer()
@@ -46,7 +46,6 @@ const RDF_type = namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type')
 const RDFS_label = namedNode('http://www.w3.org/2000/01/rdf-schema#label')
 const SH_NodeShape = namedNode('http://www.w3.org/ns/shacl#NodeShape')
 const SH_PropertyShape = namedNode('http://www.w3.org/ns/shacl#PropertyShape')
-const SH_property = namedNode('http://www.w3.org/ns/shacl#property')
 const SH_path = namedNode('http://www.w3.org/ns/shacl#path')
 
 export class SNamedNode extends n3.NamedNode {
@@ -139,14 +138,14 @@ export class SQuad extends n3.Quad {
 }
 
 export class Shui {
-  _store
-  _shaclGraphName
+  _store: n3.Store
+  _shaclGraphName: NamedNode | BlankNode
+  _queryEngine: QueryEngine
 
-  constructor(
-    shaclGraphName: string = 'urn:system:graph:shacl',
-  ) {
+  constructor(shaclGraphName: string = 'urn:system:graph:shacl') {
     this._store = new n3.Store()
     this._shaclGraphName = namedNode(shaclGraphName)
+    this._queryEngine = new QueryEngine()
   }
 
   get store() {
@@ -424,5 +423,57 @@ export class Shui {
 
     this.applySchemaValues(subject, dataGraphName, schema)
     return schema
+  }
+
+  /**
+   * Get the autocomplete values as quads as a result of the queries generated
+   * by the SHACL parameters, sh:node and sh:class.
+   * @param constraintComponents
+   * @param dataGraphName
+   */
+  async getAutoCompleteEditorValues(
+    constraintComponents: ConstraintComponent[],
+    dataGraphName: NamedNode | BlankNode
+  ) {
+    const store = new Store()
+
+    const nodes = (() => {
+      const _nodes = []
+      for (const cc of constraintComponents) {
+        if (cc instanceof NodeConstraintComponent) {
+          _nodes.push(...cc.nodes)
+        }
+      }
+      return _nodes
+    })()
+
+    const classes = (() => {
+      const _classes = []
+      for (const cc of constraintComponents) {
+        if (cc instanceof ClassConstraintComponent) {
+          _classes.push(...cc.classes)
+        }
+      }
+      return _classes
+    })()
+
+    if (nodes.length) {
+      for (const node of nodes) {
+        const query = shapeToSparql(node, this.store, this.shaclGraphName)
+        const modifiedQuery = sparqlAutoCompleteRewrite(query, classes, dataGraphName)
+        const quadStream = await this._queryEngine.queryQuads(modifiedQuery, {
+          sources: [this.store]
+        })
+        const quads = await quadStream.toArray()
+        store.addQuads(quads)
+      }
+    } else if (classes.length) {
+      for (const cls of classes) {
+        const quads = this.store.getQuads(null, RDF_type, cls, dataGraphName)
+        store.addQuads(quads)
+      }
+    }
+
+    return store.getQuads(null, null, null, null)
   }
 }

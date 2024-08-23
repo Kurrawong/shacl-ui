@@ -1,9 +1,10 @@
 import { ConstraintComponent } from '@/core/constraint-components/constraint-component'
 import type { Shape } from '@/types'
 import { sh } from '@/core/namespaces'
+import type { Term } from 'n3'
 
 export class NodeConstraintComponent extends ConstraintComponent {
-  _nodes
+  _nodes: Term[]
 
   constructor(shape: Shape) {
     super(shape)
