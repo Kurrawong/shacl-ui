@@ -1,0 +1,22 @@
+# https://taskfile.dev
+
+version: "3"
+
+vars:
+  COMPOSE_FILE: docker/docker-compose.yml
+
+tasks:
+  dev:up:
+    cmds:
+      - docker compose -f {{.COMPOSE_FILE}} --profile stack up -d
+      - uv run docker/file_producer.py main docker/data/users.trig --format application/trig
+
+  dev:down:
+    cmd: docker compose -f {{.COMPOSE_FILE}} --profile stack down
+
+  dev:clean:
+    cmd: docker compose -f {{.COMPOSE_FILE}} --profile stack down -v
+
+  dev:query:
+    desc: Test connection with a query to Fuseki instance
+    cmd: rsparql --service http://localhost:9998/ds --query query.rq

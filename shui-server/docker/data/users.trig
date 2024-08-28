@@ -1,0 +1,15 @@
+PREFIX acl: <http://www.w3.org/ns/auth/acl#>
+PREFIX olis: <https://olis.dev/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sdo: <https://schema.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+<urn:system:graph:users> {
+    <urn:user:565d6ecb-a9ce-49f8-a725-b2c50268977a> a olis:User ;
+        rdfs:label "Admin" ;
+        sdo:email "admin@example.com" ;
+        # System secret key: 123
+        # Password: admin
+        olis:hashedPassword "$2b$12$WF4oTZXUP18IIpRXPUzWFudsf5GW9m0Zo5dSKr7qLwseBe9bCryEG" ;
+    .
+}

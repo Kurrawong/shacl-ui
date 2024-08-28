@@ -1,0 +1,19 @@
+[project]
+name = "shui"
+version = "0.1.0"
+description = "A SHACL UI backend implementation."
+authors = [
+    {name = "Edmond Chuc", email = "edmond@kurrawong.ai"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "confluent-kafka>=2.5.0",
+    "loguru>=0.7.2",
+    "pydantic-settings>=2.4.0",
+    "rdflib>=7.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
