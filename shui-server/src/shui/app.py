@@ -6,6 +6,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette_wtf import CSRFProtectMiddleware
 
 from shui.auth.router import register_auth_routes
+from shui.contrib.accept_header_parser import get_best_match
 from shui.exceptions import Page500Error
 from shui.html.pages.error import ErrorPage
 from shui.router import router
@@ -14,9 +15,9 @@ from shui.settings import settings
 
 def register_error_handlers(app: FastAPI):
     @app.exception_handler(Page500Error)
-    def page_500_error_handler(request: Request, exc: Page500Error):
+    async def page_500_error_handler(request: Request, exc: Page500Error):
         title = f"Uh oh, the server failed to process your request. {exc.msg}"
-        page = ErrorPage(request, title)
+        page = await ErrorPage(request, title)
         return HTMLResponse(page.render(), status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -30,7 +31,7 @@ def register_middlewares(app: FastAPI):
     app.add_middleware(CSRFProtectMiddleware, csrf_secret=settings.secret_key)
 
     @app.middleware("http")
-    async def redirect_401(
+    async def http_middleware_handler(
         request: Request, call_next: Callable[[Request], Awaitable[Response]]
     ):
         response = await call_next(request)
@@ -44,6 +45,14 @@ def register_middlewares(app: FastAPI):
                         next_url=request.url
                     )
                 )
+
+        if response.status_code == 404:
+            accept_header = request.headers.get("Accept")
+            if get_best_match(accept_header, ["text/html"]) == "text/html":
+                page = await ErrorPage(
+                    request, "Error 404", f"Path {request.url.path} does not exist"
+                )
+                return HTMLResponse(page.render(), status.HTTP_404_NOT_FOUND)
 
         return response
 
