@@ -8,8 +8,8 @@ import socket
 
 from confluent_kafka import Producer
 from loguru import logger
-from rdflib import SDO, Graph, URIRef
 from pydantic_settings import BaseSettings
+from rdflib import SDO, Graph, URIRef
 
 SUPPORTED_FORMATS = ["application/rdf-patch", "text/turtle", "application/trig"]
 
@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     kafka_bootstrap_server: str = "localhost:9997"
 
 
-settings = Settings(_env_file=".env")
+settings = Settings()
 
 
 def producer_acknowledge(err, msg):

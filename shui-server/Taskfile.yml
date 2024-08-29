@@ -6,6 +6,15 @@ vars:
   COMPOSE_FILE: docker/docker-compose.yml
 
 tasks:
+  format:
+    cmds:
+      - uv run ruff format
+      - uv run ruff check --fix
+
+  code:
+    cmds:
+      - task: format
+
   dev:up:
     cmds:
       - docker compose -f {{.COMPOSE_FILE}} --profile stack up -d
