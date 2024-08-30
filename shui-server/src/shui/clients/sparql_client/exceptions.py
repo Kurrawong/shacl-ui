@@ -1,0 +1,2 @@
+class SparqlResponseError(Exception):
+    pass

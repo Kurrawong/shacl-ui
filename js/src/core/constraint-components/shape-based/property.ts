@@ -25,8 +25,8 @@ export class PropertyConstraintComponent extends ConstraintComponent {
     }
   }
 
-  get type(): string {
-    return 'PropertyConstraintComponent'
+  get type() {
+    return sh.PropertyConstraintComponent
   }
 
   get properties() {

@@ -1,0 +1,3 @@
+{
+    "python.defaultInterpreterPath": "./shui-server/.venv/bin/python"
+}

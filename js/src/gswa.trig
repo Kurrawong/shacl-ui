@@ -7,7 +7,6 @@
 
 PREFIX : <https://example.com/>
 PREFIX dash: <http://datashapes.org/dash#>
-PREFIX dcat: <http://www.w3.org/ns/dcat#>
 PREFIX freq: <http://purl.org/cld/freq/>
 PREFIX gswa: <https://example.com/gswa/data/>
 PREFIX gswa-shapes: <https://example.com/gswa/shapes/>
@@ -331,7 +330,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         sh:node [
             sh:property [
                 sh:name "Role" ;
-                sh:path dcat:hadRole ;
+                sh:path prov:hadRole ;
                 sh:class skos:Concept ;
                 sh:minCount 1 ;
                 sh:maxCount 1 ;
@@ -511,7 +510,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         
         # contact information
         prov:qualifiedAttribution [
-            dcat:hadRole gswa-roles:digital-data-admin ;
+            prov:hadRole gswa-roles:digital-data-admin ;
             prov:agent [
                 sdo:name "Digital Data Administrator"@en ;
                 sdo:contactPoint [
@@ -530,7 +529,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
         # resource contact information
         prov:qualifiedAttribution [
-            dcat:hadRole gswa-roles:chief-geoscientist ;
+            prov:hadRole gswa-roles:chief-geoscientist ;
             prov:agent [
                 sdo:name "Chief Geoscientist"@en ;
                 sdo:contactPoint [
@@ -634,7 +633,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-mapping> <https://schema.org/citation> "https://www.usgs.gov/programs/national-cooperative-geologic-mapping-program/introduction-geologic-mapping"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
     <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-framework> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
     <https://linked.data.gov.au/def/GSWA-vocabulary-themes/sample-acquisition-management> <http://www.w3.org/2004/02/skos/core#inScheme> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
-    _:nb311e8c6764c4708af3afc7a28e182f4b1 <http://www.w3.org/ns/dcat#hadRole> <https://linked.data.gov.au/def/data-roles/custodian> .
+    _:nb311e8c6764c4708af3afc7a28e182f4b1 <http://www.w3.org/ns/prov#hadRole> <https://linked.data.gov.au/def/data-roles/custodian> .
     <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://www.w3.org/2002/07/owl#versionIRI> <https://linked.data.gov.au/def/GSWA-vocabulary-themes/1> .
     <https://linked.data.gov.au/def/GSWA-vocabulary-themes/data-acquisition> <http://www.w3.org/2004/02/skos/core#definition> "Vocabularies related to the systematic processes of gathering observations and measurements, and related analytical techniques and methodologies, including sample preparation techniques."@en .
     <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-paleontology> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
@@ -704,7 +703,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     <https://linked.data.gov.au/def/GSWA-vocabulary-themes/resources> <http://www.w3.org/2004/02/skos/core#topConceptOf> <https://linked.data.gov.au/def/GSWA-vocabulary-themes> .
     <https://linked.data.gov.au/def/GSWA-vocabulary-themes/geology-geochemistry> <https://schema.org/citation> "https://glossary.americangeosciences.org/term/geochemistry"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
     <https://linked.data.gov.au/def/GSWA-vocabulary-themes/legislation> <http://www.w3.org/2004/02/skos/core#prefLabel> "legislation"@en .
-    _:nb311e8c6764c4708af3afc7a28e182f4b3 <http://www.w3.org/ns/dcat#hadRole> <https://linked.data.gov.au/def/data-roles/custodian> .
+    _:nb311e8c6764c4708af3afc7a28e182f4b3 <http://www.w3.org/ns/prov#hadRole> <https://linked.data.gov.au/def/data-roles/custodian> .
     <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://www.w3.org/ns/prov#qualifiedAttribution> _:nb311e8c6764c4708af3afc7a28e182f4b1 .
     <https://linked.data.gov.au/def/GSWA-vocabulary-themes/data-acquisition> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
     <https://linked.data.gov.au/def/GSWA-vocabulary-themes> <http://purl.org/linked-data/registry#status> <https://linked.data.gov.au/def/reg-statuses/stable> .

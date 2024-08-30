@@ -2,27 +2,37 @@
 
 version: '3'
 
-vars:
-  GREETING: Hello, World!
-
 tasks:
+  install:
+    desc: Install the npm dependencies
+    cmd: pnpm install
+
+  type-check:
+    desc: Type-check the project
+    cmd: pnpm run type-check
+
   code:
+    desc: Format and lint the project
     cmds:
+      - task: format
       - pnpm run lint
-      - pnpm run format
 
   format:
+    desc: Format the project
     cmds:
       - pnpm run format
 
   build:
+    desc: Build the project
     cmds:
       - pnpm run build
 
   storybook:
+    desc: Run the storybook dev server
     cmds:
       - pnpm run storybook
 
   test:
+    desc: Run tests
     cmds:
       - pnpm run test

@@ -1,0 +1,17 @@
+PREFIX olis: <https://olis.dev/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sdo: <https://schema.org/>
+
+<urn:system:graph:users> {
+    <urn:user:565d6ecb-a9ce-49f8-a725-b2c50268977a> a olis:User ;
+        rdfs:label "Admin" ;
+        sdo:email "admin@example.com" ;
+        olis:isActive true ;
+        olis:isSuperuser true ;
+        olis:isVerified true ;
+
+        # System secret key: insecure-secret-key
+        # Password: password
+        olis:hashedPassword "$argon2id$v=19$m=65536,t=3,p=4$9Sok/aLS8BjywWqrqKel+w$5nNptvCJVHhs/WSBj1vWsiVx56StRv1JxT14Zj3WjGs" ;
+    .
+}

@@ -4,8 +4,8 @@ version: '3'
 
 includes:
   py:
-    taskfile: ./python
-    dir: ./python
+    taskfile: ./shui-server
+    dir: ./shui-server
 
   js:
     taskfile: ./js

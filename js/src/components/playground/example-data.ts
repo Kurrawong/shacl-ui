@@ -164,7 +164,6 @@ aussies:HolgersAddress
     shacl: `\
 PREFIX : <https://example.com/>
 PREFIX dash: <http://datashapes.org/dash#>
-PREFIX dcat: <http://www.w3.org/ns/dcat#>
 PREFIX freq: <http://purl.org/cld/freq/>
 PREFIX gswa: <https://example.com/gswa/data/>
 PREFIX gswa-shapes: <https://example.com/gswa/shapes/>
@@ -487,7 +486,7 @@ gswa-shapes:Dataset-qualifiedAttribution a sh:PropertyShape ;
     sh:node [
         sh:property [
             sh:name "Role" ;
-            sh:path dcat:hadRole ;
+            sh:path prov:hadRole ;
             sh:class skos:Concept ;
             sh:minCount 1 ;
             sh:maxCount 1 ;
@@ -612,7 +611,6 @@ gswa-shapes:Dataset-contact-group a sh:PropertyGroup ;
     data: `\
 PREFIX : <https://example.com/>
 PREFIX dash: <http://datashapes.org/dash#>
-PREFIX dcat: <http://www.w3.org/ns/dcat#>
 PREFIX freq: <http://purl.org/cld/freq/>
 PREFIX gswa: <https://example.com/gswa/data/>
 PREFIX gswa-shapes: <https://example.com/gswa/shapes/>
@@ -685,7 +683,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     
     # contact information
     prov:qualifiedAttribution [
-        dcat:hadRole gswa-roles:digital-data-admin ;
+        prov:hadRole gswa-roles:digital-data-admin ;
         prov:agent [
             sdo:name "Digital Data Administrator"@en ;
             sdo:contactPoint [
@@ -704,7 +702,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
     # resource contact information
     prov:qualifiedAttribution [
-        dcat:hadRole gswa-roles:chief-geoscientist ;
+        prov:hadRole gswa-roles:chief-geoscientist ;
         prov:agent [
             sdo:name "Chief Geoscientist"@en ;
             sdo:contactPoint [

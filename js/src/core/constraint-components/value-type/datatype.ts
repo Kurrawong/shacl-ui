@@ -1,7 +1,6 @@
 import { ConstraintComponent } from '@/core/constraint-components/constraint-component'
-import type { Shape, UISchema } from '@/types'
+import type { Shape } from '@/types'
 import { sh } from '@/core/namespaces'
-import type { BlankNode, NamedNode } from '@rdfjs/types'
 
 export class DatatypeConstraintComponent extends ConstraintComponent {
   _datatype
@@ -33,18 +32,10 @@ export class DatatypeConstraintComponent extends ConstraintComponent {
   }
 
   get type() {
-    return 'DatatypeConstraintComponent'
+    return sh.DatatypeConstraintComponent
   }
 
   get datatype() {
     return this._datatype
-  }
-
-  evaluateUserInterface(
-    focusNode: NamedNode | BlankNode,
-    shapesGraphName: NamedNode | BlankNode,
-    schema: UISchema
-  ) {
-    this.addToUISchema(focusNode, schema)
   }
 }

@@ -1,7 +1,6 @@
 import { ConstraintComponent } from '@/core/constraint-components/constraint-component'
-import type { Shape, UISchema } from '@/types'
+import type { Shape } from '@/types'
 import { sh } from '@/core/namespaces'
-import type { BlankNode, NamedNode } from '@rdfjs/types'
 
 const VALID_NODE_KIND_VALUES = [
   sh.NodeKind,
@@ -43,18 +42,10 @@ export class NodeKindConstraintComponent extends ConstraintComponent {
   }
 
   get type() {
-    return 'NodeKindConstraintComponent'
+    return sh.NodeKindConstraintComponent
   }
 
   get nodeKind() {
     return this._nodeKind
-  }
-
-  evaluateUserInterface(
-    focusNode: NamedNode | BlankNode,
-    shapesGraphName: NamedNode | BlankNode,
-    schema: UISchema
-  ) {
-    this.addToUISchema(focusNode, schema)
   }
 }
