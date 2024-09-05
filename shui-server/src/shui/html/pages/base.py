@@ -18,14 +18,14 @@ from fastapi import Request
 from ...auth.models import User
 from ..colours import PageColours
 from ..flash import get_flashed_messages
-from ..shoelace import sl_alert
+from ..shoelace import sl_alert, sl_spinner
 
 
 @div(cls="content-center")
 def Logo():
-    a("SHUI Admin", href="/", cls="font-bold")
+    a("SHUI CMS", href="/", cls="font-bold")
     p(
-        "Knowledge graph resource management",
+        "Knowledge Graph Content Management System",
         cls=f"px-[0.2rem] italic text-xs bg-[{PageColours.bg_secondary.value}]",
     )
 
@@ -34,19 +34,20 @@ def NavLink(value: str, href: str):
     a(
         value,
         href=href,
-        cls=f"p-2 content-center hover:bg-[{PageColours.bg_secondary.value}]",
+        cls="p-2 content-center hover:bg-blue-100",
     )
 
 
-@nav(cls=f"bg-[{PageColours.bg_primary.value}]")
+@div(cls=f"bg-[{PageColours.bg_primary.value}]", data_hx_boost="true")
 def Nav(request: Request, user: User):
     with div(cls="flex p-2"):
         Logo()
-        with ul(cls="grow flex flex-row-reverse flex-nowrap overflow-x-auto"):
-            with li(cls="flex space-x-2"):
-                NavLink("Home", href=str(request.url_for("home_route")))
-                if user:
-                    NavLink("Log out", href=str(request.url_for("logout_route")))
+        with nav(cls="grow flex flex-row-reverse flex-nowrap overflow-x-auto"):
+            with ul():
+                with li(cls="flex space-x-2"):
+                    NavLink("Home", href=str(request.url_for("home_route")))
+                    if user:
+                        NavLink("Log out", href=str(request.url_for("logout_route")))
 
 
 def BasePage(request: Request, title: str, user: User = None) -> document:
@@ -68,9 +69,6 @@ def BasePage(request: Request, title: str, user: User = None) -> document:
         # Tailwindcss
         script(src="https://cdn.tailwindcss.com")
 
-        # HTMX
-        script(src="https://unpkg.com/htmx.org@2.0.1")
-
         # Shoelace
         link(
             rel="stylesheet",
@@ -88,20 +86,36 @@ def BasePage(request: Request, title: str, user: User = None) -> document:
             src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.16.0/cdn/shoelace-autoloader.js",
         )
 
-    with doc:
-        with body():
-            Nav(request, user)
-            with main(id="main", cls="container mx-auto mt-2 px-2"):
-                if messages:
-                    with div(cls="pb-4"):
-                        for message in messages:
-                            alert = sl_alert(cls="sticky", variant=message["category"])
-                            alert["open"] = ""
-                            alert["closable"] = ""
-                            alert.add(span(message["message"]))
+        # HTMX
+        link(rel="stylesheet", href=request.url_for("static", path="htmx.css"))
+        script(src="https://unpkg.com/htmx.org@2.0.1")
+        script(src=request.url_for("static", path="htmx.ext.shoelace.js"))
+        script(src="https://unpkg.com/hyperscript.org@0.9.12")
 
-                # Pages inheriting from base page should target element with id main
-                # to slot content in.
-                ...
+    with doc:
+        with body(data_hx_ext="shoelace", data_hx_indicator="#page-loading-indicator"):
+            Nav(request, user)
+            with div(cls="flex flex-row h-[calc(100vh-5rem)]"):
+                div(id="nav", cls="min-w-[15rem] overflow-y-auto border-r h-full")
+
+                with div(cls="overflow-y-auto w-full"):
+                    with main(id="main", cls="container mx-auto p-4"):
+                        if messages:
+                            with div(cls="pb-4"):
+                                for message in messages:
+                                    alert = sl_alert(
+                                        cls="sticky", variant=message["category"]
+                                    )
+                                    alert["open"] = ""
+                                    alert["closable"] = ""
+                                    alert.add(span(message["message"]))
+
+                with div(
+                    id="page-loading-indicator",
+                    cls="htmx-indicator w-screen h-screen fixed grid place-content-center",
+                ):
+                    with div(cls="text-center"):
+                        sl_spinner(style="font-size: 3rem; --track-width: 5px;")
+                        div("Loading", cls="pt-3")
 
     return doc

@@ -53,7 +53,7 @@ class sl_details(html_tag):
 
 class sl_icon(html_tag):
     """
-    Shoelace Input.
+    Shoelace Icon.
     """
 
     def __init__(self, content: str = None, *args, **kwargs):
@@ -63,7 +63,7 @@ class sl_icon(html_tag):
 
 class sl_icon_button(html_tag):
     """
-    Shoelace Input.
+    Shoelace Icon Button.
     """
 
     def __init__(self, content: str = None, *args, **kwargs):
@@ -78,6 +78,36 @@ class sl_input(html_tag):
 
     def __init__(self, content: str = None, *args, **kwargs):
         self.tagname = "sl-input"
+        super().__init__(*args, content=content, **kwargs)
+
+
+class sl_menu(html_tag):
+    """
+    Shoelace Menu.
+    """
+
+    def __init__(self, content: str = None, *args, **kwargs):
+        self.tagname = "sl-menu"
+        super().__init__(*args, content=content, **kwargs)
+
+
+class sl_menu_item(html_tag):
+    """
+    Shoelace Menu Item.
+    """
+
+    def __init__(self, content: str = None, *args, **kwargs):
+        self.tagname = "sl-menu-item"
+        super().__init__(*args, content=content, **kwargs)
+
+
+class sl_spinner(html_tag):
+    """
+    Shoelace Spinner.
+    """
+
+    def __init__(self, content: str = None, *args, **kwargs):
+        self.tagname = "sl-spinner"
         super().__init__(*args, content=content, **kwargs)
 
 

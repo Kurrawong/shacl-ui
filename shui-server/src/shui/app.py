@@ -1,7 +1,9 @@
+from pathlib import Path
 from typing import Awaitable, Callable
 
 from fastapi import FastAPI, Request, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 from starlette_wtf import CSRFProtectMiddleware
 
@@ -12,12 +14,21 @@ from shui.html.pages.error import ErrorPage
 from shui.router import router
 from shui.settings import settings
 
+package_path = Path(__file__).parent
+
+
+def register_staticfiles(app: FastAPI):
+    app.mount(
+        "/static", StaticFiles(directory=package_path / "html/static"), name="static"
+    )
+
 
 def register_error_handlers(app: FastAPI):
     @app.exception_handler(Page500Error)
     async def page_500_error_handler(request: Request, exc: Page500Error):
         title = f"Uh oh, the server failed to process your request. {exc.msg}"
-        page = await ErrorPage(request, title)
+        # TODO: handle nav_items
+        page = await ErrorPage(request, title, [])
         return HTMLResponse(page.render(), status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -59,6 +70,7 @@ def register_middlewares(app: FastAPI):
 
 def create_app():
     app = FastAPI()
+    register_staticfiles(app)
     register_middlewares(app)
     register_routers(app)
     return app

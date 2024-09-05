@@ -18,6 +18,7 @@ dependencies = [
     "jinja2>=3.1.4",
     "dominate>=2.9.1",
     "starlette-wtf>=0.4.5",
+    "pyld>=2.0.4",
 ]
 
 [build-system]

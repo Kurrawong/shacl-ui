@@ -11,11 +11,6 @@ includes:
     taskfile: ./js
     dir: ./js
 
-vars:
-  GREETING: Hello, World!
-
 tasks:
   default:
-    cmds:
-      - echo "{{.GREETING}}"
-    silent: true
+    cmd: task -a

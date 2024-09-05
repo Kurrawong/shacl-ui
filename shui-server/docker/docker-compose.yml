@@ -13,7 +13,8 @@ services:
   fuseki:
     profiles:
       - stack
-    image: ghcr.io/kurrawong/rdf-delta
+    build:
+      context: .
     container_name: fuseki
     ports:
       - 9998:3030

@@ -1,3 +1,5 @@
+PREFIX crud: <https://w3id.org/crud/>
+PREFIX gswa-shapes: <https://example.com/gswa/shapes/>
 PREFIX olis: <https://olis.dev/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX sdo: <https://schema.org/>
@@ -13,5 +15,30 @@ PREFIX sdo: <https://schema.org/>
         # System secret key: insecure-secret-key
         # Password: password
         olis:hashedPassword "$argon2id$v=19$m=65536,t=3,p=4$9Sok/aLS8BjywWqrqKel+w$5nNptvCJVHhs/WSBj1vWsiVx56StRv1JxT14Zj3WjGs" ;
+    .
+}
+
+<urn:system:graph:crud> {
+    <urn:crud:b8ebcc6c-64b0-40d2-a22d-a3c313525c34> a crud:ContentType ;
+        sdo:name "Catalogs" ;
+        sdo:description "A collection of datasets." ;
+
+        # http://localhost:8000/content-types/catalogs <-- manage the content type
+        # http://localhost:8000/collections/catalogs <-- view the content collection instances list
+        # http://localhost:8000/collections/catalogs/items?iri=... <-- view the content collection record instance
+        crud:id "catalogs" ;
+
+        crud:targetClass sdo:DataCatalog ;
+        crud:graph <urn:graph:catalogs> ;
+        crud:nodeShape gswa-shapes:DataCatalog ;
+    .
+
+    <urn:crud:a552310a-4562-4cf1-8f5b-b082cb487a58> a crud:ContentType ;
+        sdo:name "Datasets" ;
+        sdo:description "A body of structured information describing some topic(s) of interest." ;
+        crud:id "datasets" ;
+        crud:targetClass sdo:Dataset ;
+        crud:graph <urn:graph:catalogs> ;
+        crud:nodeShape gswa-shapes:Dataset ;
     .
 }
