@@ -27,7 +27,8 @@ PREFIX sdo: <https://schema.org/>
         # http://localhost:8000/collections/catalogs <-- view the content collection instances list
         # http://localhost:8000/collections/catalogs/items?iri=... <-- view the content collection record instance
         crud:id "catalogs" ;
-
+        crud:labelProperty sdo:name ;
+        crud:descriptionProperty sdo:description ;
         crud:targetClass sdo:DataCatalog ;
         crud:graph <urn:graph:catalogs> ;
         crud:nodeShape gswa-shapes:DataCatalog ;
@@ -37,6 +38,8 @@ PREFIX sdo: <https://schema.org/>
         sdo:name "Datasets" ;
         sdo:description "A body of structured information describing some topic(s) of interest." ;
         crud:id "datasets" ;
+        crud:labelProperty sdo:name ;
+        crud:descriptionProperty sdo:abstract ;
         crud:targetClass sdo:Dataset ;
         crud:graph <urn:graph:catalogs> ;
         crud:nodeShape gswa-shapes:Dataset ;

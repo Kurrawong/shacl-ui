@@ -54,6 +54,8 @@ async def collection_route(
     request: Request,
     collection_id: str,
     q: str = "",
+    page: int = 1,
+    per_page: int = 10,
     user: User = Depends(current_active_user),
     collection_service: CollectionService = Depends(get_collection_service),
     content_type_service: ContentTypeService = Depends(get_content_type_service),
@@ -61,9 +63,10 @@ async def collection_route(
     nav_items = await get_nav_items(request, content_type_service)
     try:
         content_type = await content_type_service.get_one_by_id(collection_id)
-        items = await collection_service.get_list(collection_id, 1, 10, q)
+        items = await collection_service.get_list(collection_id, q, page, per_page)
+        count = await collection_service.get_list_count(collection_id, q)
         page = await CollectionsListPage(
-            request, nav_items, q, content_type, items, user
+            request, nav_items, q, content_type, items, count, user
         )
         return HTMLResponse(page.render())
     except Exception as err:

@@ -3,7 +3,6 @@ from textwrap import dedent
 
 from fastapi import Depends
 from jinja2 import Template
-from loguru import logger
 from pydantic import BaseModel, ConfigDict, Field
 from pyld import jsonld
 from rdflib import RDF, Graph
@@ -34,7 +33,52 @@ class CollectionService:
         self._client = client
         self._content_type_service = ContentTypeService(self._client)
 
-    async def get_list(self, collection_id: str, page: int, per_page: int, q: str):
+    @staticmethod
+    def _list_subquery(
+        label_property: str,
+        target_class: str,
+        q: str,
+        limit: int = 10,
+        offset: int = 0,
+        no_limit: bool = False,
+    ):
+        query = dedent(
+            Template(
+                """
+                {
+                    SELECT DISTINCT ?iri
+                    WHERE {
+                        {% if q %}
+                        {
+                            SELECT DISTINCT ?iri
+                            WHERE {
+                                (?iri ?score ?matchedLabel ?graph) text:query (<{{ label_property }}> "{{ q }}*") .
+                            }
+                        }
+                        {% endif %}
+                        
+                        ?iri a <{{ target_class }}> ;
+                            <{{ label_property }}> ?label .
+                    }
+                    ORDER BY ?label
+                    {% if not no_limit %}
+                    LIMIT {{ limit }}
+                    OFFSET {{ offset }}
+                    {% endif %}
+                }
+                """
+            ).render(
+                label_property=label_property,
+                target_class=target_class,
+                q=q,
+                limit=limit,
+                offset=offset,
+                no_limit=no_limit,
+            )
+        )
+        return query
+
+    async def get_list_count(self, collection_id: str, q: str):
         client = self._client
         content_type_service = self._content_type_service
         content_type_model = await content_type_service.get_one_by_id(collection_id)
@@ -49,16 +93,68 @@ class CollectionService:
         )
         if content_type_iri is None:
             raise Exception(f"No content type found for collection {collection_id}")
+        label_property = content_type.value(content_type_iri, CRUD.labelProperty)
+        description_property = content_type.value(
+            content_type_iri, CRUD.descriptionProperty
+        )
         target_class = content_type.value(content_type_iri, CRUD.targetClass)
-        if target_class is None:
-            raise Exception(f"No target class found for collection {collection_id}")
         content_type_graph = content_type.value(content_type_iri, CRUD.graph)
-        if content_type_graph is None:
-            raise Exception(
-                f"No content type graph found for collection {collection_id}"
+        query = dedent(
+            Template(
+                """
+                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                PREFIX sdo: <https://schema.org/>
+                PREFIX text: <http://jena.apache.org/text#>
+                CONSTRUCT {
+                    _:b1 rdf:value ?count
+                }
+                FROM <{{ graph_name }}>
+                WHERE {
+                    SELECT (COUNT(?iri) AS ?count) {
+                        {{ subquery|indent(24, True) }}
+                    }
+                }
+                """
+            ).render(
+                subquery=self._list_subquery(
+                    label_property, target_class, q, no_limit=True
+                ),
+                label_property=label_property,
+                description_property=description_property,
+                graph_name=content_type_graph,
+                target_class=target_class,
+                q=q,
             )
-        # TODO: get the label role and description role to get the property and remove
-        #       the hardcoded sdo:name in query.
+        )
+        result = await client.post(query, accept="text/turtle")
+        graph = Graph().parse(data=result)
+        value = next(graph.objects())
+        if value is None:
+            raise ValueError("Failed to get the count.")
+        return value.value
+
+    async def get_list(self, collection_id: str, q: str, page: int, per_page: int):
+        client = self._client
+        content_type_service = self._content_type_service
+        content_type_model = await content_type_service.get_one_by_id(collection_id)
+        if content_type_model is None:
+            raise Exception(f"No content type found for collection {collection_id}")
+        content_type = Graph().parse(
+            data=content_type_model.model_dump_json(by_alias=True, round_trip=True),
+            format="json-ld",
+        )
+        content_type_iri = content_type.value(
+            predicate=RDF.type, object=CRUD.ContentType
+        )
+        if content_type_iri is None:
+            raise Exception(f"No content type found for collection {collection_id}")
+        label_property = content_type.value(content_type_iri, CRUD.labelProperty)
+        description_property = content_type.value(
+            content_type_iri, CRUD.descriptionProperty
+        )
+        target_class = content_type.value(content_type_iri, CRUD.targetClass)
+        content_type_graph = content_type.value(content_type_iri, CRUD.graph)
         limit = per_page
         offset = (page - 1) * per_page
         query = dedent(
@@ -74,36 +170,23 @@ class CollectionService:
                 }
                 FROM <{{ graph_name }}>
                 WHERE {
-                    {
-                        SELECT DISTINCT ?iri
-                        WHERE {
-                            {% if q %}
-                            {
-                                SELECT DISTINCT ?iri
-                                WHERE {
-                                    (?iri ?score ?matchedLabel ?graph) text:query (sdo:name "{{ q }}*") .
-                                }
-                            }
-                            {% endif %}
-                            
-                            ?iri a <{{ target_class }}> ;
-                                sdo:name ?label .
-                        }
-                        ORDER BY ?label
-                        LIMIT {{ limit }}
-                        OFFSET {{ offset }}
-                    }
+                    {{ subquery|indent(20, True) }}
                     
-                    ?iri sdo:name ?_label .
+                    ?iri <{{ label_property }}> ?_label .
                     BIND(STR(?_label) AS ?label)
                     
                     OPTIONAL {
-                        ?iri sdo:description ?_description .
+                        ?iri <{{ description_property }}> ?_description .
                         BIND(STR(?_description) AS ?description)
                     }
                 }
                 """
             ).render(
+                subquery=self._list_subquery(
+                    label_property, target_class, q, limit, offset
+                ),
+                label_property=label_property,
+                description_property=description_property,
                 graph_name=content_type_graph,
                 target_class=target_class,
                 q=q,
@@ -111,7 +194,6 @@ class CollectionService:
                 offset=offset,
             )
         )
-        logger.debug(query)
         result = await client.post(query, accept="text/turtle")
         graph = Graph()
         graph.parse(data=result, format="turtle")

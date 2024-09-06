@@ -8,5 +8,7 @@ class CRUD(DefinedNamespace):
 
     ContentType: URIRef
 
+    labelProperty: URIRef
+    descriptionProperty: URIRef
     graph: URIRef
     targetClass: URIRef

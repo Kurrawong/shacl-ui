@@ -17,6 +17,7 @@ async def CollectionsListPage(
     q: str,
     content_type: ContentType,
     collection_items: list[CollectionItem],
+    count: int,
     user: User | None,
 ) -> document:
     title = content_type.label
@@ -52,7 +53,9 @@ async def CollectionsListPage(
                     )
 
                 if q:
-                    p(f'<count> {content_type.id} found for "{q}"', id="result-details")
+                    p(f'{count} {content_type.id} found for "{q}"', id="result-details")
+                else:
+                    p(f"{count} {content_type.id} found", id="result-details")
 
                 with ul(id="results", cls="space-y-2"):
                     for item in collection_items:

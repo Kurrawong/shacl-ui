@@ -18,6 +18,8 @@ frame = {
         "olis": "https://olis.dev/",
         "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
         "sdo": "https://schema.org/",
+        "crud:labelProperty": {"@type": "@id"},
+        "crud:descriptionProperty": {"@type": "@id"},
         "crud:graph": {"@type": "@id"},
         "crud:nodeShape": {"@type": "@id"},
         "crud:targetClass": {"@type": "@id"},
@@ -32,6 +34,8 @@ class ContentType(BaseModel):
     label: str = Field(..., alias="sdo:name")
     description: str = Field("", alias="sdo:description")
     id: str = Field(..., alias="crud:id")
+    label_property: str = Field(..., alias="crud:labelProperty")
+    description_property: str = Field(..., alias="crud:descriptionProperty")
     target_class: str = Field(..., alias="crud:targetClass")
     graph: str = Field(..., alias="crud:graph")
     node_shape: str = Field(..., alias="crud:nodeShape")
