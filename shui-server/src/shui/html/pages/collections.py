@@ -1,3 +1,5 @@
+import textwrap
+
 from dominate import document
 from dominate.tags import a, div, form, input_, li, p, ul
 from fastapi import Request
@@ -9,6 +11,9 @@ from ...collection import CollectionItem
 from ...content_type import ContentType
 from ..colours import PageColours
 from .base_with_nav import BaseWithNav
+
+TEXTWRAP_SHORTEN_WIDTH = 200
+TEXTWRAP_SHORTEN_PLACEHOLDER = "..."
 
 
 async def CollectionsListPage(
@@ -67,6 +72,13 @@ async def CollectionsListPage(
                                     "record_route", collection_id=content_type.id
                                 ).include_query_params(iri=item.iri),
                             )
-                            div(item.description, cls="text-sm")
+                            div(
+                                textwrap.shorten(
+                                    item.description,
+                                    width=TEXTWRAP_SHORTEN_WIDTH,
+                                    placeholder=TEXTWRAP_SHORTEN_PLACEHOLDER,
+                                ),
+                                cls="text-sm",
+                            )
 
     return doc
