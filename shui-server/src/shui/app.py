@@ -11,6 +11,7 @@ from shui.auth.router import register_auth_routes
 from shui.contrib.accept_header_parser import get_best_match
 from shui.exceptions import Page500Error
 from shui.html.pages.error import ErrorPage
+from shui.nav import NavMiddleware
 from shui.router import router
 from shui.settings import settings
 
@@ -28,7 +29,7 @@ def register_error_handlers(app: FastAPI):
     async def page_500_error_handler(request: Request, exc: Page500Error):
         title = f"Uh oh, the server failed to process your request. {exc.msg}"
         # TODO: handle nav_items
-        page = await ErrorPage(request, title, [])
+        page = await ErrorPage(request, title)
         return HTMLResponse(page.render(), status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -41,8 +42,8 @@ def register_middlewares(app: FastAPI):
     app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
     app.add_middleware(CSRFProtectMiddleware, csrf_secret=settings.secret_key)
 
-    @app.middleware("http")
-    async def http_middleware_handler(
+    @app.middleware("auth_redirect")
+    async def auth_middleware_handler(
         request: Request, call_next: Callable[[Request], Awaitable[Response]]
     ):
         response = await call_next(request)
@@ -50,12 +51,17 @@ def register_middlewares(app: FastAPI):
         if response.status_code == 401:
             accept_header = request.headers.get("Accept")
 
-            if "text/html" in accept_header:
-                return RedirectResponse(
-                    request.url_for("login_route").include_query_params(
-                        next_url=request.url
-                    )
+            if "text/html" in accept_header or accept_header == "*/*":
+                url = request.url_for("login_route").include_query_params(
+                    next_url=request.url
                 )
+                return RedirectResponse(url, headers={"HX-Redirect": str(url)})
+
+        return response
+
+    @app.middleware("404_middleware")
+    async def page_404_middleware(request: Request, call_next):
+        response = await call_next(request)
 
         if response.status_code == 404:
             accept_header = request.headers.get("Accept")
@@ -66,6 +72,18 @@ def register_middlewares(app: FastAPI):
                 return HTMLResponse(page.render(), status.HTTP_404_NOT_FOUND)
 
         return response
+
+    app.add_middleware(NavMiddleware)
+
+    # @app.middleware("breadcrumbs_middleware")
+    # async def breadcrumbs_middleware(request: Request, call_next):
+    #     response = await call_next(request)
+    #     print("Breadcrumb middleware")
+    #     print(request.url)
+    #     print(request.state.__dict__)
+    #     print(request.path_params)
+    #     print(request.query_params)
+    #     return response
 
 
 def create_app():

@@ -1,7 +1,6 @@
 from dominate import document
 from dominate.tags import (
     a,
-    body,
     div,
     li,
     link,
@@ -23,7 +22,7 @@ from ..shoelace import sl_alert, sl_spinner
 
 @div(cls="content-center")
 def Logo():
-    a("SHUI CMS", href="/", cls="font-bold")
+    a("SHUI CMS", href="/", cls="font-bold hover:underline")
     p(
         "Knowledge Graph Content Management System",
         cls=f"px-[0.2rem] italic text-xs bg-[{PageColours.bg_secondary.value}]",
@@ -92,30 +91,31 @@ def BasePage(request: Request, title: str, user: User = None) -> document:
         script(src=request.url_for("static", path="htmx.ext.shoelace.js"))
         script(src="https://unpkg.com/hyperscript.org@0.9.12")
 
+    doc.body["data-hx-ext"] = "shoelace"
+    doc.body["data-hx-indicator"] = "#page-loading-indicator"
     with doc:
-        with body(data_hx_ext="shoelace", data_hx_indicator="#page-loading-indicator"):
-            Nav(request, user)
-            with div(cls="flex flex-row h-[calc(100vh-5rem)]"):
-                div(id="nav", cls="min-w-[15rem] overflow-y-auto border-r h-full")
+        Nav(request, user)
+        with div(cls="flex flex-row h-[calc(100vh-5rem)]"):
+            div(id="nav", cls="min-w-[15rem] overflow-y-auto border-r h-full")
 
-                with div(cls="overflow-y-auto w-full"):
-                    with main(id="main", cls="container mx-auto p-4"):
-                        if messages:
-                            with div(cls="pb-4"):
-                                for message in messages:
-                                    alert = sl_alert(
-                                        cls="sticky", variant=message["category"]
-                                    )
-                                    alert["open"] = ""
-                                    alert["closable"] = ""
-                                    alert.add(span(message["message"]))
+            with div(cls="overflow-y-auto w-full"):
+                with main(id="main", cls="container mx-auto p-4"):
+                    if messages:
+                        with div(cls="pb-4"):
+                            for message in messages:
+                                alert = sl_alert(
+                                    cls="sticky", variant=message["category"]
+                                )
+                                alert["open"] = ""
+                                alert["closable"] = ""
+                                alert.add(span(message["message"]))
 
-                with div(
-                    id="page-loading-indicator",
-                    cls="htmx-indicator w-screen h-screen fixed grid place-content-center",
-                ):
-                    with div(cls="text-center"):
-                        sl_spinner(style="font-size: 3rem; --track-width: 5px;")
-                        div("Loading", cls="pt-3")
+            with div(
+                id="page-loading-indicator",
+                cls="htmx-indicator w-screen h-screen fixed grid place-content-center",
+            ):
+                with div(cls="text-center"):
+                    sl_spinner(style="font-size: 3rem; --track-width: 5px;")
+                    div("Loading", cls="pt-3")
 
     return doc

@@ -16,8 +16,21 @@ class sl_button(html_tag):
     Shoelace Button.
     """
 
-    def __init__(self, content: str = None, *args, **kwargs):
+    def __init__(self, *args, disabled: bool = False, **kwargs):
         self.tagname = "sl-button"
+        if disabled:
+            super().__init__(*args, disabled="", **kwargs)
+        else:
+            super().__init__(*args, **kwargs)
+
+
+class sl_button_group(html_tag):
+    """
+    Shoelace Button Group.
+    """
+
+    def __init__(self, content: str = None, *args, **kwargs):
+        self.tagname = "sl-button-group"
         super().__init__(*args, content=content, **kwargs)
 
 

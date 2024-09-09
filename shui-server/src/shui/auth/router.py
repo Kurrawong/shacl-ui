@@ -163,8 +163,8 @@ async def login_submit_route(
             logger.error(traceback.print_exc())
             flash(request, f"Error: {err}", "danger")
     else:
-        flash(request, f"Form error occurred: {form.errors}", "dangers")
-    csrf_token = form.csrf_token.current_token
+        flash(request, f"Form error occurred: {form.errors}", "danger")
+    csrf_token = form.current_csrf_token
     return HTMLResponse(LoginPage(request, csrf_token, next_url).render())
 
 

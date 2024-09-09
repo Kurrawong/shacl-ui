@@ -19,6 +19,7 @@ dependencies = [
     "dominate>=2.9.1",
     "starlette-wtf>=0.4.5",
     "pyld>=2.0.4",
+    "beautifulsoup4>=4.12.3",
 ]
 
 [build-system]

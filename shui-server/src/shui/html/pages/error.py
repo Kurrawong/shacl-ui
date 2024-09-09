@@ -2,14 +2,13 @@ from dominate import document
 from dominate.tags import h1, p
 from fastapi import Request
 
-from shui.html.pages.base_with_nav import BaseWithNav
-from shui.nav import NavItems
+from shui.html.pages.base import BasePage
 
 
 async def ErrorPage(
-    request: Request, title: str, nav_items: NavItems, description: str | None = None
+    request: Request, title: str, description: str | None = None
 ) -> document:
-    with BaseWithNav(request, nav_items, title) as doc:
+    with BasePage(request, title) as doc:
         main = doc.getElementById("main")
         with main:
             h1(title, cls="text-lg font-bold")

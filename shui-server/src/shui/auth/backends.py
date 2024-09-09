@@ -7,6 +7,7 @@ from fastapi_users.authentication import (
 from shui.redis import redis
 from shui.settings import settings
 
+from .consts import USER_AUTH_COOKIE_NAME
 from .transports import bearer_transport, cookie_transport
 
 auth_backend = AuthenticationBackend(
@@ -14,7 +15,7 @@ auth_backend = AuthenticationBackend(
     transport=cookie_transport,
     get_strategy=lambda: RedisStrategy(
         redis,
-        key_prefix="olis_users_token",
+        key_prefix=f"{USER_AUTH_COOKIE_NAME}:",
     ),
 )
 
