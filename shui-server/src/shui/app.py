@@ -1,4 +1,5 @@
 from pathlib import Path
+from contextlib import asynccontextmanager
 from typing import Awaitable, Callable
 
 from fastapi import FastAPI, Request, Response, status
@@ -8,6 +9,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette_wtf import CSRFProtectMiddleware
 
 from shui.auth.router import register_auth_routes
+from shui.redis import redis
 from shui.contrib.accept_header_parser import get_best_match
 from shui.exceptions import Page500Error
 from shui.html.pages.error import ErrorPage
@@ -86,8 +88,15 @@ def register_middlewares(app: FastAPI):
     #     return response
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Start up health checks and other tasks.
+    await redis.ping()
+    yield
+
+
 def create_app():
-    app = FastAPI()
+    app = FastAPI(lifespan=lifespan)
     register_staticfiles(app)
     register_middlewares(app)
     register_routers(app)
