@@ -21,7 +21,7 @@ PREFIX sdo: <https://schema.org/>
 <urn:system:graph:crud> {
     <urn:crud:b8ebcc6c-64b0-40d2-a22d-a3c313525c34> a crud:ContentType ;
         sdo:name "Catalogs" ;
-        sdo:description "A collection of datasets." ;
+        sdo:description "A collection of catalog records." ;
 
         # http://localhost:8000/content-types/catalogs <-- manage the content type
         # http://localhost:8000/collections/catalogs <-- view the content collection instances list
@@ -36,7 +36,7 @@ PREFIX sdo: <https://schema.org/>
 
     <urn:crud:a552310a-4562-4cf1-8f5b-b082cb487a58> a crud:ContentType ;
         sdo:name "Datasets" ;
-        sdo:description "A body of structured information describing some topic(s) of interest." ;
+        sdo:description "A collection of dataset records." ;
         crud:id "datasets" ;
         crud:labelProperty sdo:name ;
         crud:descriptionProperty sdo:abstract ;
