@@ -86,6 +86,9 @@ def get_nav_html(nav_items: NavItems) -> str:
 
 
 class NavMiddleware(BaseHTTPMiddleware):
+    """
+    A middleware to inject the application's navigation into the HTML response.
+    """
     @staticmethod
     async def _is_authenticated(request: Request) -> bool:
         user_session_id = request.cookies.get(USER_AUTH_COOKIE_NAME)
