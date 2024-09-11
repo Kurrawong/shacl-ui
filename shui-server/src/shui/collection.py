@@ -79,6 +79,9 @@ class CollectionService:
         return query
 
     async def get_list_count(self, collection_id: str, q: str):
+        # TODO: There is no error handling here because we expect the required values on the
+        #       crud:ContentType instances to be in the correct shape.
+        #       It may be a good idea to do a SHACL check here.
         client = self._client
         content_type_service = self._content_type_service
         content_type_model = await content_type_service.get_one_by_id(collection_id)
