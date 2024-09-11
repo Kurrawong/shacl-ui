@@ -48,7 +48,6 @@ async def collection_route(
         total_pages = -(count // -per_page)
         page = await CollectionsListPage(
             request,
-            [],
             q,
             content_type,
             items,

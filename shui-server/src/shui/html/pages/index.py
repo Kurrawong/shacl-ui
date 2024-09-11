@@ -1,5 +1,5 @@
 from dominate import document
-from dominate.tags import p, ul, li
+from dominate.tags import li, p, ul
 from fastapi import Request
 
 from shui.auth.models import User
@@ -18,11 +18,21 @@ async def IndexPage(
         with main:
             p(title, cls=f"text-xl pb-4 text-[{PageColours.text_primary.value}]")
 
-            p("Some things that may be added to the user's home page in a future update:")
+            p(
+                "Some things that may be added to the user's home page in a future update:"
+            )
             with ul():
-                li("A timeline of changes made to the system by other users.", cls="list-disc translate-x-5 first:pt-2")
-                li("A list of recent changes made by the user.", cls="list-disc translate-x-5 first:pt-2")
-                li("A list of quick links to commonly accessed pages.", cls="list-disc translate-x-5 first:pt-2")
-
+                li(
+                    "A timeline of changes made to the system by other users.",
+                    cls="list-disc translate-x-5 first:pt-2",
+                )
+                li(
+                    "A list of recent changes made by the user.",
+                    cls="list-disc translate-x-5 first:pt-2",
+                )
+                li(
+                    "A list of quick links to commonly accessed pages.",
+                    cls="list-disc translate-x-5 first:pt-2",
+                )
 
     return doc

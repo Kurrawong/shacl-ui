@@ -1,5 +1,5 @@
-from pathlib import Path
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Awaitable, Callable
 
 from fastapi import FastAPI, Request, Response, status
@@ -9,11 +9,11 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette_wtf import CSRFProtectMiddleware
 
 from shui.auth.router import register_auth_routes
-from shui.redis import redis
 from shui.contrib.accept_header_parser import get_best_match
 from shui.exceptions import Page500Error
 from shui.html.pages.error import ErrorPage
 from shui.nav import NavMiddleware
+from shui.redis import redis
 from shui.router import router
 from shui.settings import settings
 

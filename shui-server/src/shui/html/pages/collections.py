@@ -6,7 +6,6 @@ from fastapi import Request
 
 from shui.auth.models import User
 from shui.html.shoelace import sl_button, sl_button_group
-from shui.nav import NavItems
 
 from ...collection import CollectionItem
 from ...content_type import ContentType
@@ -19,7 +18,6 @@ TEXTWRAP_SHORTEN_PLACEHOLDER = "..."
 
 async def CollectionsListPage(
     request: Request,
-    nav_items: NavItems,
     q: str,
     content_type: ContentType,
     collection_items: list[CollectionItem],
