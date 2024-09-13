@@ -66,7 +66,7 @@ def register_middlewares(app: FastAPI):
         response = await call_next(request)
 
         if response.status_code == 404:
-            accept_header = request.headers.get("Accept")
+            accept_header = request.headers.get("Accept", "")
             if get_best_match(accept_header, ["text/html"]) == "text/html":
                 page = await ErrorPage(
                     request, "Error 404", f"Path {request.url.path} does not exist"
