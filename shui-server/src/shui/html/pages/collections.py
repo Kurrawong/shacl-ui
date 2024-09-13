@@ -66,7 +66,7 @@ async def CollectionsListPage(
                 else:
                     p(f"{count} {content_type.id} found", id="result-details")
 
-                with ul(id="results", cls="space-y-2"):
+                with ul(id="results", cls="space-y-2", data_hx_boost="true"):
                     for item in collection_items:
                         with li(cls="border-t pt-4 pb-3 min-h-16 max-h-32 space-y-1"):
                             a(

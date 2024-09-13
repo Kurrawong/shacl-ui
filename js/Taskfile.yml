@@ -27,6 +27,13 @@ tasks:
     cmds:
       - pnpm run build
 
+  build-only:
+    desc: Build without performing a type check
+    cmds:
+      - pnpm run build-only
+      - cp dist/index.js ../shui-server/src/shui/html/static/shui.js
+      - cp dist/style.css ../shui-server/src/shui/html/static/shui.css
+
   storybook:
     desc: Run the storybook dev server
     cmds:

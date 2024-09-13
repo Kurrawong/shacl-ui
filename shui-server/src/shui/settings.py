@@ -21,6 +21,11 @@ class Settings(BaseSettings):
     secret_key: str
     environment: Environment = Environment.production
 
+    # Kafka
+    kafka_key: str = "main"
+    kafka_topic: str = "rdf-patch-log"
+    kafka_bootstrap_server: str = "localhost:9092"
+
     # Redis
     redis_connection: str = "redis://localhost:6379"
 

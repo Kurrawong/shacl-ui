@@ -1,16 +1,20 @@
 import traceback
 
-from fastapi import APIRouter, Depends, Request
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Depends, Request, status
+from fastapi.responses import HTMLResponse, JSONResponse
 from loguru import logger
 
 from shui.auth.core import current_active_user
 from shui.auth.models import User
 from shui.collection import CollectionService, get_collection_service
 from shui.content_type import ContentTypeService, get_content_type_service
+from shui.html.flash import flash
 from shui.html.pages.collections import CollectionsListPage
 from shui.html.pages.error import ErrorPage
 from shui.html.pages.index import IndexPage
+from shui.html.pages.record import RecordPage
+from shui.namespaces import CRUD
+from shui.record import RecordService, get_record_service
 
 router = APIRouter()
 
@@ -72,5 +76,35 @@ async def record_route(
     collection_id: str,
     iri: str,
     user: User = Depends(current_active_user),
+    content_type_service: ContentTypeService = Depends(get_content_type_service),
+    record_service: RecordService = Depends(get_record_service),
 ):
-    return iri
+    content_type = await content_type_service.get_one_by_id(collection_id)
+    graph_name = content_type.value(CRUD.graph)
+    record_data = await record_service.get_one_by_iri(iri, graph_name)
+    node_shape = content_type.value(CRUD.nodeShape)
+    page = await RecordPage(request, user, iri, graph_name, node_shape, record_data)
+    return HTMLResponse(page.render())
+
+
+@router.post("/collections/{collection_id}/items")
+async def record_submit_route(
+    request: Request,
+    collection_id: str,
+    iri: str,
+    user: User = Depends(current_active_user),
+    record_service: RecordService = Depends(get_record_service),
+):
+    try:
+        body = await request.body()
+        patch_log = body.decode("utf-8")
+        await record_service.create_change_request(iri, patch_log)
+        flash(request, "Changes saved.")
+        return JSONResponse(
+            {"redirect": str(request.url)}, status_code=status.HTTP_200_OK
+        )
+    except Exception as err:
+        return JSONResponse(
+            {"detail": f"Failed to save changes. {err}"},
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )

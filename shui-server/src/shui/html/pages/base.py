@@ -1,3 +1,5 @@
+from textwrap import dedent
+
 from dominate import document
 from dominate.tags import (
     a,
@@ -64,6 +66,19 @@ def BasePage(request: Request, title: str, user: User = None) -> document:
     with doc.head:
         meta(charset="UTF-8")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
+
+        vue = script(type="importmap")
+        vue.add_raw_string(
+            dedent(
+                """
+            {
+                "imports": {
+                    "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js"
+                }
+            }
+            """
+            )
+        )
 
         # Tailwindcss
         script(src="https://cdn.tailwindcss.com")

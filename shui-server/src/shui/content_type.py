@@ -1,13 +1,15 @@
 import json
 from textwrap import dedent
+from typing import Any
 
 from fastapi import Depends
 from jinja2 import Template
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 from pyld import jsonld
-from rdflib import Graph
+from rdflib import RDF, Graph, URIRef
 
 from shui.clients.sparql_client import SparqlClient, get_sparql_client
+from shui.namespaces import CRUD
 
 GRAPH_NAME = "urn:system:graph:crud"
 
@@ -29,7 +31,9 @@ frame = {
 
 
 class ContentType(BaseModel):
-    model_config = ConfigDict(populate_by_name=True, extra="allow")
+    model_config = ConfigDict(
+        populate_by_name=True, extra="allow", arbitrary_types_allowed=True
+    )
 
     label: str = Field(..., alias="sdo:name")
     description: str = Field("", alias="sdo:description")
@@ -39,6 +43,33 @@ class ContentType(BaseModel):
     target_class: str = Field(..., alias="crud:targetClass")
     graph: str = Field(..., alias="crud:graph")
     node_shape: str = Field(..., alias="crud:nodeShape")
+
+    def __init__(self, **data: Any) -> None:
+        super().__init__(**data)
+        self._graph = Graph().parse(
+            data=self.model_dump_json(by_alias=True, round_trip=True),
+            format="json-ld",
+        )
+
+    @computed_field
+    def rdflib_graph(self) -> Graph:
+        """The model as an RDFLib graph."""
+        return self._graph
+
+    @computed_field
+    def iri(self) -> URIRef:
+        """The resource's IRI."""
+        content_type_iri = self.rdflib_graph.value(
+            predicate=RDF.type, object=CRUD.ContentType
+        )
+        return content_type_iri
+
+    def value(self, predicate: URIRef) -> str:
+        """A shortcut to the RDFLib Graph's value method."""
+        result = self.rdflib_graph.value(self.iri, predicate=predicate)
+        if result is None:
+            raise Exception(f"No value found for predicate {predicate}")
+        return str(result)
 
 
 class ContentTypeService:
