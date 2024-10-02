@@ -74,5 +74,16 @@ services:
       - OLIS_DELTA_KAFKA_SINK__KAFKA_TOPIC=rdf-patch-log
       - OLIS_DELTA_KAFKA_SINK__KAFKA_BOOTSTRAP_SERVER=kafka:9092
 
+  asb-rdf-delta-consumer:
+    profiles:
+      - stack
+    image: ghcr.io/kurrawong/gswa-rdf-delta-consumer:0.1.1
+    environment:
+      - DELTA_CONSUMER__CONN_STR=Endpoint=sb://gswaservicebus.servicebus.windows.net/;SharedAccessKeyName=testSAP;SharedAccessKey=yLGmjFj9bYA2DDeEEi2VOYMrUmza5urAW+ASbFXC428=
+      - DELTA_CONSUMER__SUBSCRIPTION=rdf-patch-consumer
+      - DELTA_CONSUMER__TOPIC=rdf-patch-log
+      - DELTA_CONSUMER__SESSION_ID=main
+      - DELTA_CONSUMER__RDF_DELTA_URL=http://rdf-delta-server:1066
+
 volumes:
   rdf-delta-data:

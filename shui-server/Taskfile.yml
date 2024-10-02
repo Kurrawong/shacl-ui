@@ -18,8 +18,10 @@ tasks:
   dev:up:
     cmds:
       - docker compose -f {{.COMPOSE_FILE}} --profile stack up -d
-      - uv run docker/file_producer.py main docker/data/catalogs.trig --format application/trig
-      - uv run docker/file_producer.py main docker/data/users.trig --format application/trig
+#      - uv run docker/file_producer.py main docker/data/catalogs.trig --format application/trig
+#      - uv run docker/file_producer.py main docker/data/users.trig --format application/trig
+      - uv run docker/asb_file_producer.py rdf-patch-log data/catalogs.trig main --format application/trig
+      - uv run docker/asb_file_producer.py rdf-patch-log data/users.trig main --format application/trig
 
   dev:down:
     cmd: docker compose -f {{.COMPOSE_FILE}} --profile stack down
