@@ -3,10 +3,9 @@ from textwrap import dedent
 from fastapi import Depends
 from jinja2 import Template
 
-from change_request import PatchLogHeader
+from shui.change_request import PatchLogHeader
 from shui.clients.sparql_client import SparqlClient, get_sparql_client
-from shui.command import Command, get_command
-from shui.settings import settings
+from shui.commands import Command, get_command
 
 
 class RecordService:
@@ -32,11 +31,12 @@ class RecordService:
         iri: str,
         patch_log: str,
     ):
-        await self._command.create_message(
-            settings.kafka_key,
-            settings.kafka_topic,
+        command = self._command
+        await command.send(
+            command.key,
+            command.topic,
             patch_log,
-            PatchLogHeader(about=iri).model_dump(by_alias=True),
+            PatchLogHeader(about=iri),
         )
 
 

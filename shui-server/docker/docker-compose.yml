@@ -9,6 +9,12 @@ services:
     volumes:
       - rdf-delta-data:/opt/rdf-delta/databases
     command: java -jar /opt/rdf-delta/rdf-delta-server.jar --base /opt/rdf-delta/databases --file
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:1066" ]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   fuseki:
     profiles:
@@ -20,7 +26,7 @@ services:
       - 9998:3030
     command: ["/bin/bash", "-c", "/opt/rdf-delta/fuseki-entrypoint.sh"]
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://rdf-delta-server:1066"]
+      test: ["CMD", "curl", "-I", "http://localhost:3030/ds"]
       interval: 5s
       timeout: 10s
       retries: 3
@@ -73,6 +79,9 @@ services:
       - OLIS_DELTA_KAFKA_SINK__RDF_DELTA_URL=http://rdf-delta-server:1066
       - OLIS_DELTA_KAFKA_SINK__KAFKA_TOPIC=rdf-patch-log
       - OLIS_DELTA_KAFKA_SINK__KAFKA_BOOTSTRAP_SERVER=kafka:9092
+    depends_on:
+      rdf-delta-server:
+        condition: service_healthy
 
   asb-rdf-delta-consumer:
     profiles:
@@ -84,6 +93,9 @@ services:
       - DELTA_CONSUMER__TOPIC=rdf-patch-log
       - DELTA_CONSUMER__SESSION_ID=main
       - DELTA_CONSUMER__RDF_DELTA_URL=http://rdf-delta-server:1066
+    depends_on:
+      rdf-delta-server:
+        condition: service_healthy
 
 volumes:
   rdf-delta-data:

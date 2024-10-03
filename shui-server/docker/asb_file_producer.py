@@ -3,10 +3,10 @@ import asyncio
 import datetime
 import pathlib
 
-from loguru import logger
-from azure.servicebus.aio import ServiceBusClient
 from azure.servicebus import ServiceBusMessage, TransportType
-from rdflib import Graph, SDO, URIRef
+from azure.servicebus.aio import ServiceBusClient
+from loguru import logger
+from rdflib import SDO, Graph, URIRef
 
 SUPPORTED_FORMATS = ["application/rdf-patch", "text/turtle", "application/trig"]
 path = pathlib.Path(__file__).parent.absolute()
@@ -24,7 +24,10 @@ class Client:
     async def send_message(self, session_id: str, message: str, metadata: dict):
         content_type = metadata[SDO.encodingFormat]
         _message = ServiceBusMessage(
-            message, content_type=content_type, application_properties=metadata, session_id=session_id
+            message,
+            content_type=content_type,
+            application_properties=metadata,
+            session_id=session_id,
         )
         logger.info("Getting topic sender")
         sender = self._client.get_topic_sender(self._topic)

@@ -2,14 +2,12 @@ import datetime
 import json
 import uuid
 
-from fastapi import Depends
 from pydantic import BaseModel, ConfigDict, Field
 from rdflib import SDO, XSD, BNode, Graph
 
-from shui.command import Command
-from shui.kafka import KafkaClient, get_kafka_client
-from shui.namespaces import CHANGE_REQUESTS_GRAPH, CR
-from shui.settings import settings
+# from shui.commands import Command
+# from shui.commands.kafka import KafkaCommand, get_kafka_command
+from shui.namespaces import CR
 
 
 class PatchLogHeader(BaseModel):
@@ -127,35 +125,35 @@ class ChangeRequest(BaseModel):
         return graph.serialize(format=content_type)
 
 
-class ChangeRequestCommand(Command):
-    async def create_change_request(
-        self,
-        change_request: ChangeRequest,
-        about: list[str],
-        encoding_format: str = "application/trig",
-    ) -> None:
-        """
-        Create a new change request object.
+# class ChangeRequestCommand(Command):
+#     async def create_change_request(
+#         self,
+#         change_request: ChangeRequest,
+#         about: list[str],
+#         encoding_format: str = "application/trig",
+#     ) -> None:
+#         """
+#         Create a new change request object.
+#
+#         :param change_request: Change request object.
+#         :param about: A list of IRIs of resources affected by this change request.
+#         :param encoding_format: Format of the message.
+#         """
+#
+#         await self.send(
+#             key=settings.kafka_key,
+#             topic=settings.kafka_topic,
+#             message=change_request.model_dump_trig(
+#                 named_graph=CHANGE_REQUESTS_GRAPH,
+#                 content_type=encoding_format,
+#             ),
+#             headers=PatchLogHeader(
+#                 about="|".join(about),
+#                 is_part_of=change_request.id,
+#                 encoding_format=encoding_format,
+#             ).model_dump(by_alias=True),
+#         )
 
-        :param change_request: Change request object.
-        :param about: A list of IRIs of resources affected by this change request.
-        :param encoding_format: Format of the message.
-        """
 
-        await self.create_message(
-            key=settings.kafka_key,
-            topic=settings.kafka_topic,
-            message=change_request.model_dump_trig(
-                named_graph=CHANGE_REQUESTS_GRAPH,
-                content_type=encoding_format,
-            ),
-            headers=PatchLogHeader(
-                about="|".join(about),
-                is_part_of=change_request.id,
-                encoding_format=encoding_format,
-            ).model_dump(by_alias=True),
-        )
-
-
-def get_change_request_command(kafka_client: KafkaClient = Depends(get_kafka_client)):
-    return ChangeRequestCommand(kafka_client)
+# def get_change_request_command(kafka_client: KafkaCommand = Depends(get_kafka_command)):
+#     return ChangeRequestCommand(kafka_client)
