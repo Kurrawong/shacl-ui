@@ -1,11 +1,11 @@
 import textwrap
 
 from dominate import document
-from dominate.tags import a, div, form, input_, li, p, ul
+from dominate.tags import a, div, form, h1, input_, li, p, ul
 from fastapi import Request
 
 from shui.auth.models import User
-from shui.html.shoelace import sl_button, sl_button_group
+from shui.html.shoelace import sl_button, sl_button_group, sl_link_button
 
 from ...collection import CollectionItem
 from ...content_type import ContentType
@@ -34,7 +34,9 @@ async def CollectionsListPage(
         main = doc.getElementById("main")
         with main:
             with div(cls="space-y-8"):
-                p(title, cls=f"text-xl pb-4 text-[{PageColours.text_primary.value}]")
+                with div(cls="flex pb-4"):
+                    h1(title, cls=f"text-xl text-[{PageColours.text_primary.value}]")
+
                 p(content_type.description)
 
                 with form(
@@ -86,24 +88,24 @@ async def CollectionsListPage(
                             )
 
                 with sl_button_group(data_hx_boost="true"):
-                    with a(
+                    sl_link_button(
+                        "Previous page",
                         href=request.url_for(
                             "collection_route", collection_id=content_type.id
-                        ).include_query_params(page=current_page - 1, per_page=per_page)
-                    ):
-                        sl_button(
-                            "Previous page", disabled=False if has_previous else True
-                        )
+                        ).include_query_params(
+                            page=current_page - 1, per_page=per_page
+                        ),
+                        disabled=False if has_previous else True,
+                    )
                     sl_button(f"{current_page} of {total_pages}", disabled=True)
-                    with a(
+                    sl_link_button(
+                        "Next page",
                         href=request.url_for(
                             "collection_route", collection_id=content_type.id
-                        ).include_query_params(page=current_page + 1, per_page=per_page)
-                    ):
-                        sl_button(
-                            "Next page",
-                            disabled=False if has_next else True,
-                            tabindex=0,
-                        )
+                        ).include_query_params(
+                            page=current_page + 1, per_page=per_page
+                        ),
+                        disabled=False if has_next else True,
+                    )
 
     return doc
