@@ -1,8 +1,11 @@
 import traceback
+from textwrap import dedent
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from loguru import logger
+from rdflib import RDF, Namespace
 
 from shui.auth.core import current_active_user
 from shui.auth.models import User
@@ -53,6 +56,7 @@ async def collection_route(
         page = await CollectionsListPage(
             request,
             q,
+            collection_id,
             content_type,
             items,
             count,
@@ -83,7 +87,14 @@ async def record_route(
     graph_name = content_type.value(CRUD.graph)
     record_data = await record_service.get_one_by_iri(iri, graph_name)
     node_shape = content_type.value(CRUD.nodeShape)
-    page = await RecordPage(request, user, iri, graph_name, node_shape, record_data)
+    submission_url = str(
+        request.url_for(
+            "record_submit_route", collection_id=collection_id
+        ).include_query_params(iri=iri)
+    )
+    page = await RecordPage(
+        request, user, iri, graph_name, node_shape, record_data, submission_url
+    )
     return HTMLResponse(page.render())
 
 
@@ -101,7 +112,81 @@ async def record_submit_route(
         await record_service.create_change_request(iri, patch_log)
         flash(request, "Changes saved.")
         return JSONResponse(
-            {"redirect": str(request.url)}, status_code=status.HTTP_200_OK
+            {
+                "redirect": str(
+                    request.url_for(
+                        "record_route", collection_id=collection_id
+                    ).include_query_params(iri=iri)
+                )
+            },
+            status_code=status.HTTP_200_OK,
+        )
+    except Exception as err:
+        return JSONResponse(
+            {"detail": f"Failed to save changes. {err}"},
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+@router.get("/collections/{collection_id}/new")
+async def record_new_route(
+    request: Request,
+    collection_id: str,
+    user: User = Depends(current_active_user),
+    content_type_service: ContentTypeService = Depends(get_content_type_service),
+    record_service: RecordService = Depends(get_record_service),
+):
+    content_type = await content_type_service.get_one_by_id(collection_id)
+    graph_name = content_type.value(CRUD.graph)
+    namespace = Namespace(content_type.value(CRUD.namespace))
+    iri = namespace[str(uuid4())]
+    target_class = content_type.value(CRUD.targetClass)
+    record_data = f"<{iri}> a <{target_class}> {graph_name} ."
+    node_shape = content_type.value(CRUD.nodeShape)
+    submission_url = str(
+        request.url_for(
+            "record_new_submit_route", collection_id=collection_id
+        ).include_query_params(iri=iri)
+    )
+    page = await RecordPage(
+        request, user, iri, graph_name, node_shape, record_data, submission_url
+    )
+    return HTMLResponse(page.render())
+
+
+@router.post("/collections/{collection_id}/new")
+async def record_new_submit_route(
+    request: Request,
+    collection_id: str,
+    iri: str,
+    user: User = Depends(current_active_user),
+    content_type_service: ContentTypeService = Depends(get_content_type_service),
+    record_service: RecordService = Depends(get_record_service),
+):
+    try:
+        body = await request.body()
+        patch_log = body.decode("utf-8")
+        content_type = await content_type_service.get_one_by_id(collection_id)
+        graph_name = content_type.value(CRUD.graph)
+        target_class = content_type.value(CRUD.targetClass)
+        patch_log_containing_class_statement = dedent(f"""\
+            TX .
+            A <{iri}> <{RDF.type}> <{target_class}> <{graph_name}> .
+            TC .
+        """)
+        await record_service.create_change_request(
+            iri, patch_log_containing_class_statement + patch_log
+        )
+        flash(request, "Changes saved.")
+        return JSONResponse(
+            {
+                "redirect": str(
+                    request.url_for(
+                        "record_route", collection_id=collection_id
+                    ).include_query_params(iri=iri)
+                )
+            },
+            status_code=status.HTTP_200_OK,
         )
     except Exception as err:
         return JSONResponse(

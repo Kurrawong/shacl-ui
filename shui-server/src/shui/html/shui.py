@@ -6,7 +6,12 @@ from jinja2 import Template
 
 
 def shui_form(
-    request: Request, iri: str, graph_name: str, node_shape: str, data: str
+    request: Request,
+    iri: str,
+    graph_name: str,
+    node_shape: str,
+    data: str,
+    submission_url: str,
 ) -> html_tag:
     with div(id="shui-form") as component:
         form = ShuiForm()
@@ -14,7 +19,7 @@ def shui_form(
         form["graph-name"] = graph_name
         form["node-shape"] = node_shape
         form["data"] = data
-        form["submission-url"] = request.url
+        form["submission-url"] = submission_url
         # TODO: add csrf token
 
         import_url = request.url_for("static", path="shui.js")

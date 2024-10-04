@@ -15,6 +15,7 @@ class CRUD(DefinedNamespace):
     graph: URIRef
     targetClass: URIRef
     nodeShape: URIRef
+    namespace: URIRef
 
 
 class CR(DefinedNamespace):

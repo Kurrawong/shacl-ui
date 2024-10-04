@@ -19,6 +19,7 @@ TEXTWRAP_SHORTEN_PLACEHOLDER = "..."
 async def CollectionsListPage(
     request: Request,
     q: str,
+    collection_id: str,
     content_type: ContentType,
     collection_items: list[CollectionItem],
     count: int,
@@ -36,6 +37,14 @@ async def CollectionsListPage(
             with div(cls="space-y-8"):
                 with div(cls="flex pb-4"):
                     h1(title, cls=f"text-xl text-[{PageColours.text_primary.value}]")
+                    with div(cls="grow flex flex-row-reverse"):
+                        sl_link_button(
+                            "Create",
+                            href=request.url_for(
+                                "record_new_route", collection_id=collection_id
+                            ),
+                            data_hx_boost="true",
+                        )
 
                 p(content_type.description)
 
