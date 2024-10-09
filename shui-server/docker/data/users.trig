@@ -32,6 +32,7 @@ PREFIX sdo: <https://schema.org/>
         crud:targetClass sdo:DataCatalog ;
         crud:graph <urn:graph:catalogs> ;
         crud:nodeShape gswa-shapes:DataCatalog ;
+        crud:namespace "https://example.com/catalogs/" ;
     .
 
     <urn:crud:a552310a-4562-4cf1-8f5b-b082cb487a58> a crud:ContentType ;
@@ -43,5 +44,6 @@ PREFIX sdo: <https://schema.org/>
         crud:targetClass sdo:Dataset ;
         crud:graph <urn:graph:catalogs> ;
         crud:nodeShape gswa-shapes:Dataset ;
+        crud:namespace "https://example.com/datasets/" ;
     .
 }
