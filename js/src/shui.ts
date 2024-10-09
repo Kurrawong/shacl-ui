@@ -17,11 +17,7 @@ import rdfDataset from '@rdfjs/dataset'
 import { Validator } from 'shacl-engine'
 import fs from 'fs'
 import { QueryEngine } from '@comunica/query-sparql'
-import type {
-  STerm,
-  UISchema,
-  Validator as IValidator
-} from '@/types'
+import type { STerm, UISchema, Validator as IValidator } from '@/types'
 import type {
   DatasetCore,
   NamedNode as RDFSNamedNode,

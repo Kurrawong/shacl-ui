@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
-import Button from "primevue/button";
-import Toast from 'primevue/toast';
-import { useToast } from 'primevue/usetoast';
+import { onMounted, ref } from 'vue'
+import Button from 'primevue/button'
+import Toast from 'primevue/toast'
+import { useToast } from 'primevue/usetoast'
 import FocusNode from '@/components/FocusNode.vue'
-import {useShui} from "@/composables/shui";
-import {DataFactory, Parser, type Quad, Store, Writer} from "n3";
-import quad = DataFactory.quad;
-import namedNode = DataFactory.namedNode;
+import { useShui } from '@/composables/shui'
+import { DataFactory, Parser, type Quad, Store, Writer } from 'n3'
+import quad = DataFactory.quad
+import namedNode = DataFactory.namedNode
 
 interface Props {
   focusNode: string
@@ -19,7 +19,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-const toast = useToast();
+const toast = useToast()
 const { shui, addQuads, reset } = useShui()
 const focusNodeTerm = namedNode(props.focusNode)
 const graphNameTerm = namedNode(props.graphName)
@@ -32,8 +32,8 @@ onMounted(() => {
   reset()
   const parser = new Parser()
   const quads = parser
-      .parse(props.data)
-      .map((q) => quad(q.subject, q.predicate, q.object, graphNameTerm))
+    .parse(props.data)
+    .map((q) => quad(q.subject, q.predicate, q.object, graphNameTerm))
   addQuads(quads)
 
   // Add a copy of the quads into the local store.
@@ -50,32 +50,32 @@ const onSaveClick = async () => {
   console.log(`Added:\n${JSON.stringify(added_quads, null, 2)}`)
 
   if (deleted_quads.length || added_quads.length) {
-    let patchStatements = "TX .\n"
+    let patchStatements = 'TX .\n'
     for (const q of deleted_quads) {
       patchStatements += `D ${writer.quadToString(q.subject, q.predicate, q.object, q.graph)}`
     }
     for (const q of added_quads) {
       patchStatements += `A ${writer.quadToString(q.subject, q.predicate, q.object, q.graph)}`
     }
-    patchStatements += "TC ."
+    patchStatements += 'TC .'
     isSaving.value = true
 
     const response = await fetch(props.submissionUrl, {
       method: 'POST',
       headers: {
-        "Content-Type": "application/rdf-patch-body",
+        'Content-Type': 'application/rdf-patch-body'
         // TODO: integrate csrf
         // "X-CSRFToken": props.csrf,
       },
-      body: patchStatements,
+      body: patchStatements
     })
     if (response.ok) {
       const json = await response.json()
-      toast.add({severity: 'success', summary: 'Message', detail: 'Saved.', life: 3000})
-      window.location.href = json?.["redirect"]
+      toast.add({ severity: 'success', summary: 'Message', detail: 'Saved.', life: 3000 })
+      window.location.href = json?.['redirect']
     } else {
       const data = await response.json()
-      toast.add({severity: 'error', summary: 'Message', detail: data?.detail, life: 5000})
+      toast.add({ severity: 'error', summary: 'Message', detail: data?.detail, life: 5000 })
     }
 
     isSaving.value = false
@@ -83,7 +83,7 @@ const onSaveClick = async () => {
     return
   }
 
-  toast.add({severity: 'warn', summary: 'Message', detail: 'No changes to save.', life: 3000})
+  toast.add({ severity: 'warn', summary: 'Message', detail: 'No changes to save.', life: 3000 })
 }
 </script>
 
