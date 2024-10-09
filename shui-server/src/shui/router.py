@@ -26,7 +26,6 @@ router = APIRouter()
 async def home_route(
     request: Request,
     user: User = Depends(current_active_user),
-    content_type_service: ContentTypeService = Depends(get_content_type_service),
 ):
     page = await IndexPage(request, user)
     return HTMLResponse(page.render())
@@ -109,7 +108,7 @@ async def record_submit_route(
     try:
         body = await request.body()
         patch_log = body.decode("utf-8")
-        await record_service.create_change_request(iri, patch_log)
+        await record_service.create_change_event(user.id, iri, patch_log)
         flash(request, "Changes saved.")
         return JSONResponse(
             {
@@ -134,7 +133,6 @@ async def record_new_route(
     collection_id: str,
     user: User = Depends(current_active_user),
     content_type_service: ContentTypeService = Depends(get_content_type_service),
-    record_service: RecordService = Depends(get_record_service),
 ):
     content_type = await content_type_service.get_one_by_id(collection_id)
     graph_name = content_type.value(CRUD.graph)
@@ -174,8 +172,8 @@ async def record_new_submit_route(
             A <{iri}> <{RDF.type}> <{target_class}> <{graph_name}> .
             TC .
         """)
-        await record_service.create_change_request(
-            iri, patch_log_containing_class_statement + patch_log
+        await record_service.create_change_event(
+            user.id, iri, patch_log_containing_class_statement + patch_log
         )
         flash(request, "Changes saved.")
         return JSONResponse(

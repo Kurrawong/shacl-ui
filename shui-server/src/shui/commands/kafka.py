@@ -3,8 +3,7 @@ import socket
 from confluent_kafka import Producer
 from loguru import logger
 
-from shui.change_request import PatchLogHeader
-from shui.commands.base import Command
+from shui.commands.base import Command, EventHeader
 from shui.settings import settings
 
 
@@ -27,7 +26,7 @@ class KafkaCommand(Command):
         self._producer = Producer(kafka_producer_config)
 
     async def send(
-        self, key: str, topic: str, message: str, headers: PatchLogHeader, **kwargs
+        self, key: str, topic: str, message: str, headers: EventHeader, **kwargs
     ):
         try:
             self._producer.produce(

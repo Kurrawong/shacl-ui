@@ -1,8 +1,7 @@
 from azure.servicebus import ServiceBusMessage, TransportType
 from azure.servicebus.aio import ServiceBusClient
 
-from shui.change_request import PatchLogHeader
-from shui.commands.base import Command
+from shui.commands.base import Command, EventHeader
 
 
 class ServiceBusCommand(Command):
@@ -14,7 +13,7 @@ class ServiceBusCommand(Command):
         )
 
     async def send(
-        self, key: str, topic: str, message: str, headers: PatchLogHeader, **kwargs
+        self, key: str, topic: str, message: str, headers: EventHeader, **kwargs
     ):
         content_type = headers.encoding_format
         sb_message = ServiceBusMessage(

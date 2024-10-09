@@ -1,7 +1,7 @@
 from rdflib import URIRef
 from rdflib.namespace import DefinedNamespace, Namespace
 
-CHANGE_REQUESTS_GRAPH = "urn:system:graph:cr"
+CHANGE_EVENTS_GRAPH = "urn:system:graph:change-events"
 
 
 class CRUD(DefinedNamespace):
@@ -18,12 +18,11 @@ class CRUD(DefinedNamespace):
     namespace: URIRef
 
 
-class CR(DefinedNamespace):
-    _NS = Namespace("https://w3id.org/cr/")
-    # Set to false because we need to use the datatype rdf-patch-body.
-    _fail = False
+class EVENT(DefinedNamespace):
+    _NS = Namespace("https://w3id.org/event/")
+    _fail = True
 
-    ChangeRequest: URIRef
+    ChangeEvent: URIRef
 
     accepted: URIRef
     failed: URIRef
