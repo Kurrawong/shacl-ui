@@ -18,6 +18,7 @@ from shui.html.pages.index import IndexPage
 from shui.html.pages.record import RecordPage, li_change_events
 from shui.namespaces import CRUD, EVENT
 from shui.record import RecordService, get_record_service
+from shui.shacl import ShaclService, get_shacl_service
 
 router = APIRouter()
 
@@ -81,11 +82,14 @@ async def record_route(
     user: User = Depends(current_active_user),
     content_type_service: ContentTypeService = Depends(get_content_type_service),
     record_service: RecordService = Depends(get_record_service),
+    shacl_service: ShaclService = Depends(get_shacl_service),
 ):
     content_type = await content_type_service.get_one_by_id(collection_id)
     graph_name = content_type.value(CRUD.graph)
     record_data = await record_service.get_one_by_iri(iri, graph_name)
-    node_shape = content_type.value(CRUD.nodeShape)
+    node_shape_iri = content_type.value(CRUD.nodeShape)
+    node_shape_graph = await shacl_service.get_nodeshape_graph_closure(node_shape_iri)
+    node_shape_data = node_shape_graph.serialize(format="ntriples")
     submission_url = str(
         request.url_for(
             "record_submit_route", collection_id=collection_id
@@ -100,7 +104,8 @@ async def record_route(
         collection_id,
         iri,
         graph_name,
-        node_shape,
+        node_shape_iri,
+        node_shape_data,
         record_data,
         submission_url,
         change_events,

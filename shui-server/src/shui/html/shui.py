@@ -9,7 +9,8 @@ def shui_form(
     request: Request,
     iri: str,
     graph_name: str,
-    node_shape: str,
+    node_shape_iri: str,
+    node_shape_data: str,
     data: str,
     submission_url: str,
 ) -> html_tag:
@@ -17,7 +18,8 @@ def shui_form(
         form = ShuiForm()
         form["focus-node"] = iri
         form["graph-name"] = graph_name
-        form["node-shape"] = node_shape
+        form["node-shape"] = node_shape_iri
+        form["node-shape-data"] = node_shape_data
         form["data"] = data
         form["submission-url"] = submission_url
         # TODO: add csrf token

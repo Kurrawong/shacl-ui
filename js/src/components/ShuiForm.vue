@@ -13,6 +13,7 @@ interface Props {
   focusNode: string
   graphName: string
   nodeShape: string
+  nodeShapeData: string
   data: string
   // csrf: string
   submissionUrl: string
@@ -22,7 +23,9 @@ const props = defineProps<Props>()
 const toast = useToast()
 const { shui, addQuads, reset } = useShui()
 const focusNodeTerm = namedNode(props.focusNode)
+const nodeShapeTerm = namedNode(props.nodeShape)
 const graphNameTerm = namedNode(props.graphName)
+const shapeGraphNameTerm = namedNode("urn:system:graph:shacl")
 
 const writer = new Writer()
 const store = new Store()
@@ -31,15 +34,22 @@ const isSaving = ref(false)
 onMounted(() => {
   reset()
   const parser = new Parser()
+
   const quads = parser
     .parse(props.data)
     .map((q) => quad(q.subject, q.predicate, q.object, graphNameTerm))
   addQuads(quads)
 
+  const shapesQuads = parser
+    .parse(props.nodeShapeData)
+    .map((q) => quad(q.subject, q.predicate, q.object, shapeGraphNameTerm))
+  addQuads(shapesQuads)
+
   // Add a copy of the quads into the local store.
   // This store is used later when the user performs the "save" action
   // to get a diff on what changes were made to the shui store.
   store.addQuads(quads)
+  store.addQuads(shapesQuads)
 })
 
 const onSaveClick = async () => {
@@ -90,7 +100,7 @@ const onSaveClick = async () => {
 <template>
   <Toast />
   <div class="space-y-4">
-    <FocusNode :focus-node="focusNodeTerm" :data-graph="graphNameTerm" :node-shape="null" />
+    <FocusNode :focus-node="focusNodeTerm" :data-graph="graphNameTerm" :node-shape="nodeShapeTerm" />
     <Button @click="onSaveClick" :loading="isSaving" label="Save" icon="pi pi-save" />
   </div>
 </template>

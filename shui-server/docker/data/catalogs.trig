@@ -26,6 +26,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         sh:targetClass sdo:DataCatalog ;
         sh:property gswa-shapes:DataCatalog-name ;
         sh:property gswa-shapes:DataCatalog-identifier ;
+        sh:property gswa-shapes:DataCatalog-description ;
     .
 
     gswa-shapes:DataCatalog-name a sh:PropertyShape ;
@@ -43,6 +44,14 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         sh:path sdo:identifier ;
         sh:datatype xsd:token ;
         sh:order 1 ;
+    .
+
+    gswa-shapes:DataCatalog-description a sh:PropertyShape ;
+        sh:name "Description" ;
+        sh:path sdo:description ;
+        sh:datatype rdf:langString ;
+        dash:singleLine false ;
+        sh:order 2 ;
     .
 
     #

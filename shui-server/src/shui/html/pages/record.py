@@ -146,7 +146,8 @@ async def RecordPage(
     collection_id: str,
     iri: str,
     graph_name: str,
-    node_shape: str,
+    node_shape_iri: str,
+    node_shape_data: str,
     data: str,
     submission_url: str,
     change_events: list[ChangeEventTimelineItem],
@@ -158,7 +159,13 @@ async def RecordPage(
             with div(cls="flex flex-row h-[calc(100vh-10rem)]"):
                 with div(cls="w-full overflow-y-auto space-y-8 pr-3"):
                     shui_form(
-                        request, iri, graph_name, node_shape, data, submission_url
+                        request,
+                        iri,
+                        graph_name,
+                        node_shape_iri,
+                        node_shape_data,
+                        data,
+                        submission_url,
                     )
 
                 with div(cls="w-[20rem] overflow-y-auto"):
