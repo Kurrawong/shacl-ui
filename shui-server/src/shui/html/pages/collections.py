@@ -2,6 +2,7 @@ import textwrap
 
 from dominate import document
 from dominate.tags import a, div, form, h1, input_, li, p, ul
+from dominate.util import raw
 from fastapi import Request
 
 from shui.auth.models import User
@@ -88,10 +89,12 @@ async def CollectionsListPage(
                                 ).include_query_params(iri=item.iri),
                             )
                             div(
-                                textwrap.shorten(
-                                    item.description,
-                                    width=TEXTWRAP_SHORTEN_WIDTH,
-                                    placeholder=TEXTWRAP_SHORTEN_PLACEHOLDER,
+                                raw(
+                                    textwrap.shorten(
+                                        item.description.replace("\n", "<br>"),
+                                        width=TEXTWRAP_SHORTEN_WIDTH,
+                                        placeholder=TEXTWRAP_SHORTEN_PLACEHOLDER,
+                                    )
                                 ),
                                 cls="text-sm",
                             )
