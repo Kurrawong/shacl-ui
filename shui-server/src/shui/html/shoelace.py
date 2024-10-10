@@ -3,12 +3,32 @@ from dominate.tags import html_tag
 
 class sl_alert(html_tag):
     """
-    Shoelace Alert
+    Shoelace Alert.
     """
 
     def __init__(self, content: str = None, *args, **kwargs):
         self.tagname = "sl-alert"
         super().__init__(*args, content=content, **kwargs)
+
+
+class sl_avatar(html_tag):
+    """
+    Shoelace Avatar.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.tagname = "sl-avatar"
+        super().__init__(*args, **kwargs)
+
+
+class sl_badge(html_tag):
+    """
+    Shoelace Badge.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.tagname = "sl-badge"
+        super().__init__(*args, **kwargs)
 
 
 class sl_button(html_tag):
@@ -22,6 +42,16 @@ class sl_button(html_tag):
             super().__init__(*args, disabled="", **kwargs)
         else:
             super().__init__(*args, **kwargs)
+
+
+class sl_dialog(html_tag):
+    """
+    Shoelace Dialog.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.tagname = "sl-dialog"
+        super().__init__(*args, **kwargs)
 
 
 class sl_link_button(html_tag):
@@ -130,6 +160,16 @@ class sl_menu_item(html_tag):
         super().__init__(*args, content=content, **kwargs)
 
 
+class sl_relative_time(html_tag):
+    """
+    Shoelace Relative Time.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.tagname = "sl-relative-time"
+        super().__init__(*args, **kwargs)
+
+
 class sl_spinner(html_tag):
     """
     Shoelace Spinner.
@@ -138,6 +178,36 @@ class sl_spinner(html_tag):
     def __init__(self, content: str = None, *args, **kwargs):
         self.tagname = "sl-spinner"
         super().__init__(*args, content=content, **kwargs)
+
+
+class sl_tab_group(html_tag):
+    """
+    Shoelace Tab Group.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.tagname = "sl-tab-group"
+        super().__init__(*args, **kwargs)
+
+
+class sl_tab(html_tag):
+    """
+    Shoelace Tab.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.tagname = "sl-tab"
+        super().__init__(*args, **kwargs)
+
+
+class sl_tab_panel(html_tag):
+    """
+    Shoelace Tab Panel.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.tagname = "sl-tab-panel"
+        super().__init__(*args, **kwargs)
 
 
 class sl_tooltip(html_tag):

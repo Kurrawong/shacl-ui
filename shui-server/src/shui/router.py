@@ -15,8 +15,8 @@ from shui.html.flash import flash
 from shui.html.pages.collections import CollectionsListPage
 from shui.html.pages.error import ErrorPage
 from shui.html.pages.index import IndexPage
-from shui.html.pages.record import RecordPage
-from shui.namespaces import CRUD
+from shui.html.pages.record import RecordPage, li_change_events
+from shui.namespaces import CRUD, EVENT
 from shui.record import RecordService, get_record_service
 
 router = APIRouter()
@@ -91,8 +91,19 @@ async def record_route(
             "record_submit_route", collection_id=collection_id
         ).include_query_params(iri=iri)
     )
+    change_events = await record_service.get_change_events(
+        iri, 1, 10, [str(EVENT.accepted)]
+    )
     page = await RecordPage(
-        request, user, iri, graph_name, node_shape, record_data, submission_url
+        request,
+        user,
+        collection_id,
+        iri,
+        graph_name,
+        node_shape,
+        record_data,
+        submission_url,
+        change_events,
     )
     return HTMLResponse(page.render())
 
@@ -147,7 +158,15 @@ async def record_new_route(
         ).include_query_params(iri=iri)
     )
     page = await RecordPage(
-        request, user, iri, graph_name, node_shape, record_data, submission_url
+        request,
+        user,
+        collection_id,
+        iri,
+        graph_name,
+        node_shape,
+        record_data,
+        submission_url,
+        [],
     )
     return HTMLResponse(page.render())
 
@@ -191,3 +210,24 @@ async def record_new_submit_route(
             {"detail": f"Failed to save changes. {err}"},
             status_code=status.HTTP_400_BAD_REQUEST,
         )
+
+
+@router.get("/collections/{collection_id}/items/change-events")
+async def record_change_events_route(
+    request: Request,
+    collection_id: str,
+    iri: str,
+    page: int = 1,
+    per_page: int = 10,
+    action_status: list[str] = (str(EVENT.accepted),),
+    record_service: RecordService = Depends(get_record_service),
+):
+    change_events = await record_service.get_change_events(
+        iri,
+        page,
+        per_page,
+        action_status,
+    )
+    print(len(change_events))
+    component = li_change_events(request, collection_id, iri, change_events, page + 1)
+    return HTMLResponse(component.render())
