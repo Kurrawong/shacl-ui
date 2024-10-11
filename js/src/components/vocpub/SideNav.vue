@@ -37,7 +37,11 @@ const items = computed(() => {
       command: () => {
         router.push({ name: 'resource', query: { iri: c.value } })
       }
-    }))
+    })).sort((a, b) => {
+      if (a.label < b.label) return -1
+      if (a.label > b.label) return 1
+      return 0
+    })
   })()
 
   if (conceptScheme) {
