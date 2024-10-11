@@ -7,13 +7,13 @@
         <slot name="side-nav" />
       </div>
 
-      <div class="flex-1 bg-gray-100 p-8 overflow-y-auto">
+      <div class="flex-1 p-8 overflow-y-auto">
         <slot />
       </div>
     </div>
 
     <footer
-      class="h-7 flex flex-row-reverse items-center border-t border-gray-200 bg-gray-200 px-3"
+      class="h-7 flex flex-row-reverse items-center border-t border-gray-200 bg-gray-100 px-3"
     >
       <div>Version: <code>dev</code></div>
     </footer>

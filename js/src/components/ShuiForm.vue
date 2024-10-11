@@ -25,7 +25,7 @@ const { shui, addQuads, reset } = useShui()
 const focusNodeTerm = namedNode(props.focusNode)
 const nodeShapeTerm = namedNode(props.nodeShape)
 const graphNameTerm = namedNode(props.graphName)
-const shapeGraphNameTerm = namedNode("urn:system:graph:shacl")
+const shapeGraphNameTerm = namedNode('urn:system:graph:shacl')
 
 const writer = new Writer()
 const store = new Store()
@@ -100,7 +100,11 @@ const onSaveClick = async () => {
 <template>
   <Toast />
   <div class="space-y-4">
-    <FocusNode :focus-node="focusNodeTerm" :data-graph="graphNameTerm" :node-shape="nodeShapeTerm" />
+    <FocusNode
+      :focus-node="focusNodeTerm"
+      :data-graph="graphNameTerm"
+      :node-shape="nodeShapeTerm"
+    />
     <Button @click="onSaveClick" :loading="isSaving" label="Save" icon="pi pi-save" />
   </div>
 </template>
