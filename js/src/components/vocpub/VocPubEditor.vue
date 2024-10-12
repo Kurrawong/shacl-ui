@@ -30,32 +30,47 @@ watch(
 )
 
 const menubarItems = computed(() => {
+  let projectItems: MenuItem[] = [{
+    label: 'New',
+    icon: 'pi pi-folder-plus',
+    command: (e: MenuItemCommandEvent) => send({ type: 'editor.menu.new.click' })
+  }]
+
+  if (snapshot.value.matches('opened')) {
+    projectItems = projectItems.concat([
+      {
+        label: 'Save',
+        icon: 'pi pi-save',
+        command: (e: MenuItemCommandEvent) => send({ type: 'editor.menu.save.click' })
+      },
+      {
+        label: 'Save as',
+        icon: 'pi pi-save',
+        command: (e: MenuItemCommandEvent) => send({ type: 'editor.menu.save-as.click' })
+      },
+      {
+        label: 'Close',
+        icon: 'pi pi-folder',
+        command: (e: MenuItemCommandEvent) => send({ type: 'editor.menu.close.click' })
+      }
+    ])
+  }
+  else {
+    projectItems = projectItems.concat([{
+      label: 'Open',
+      icon: 'pi pi-folder-open',
+      command: (e: MenuItemCommandEvent) => send({ type: 'editor.menu.open.click' })
+    }])
+  }
+
   const items: MenuItem[] = [
     {
-      label: 'File',
+      label: 'Project',
       icon: 'pi pi-file',
-      items: [
-        snapshot.value.matches('opened')
-          ? {
-              label: 'Close',
-              icon: 'pi pi-folder-close',
-              command: (e: MenuItemCommandEvent) => send({ type: 'editor.close' })
-            }
-          : {
-              label: 'Open',
-              icon: 'pi pi-folder-open',
-              command: (e: MenuItemCommandEvent) => send({ type: 'editor.menu.open.click' })
-            }
-      ]
+      items: projectItems
     }
   ]
-  if (snapshot.value.matches('opened')) {
-    items.push({
-      label: 'Save',
-      icon: 'pi pi-save',
-      command: (e: MenuItemCommandEvent) => send({ type: 'editor.menu.save.click' })
-    })
-  }
+
   return items
 })
 </script>

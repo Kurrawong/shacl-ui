@@ -12,11 +12,14 @@ export function getMachine(shui: Ref<Shui>, router: Router, toast: ToastServiceM
     types: {
       context: {} as Context,
       events: {} as
+        | { type: 'editor.menu.new.click' }
         | { type: 'editor.menu.open.cancel' }
         | { type: 'editor.menu.open.success' }
-        | { type: 'editor.close' }
+        | { type: 'editor.menu.close.click' }
         | { type: 'editor.menu.open.click' }
         | { type: 'editor.menu.save.click' }
+        | { type: 'editor.menu.save-as.click' }
+        | { type: 'editor.new.dialog.submit' }
     },
     actions: {
       assignFileData: assign({
@@ -36,7 +39,7 @@ export function getMachine(shui: Ref<Shui>, router: Router, toast: ToastServiceM
       },
       openedStateEntry: (params) => {
         router.push('/edit')
-      }
+      },
     },
     actors: {
       openFileDialog: (() => {
@@ -67,7 +70,18 @@ export function getMachine(shui: Ref<Shui>, router: Router, toast: ToastServiceM
           await writable.close()
           return { data: { content: newData, fileHandle } }
         })
-      })()
+      })(),
+      saveFileAs: (() => {
+        console.log('Saving file as')
+        return fromPromise(async ({ input }) => {
+          const { newData } = input
+          const fileHandle = await window.showSaveFilePicker()
+          const writeable = await fileHandle.createWritable()
+          await writeable.write(newData)
+          await writeable.close()
+          return { data: { content: newData, fileHandle } }
+        })
+      })(),
     }
   }).createMachine({
     context: {
@@ -81,6 +95,9 @@ export function getMachine(shui: Ref<Shui>, router: Router, toast: ToastServiceM
         on: {
           'editor.menu.open.click': {
             target: 'opening'
+          },
+          'editor.menu.new.click': {
+            target: 'openedAsNew'
           }
         },
         entry: [
@@ -111,9 +128,22 @@ export function getMachine(shui: Ref<Shui>, router: Router, toast: ToastServiceM
           }
         }
       },
-      opened: {
+      openingAsNew: {
         on: {
-          'editor.close': {
+          'editor.new.dialog.submit': {
+            target: 'openedAsNew'
+          }
+        }
+      },
+      opened: {
+        entry: {
+          type: 'openedStateEntry'
+        },
+        on: {
+          'editor.menu.new.click': {
+            target: 'openedAsNew'
+          },
+          'editor.menu.close.click': {
             target: 'empty'
           },
           'editor.menu.save.click': {
@@ -121,11 +151,34 @@ export function getMachine(shui: Ref<Shui>, router: Router, toast: ToastServiceM
             actions: (params) => {
               console.log('Save button clicked')
             }
+          },
+          'editor.menu.save-as.click': {
+            target: 'savingAs',
+            actions: (params) => {
+              console.log('Save as button clicked')
+            }
+          },
+        },
+      },
+      openedAsNew: {
+        entry: [
+          assign({
+            content: '',
+            fileHandle: null
+          }),
+          () => router.push('/edit')
+        ],
+        on: {
+          'editor.menu.close.click': {
+            target: 'empty'
+          },
+          'editor.menu.save-as.click': {
+            target: 'savingAs',
+            actions: (params) => {
+              console.log('Save as button clicked')
+            }
           }
         },
-        entry: {
-          type: 'openedStateEntry'
-        }
       },
       saving: {
         entry: () => {
@@ -135,9 +188,30 @@ export function getMachine(shui: Ref<Shui>, router: Router, toast: ToastServiceM
         invoke: {
           // input: ({context, event}) => ({ ...context }),
           input: ({ context }) => {
-            return { ...context, newData: shui.value.quadsToString(DATA_GRAPH) }
+            return { ...context, newData: shui.value.quadsToTriplesString(DATA_GRAPH) }
           },
           src: 'saveFile',
+          onDone: {
+            target: 'opened',
+            actions: 'savingSuccess'
+          },
+          onError: {
+            target: 'opened',
+            actions: 'savingFailed'
+          }
+        }
+      },
+      savingAs: {
+        entry: () => {
+          console.log('Entering savingAs state')
+        },
+        exit: 'assignFileData',
+        invoke: {
+          // input: ({context, event}) => ({ ...context }),
+          input: ({ context }) => {
+            return { ...context, newData: shui.value.quadsToTriplesString(DATA_GRAPH) }
+          },
+          src: 'saveFileAs',
           onDone: {
             target: 'opened',
             actions: 'savingSuccess'

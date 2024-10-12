@@ -41,7 +41,7 @@ const items = computed(() => {
   if (conceptSchemes) {
     _items = _items.concat([
       {
-        label: `Concept Scheme (${conceptSchemes.length})`,
+        label: `Concept Scheme`,
         items: conceptSchemes
       }
     ])
@@ -61,5 +61,9 @@ const items = computed(() => {
 </script>
 
 <template>
-  <Menu :model="items" />
+  <Menu :model="items" :pt="{
+    root: {
+      class: 'h-[calc(100vh-7.4rem)] border rounded'
+    }
+  }" />
 </template>
