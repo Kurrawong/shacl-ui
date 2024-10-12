@@ -16,6 +16,7 @@ const machine = getMachine(shui, router, toast)
 const { snapshot, send } = useMachine(machine)
 const data = computed(() => snapshot.value.context)
 const filename = ref<string | null>(null)
+
 watch(
   () => data.value.fileHandle, // Watch for changes in fileHandle
   async (newFileHandle) => {
@@ -60,7 +61,7 @@ const menubarItems = computed(() => {
 </script>
 
 <template>
-  <div class="space-y-1">
+  <div class="space-y-1 max-w-[120rem]">
     <Menubar :model="menubarItems">
       <template v-slot:end>
         <span v-if="filename" class="pr-4">

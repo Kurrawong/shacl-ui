@@ -24,5 +24,5 @@ watch(value, () => emitUpdate())
 
 <template>
   <InputText v-model="value" class="w-full" />
-  <small>IRI</small>
+  <small>Blank Node</small>
 </template>

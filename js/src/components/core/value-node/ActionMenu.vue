@@ -69,7 +69,7 @@ const handleDelete = () => {
     :aria-controls="menuId"
     @click="(event: Event) => menuRef.toggle(event)"
     severity="secondary"
-    v-tooltip.bottom="'Add new value by type'"
+    v-tooltip.bottom="'Options'"
   />
   <TieredMenu ref="menuRef" :id="menuId" :model="items" popup />
 </template>

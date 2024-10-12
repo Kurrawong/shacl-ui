@@ -10,8 +10,9 @@ interface Props {
   focusNode: SNamedNode | SBlankNode
   nodeShape?: SNamedNode | SBlankNode
   dataGraph: SNamedNode | SBlankNode
+  isRootNode?: boolean
 }
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {isRootNode: false})
 const focusNode = toRef(props, 'focusNode')
 const nodeShape = toRef(props, 'nodeShape')
 const dataGraph = toRef(props, 'dataGraph')
@@ -57,18 +58,19 @@ const propertyGroups = computed(() => {
 <template>
   <template v-if="uiSchema">
     <div
-      v-for="propertyGroup in propertyGroups"
-      class="hover:shadow-[0_0_35px_-15px_rgba(0,0,0,0.3)]"
+      v-for="(propertyGroup, index) in propertyGroups"
       :key="propertyGroup.term.id"
     >
       <Fieldset
         :legend="propertyGroup.name"
+        :toggleable="true"
+        :collapsed="index !== 0"
         :pt="{
           legend: {
             class: 'text-lg font-bold pt-4'
           },
           root: {
-            class: 'p-4 outline outline-1 outline-gray-100'
+            class: 'p-4 outline outline-1 outline-gray-300'
           }
         }"
       >
@@ -83,15 +85,17 @@ const propertyGroups = computed(() => {
       </Fieldset>
     </div>
 
-    <div class="hover:shadow-[0_5px_30px_-15px_rgba(0,0,0,0.3)]">
+    <div>
       <Fieldset
-        legend="Other Properties"
+        legend="Properties"
+        :toggleable="true"
+        :collapsed="propertyGroups.length"
         :pt="{
           legend: {
             class: 'text-lg font-bold pt-4'
           },
           root: {
-            class: 'p-4 outline outline-1 outline-gray-100'
+            class: 'p-4 outline outline-1 outline-gray-300'
           }
         }"
       >

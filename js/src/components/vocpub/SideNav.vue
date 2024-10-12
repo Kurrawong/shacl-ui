@@ -12,14 +12,14 @@ const { shui } = useShui()
 const items = computed(() => {
   let _items: any = []
   const store = shui.value.store
-  const conceptScheme = (() => {
-    const conceptSchemes = store.getSubjects(rdf.type, skos.ConceptScheme, null)
-    return conceptSchemes.map((c) => ({
+  const conceptSchemes = (() => {
+    const _conceptSchemes = store.getSubjects(rdf.type, skos.ConceptScheme, null)
+    return _conceptSchemes.map((c) => ({
       label: getConceptLabel(c, store),
       command: () => {
         router.push({ name: 'resource', query: { iri: c.value } })
       }
-    }))[0]
+    }))
   })()
 
   const concepts = (() => {
@@ -38,11 +38,11 @@ const items = computed(() => {
       })
   })()
 
-  if (conceptScheme) {
+  if (conceptSchemes) {
     _items = _items.concat([
       {
-        label: 'Concept Scheme',
-        items: [conceptScheme]
+        label: `Concept Scheme (${conceptSchemes.length})`,
+        items: conceptSchemes
       }
     ])
   }
@@ -50,7 +50,7 @@ const items = computed(() => {
   if (concepts) {
     _items = _items.concat([
       {
-        label: 'Concepts',
+        label: `Concepts (${concepts.length})`,
         items: concepts
       }
     ])
