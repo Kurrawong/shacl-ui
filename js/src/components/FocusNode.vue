@@ -89,7 +89,7 @@ const propertyGroups = computed(() => {
       <Fieldset
         legend="Properties"
         :toggleable="true"
-        :collapsed="propertyGroups.length"
+        :collapsed="propertyGroups.length > 0"
         :pt="{
           legend: {
             class: 'text-lg font-bold pt-4'
