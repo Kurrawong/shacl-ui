@@ -15,7 +15,6 @@ type Context = {
   content: string
   fileHandle: FileSystemFileHandle | null
   conceptSchemeIRI: string
-  baseConceptIRI: string
 }
 
 export function getMachine(
@@ -37,7 +36,7 @@ export function getMachine(
         | { type: 'editor.menu.open.click' }
         | { type: 'editor.menu.save.click' }
         | { type: 'editor.menu.save-as.click' }
-        | { type: 'editor.project.new.submit'; conceptSchemeIRI: string; baseConceptIRI: string }
+        | { type: 'editor.project.new.submit'; conceptSchemeIRI: string }
         | { type: 'editor.project.new.cancel' }
     },
     actions: {
@@ -56,7 +55,7 @@ export function getMachine(
       savingFailed: (params) => {
         toast.add({ severity: 'error', summary: 'Error', detail: 'Saving failed', life: 3000 })
       },
-      openedStateEntry: (params) => {
+      loadDataToStore: (params) => {
         reset()
         const parser = new Parser()
         const quads = parser
@@ -71,9 +70,34 @@ export function getMachine(
 
         router.push('/edit')
       },
+      validateFile: (params) => {
+        const conceptSchemes = shui.value.store.getQuads(
+          null,
+          rdf.type,
+          skos.ConceptScheme,
+          DATA_GRAPH
+        )
+
+        if (conceptSchemes.length === 0) {
+          toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No concept scheme found in the file',
+            life: 5000
+          })
+          params.self.send({ type: 'editor.menu.close.click' })
+        } else if (conceptSchemes.length > 1) {
+          toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Multiple concept schemes found in the file',
+            life: 5000
+          })
+          params.self.send({ type: 'editor.menu.close.click' })
+        }
+      },
       assignNewProjectDetails: assign({
         conceptSchemeIRI: (context) => context.event.conceptSchemeIRI,
-        baseConceptIRI: (context) => context.event.baseConceptIRI,
         content: () => '', // Reset content for new project
         fileHandle: () => null // Reset file handle for new project
       }),
@@ -87,6 +111,48 @@ export function getMachine(
       }
     },
     actors: {
+      loadDataToStore: (() => {
+        return fromPromise(async (params) => {
+          reset()
+          const parser = new Parser()
+          const quads = parser
+            .parse(params.context.content)
+            .map((q) => quad(q.subject, q.predicate, q.object, DATA_GRAPH))
+          addQuads(quads)
+
+          const shaclQuads = parser
+            .parse(vocpub)
+            .map((q) => quad(q.subject, q.predicate, q.object, SHACL_GRAPH))
+          addQuads(shaclQuads)
+
+          const conceptSchemes = shui.value.store.getQuads(
+            null,
+            rdf.type,
+            skos.ConceptScheme,
+            DATA_GRAPH
+          )
+
+          if (conceptSchemes.length === 0) {
+            toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No concept scheme found in the file',
+              life: 5000
+            })
+            throw new Error('No concept scheme found in the file')
+          } else if (conceptSchemes.length > 1) {
+            toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Multiple concept schemes found in the file',
+              life: 5000
+            })
+            throw new Error('Multiple concept schemes found in the file')
+          }
+
+          router.push('/edit')
+        })
+      })(),
       openFileDialog: (() => {
         const filePickerOptions: OpenFilePickerOptions = {
           types: [
@@ -98,7 +164,6 @@ export function getMachine(
             }
           ]
         }
-
         return fromPromise(async (params) => {
           const [fileHandle] = await window.showOpenFilePicker(filePickerOptions)
           const file = await fileHandle.getFile()
@@ -141,8 +206,7 @@ export function getMachine(
     context: {
       content: '',
       fileHandle: null,
-      conceptSchemeIRI: '',
-      baseConceptIRI: ''
+      conceptSchemeIRI: ''
     },
     id: 'editor',
     initial: 'empty',
@@ -200,9 +264,25 @@ export function getMachine(
         }
       },
       opened: {
-        entry: {
-          type: 'openedStateEntry'
-        },
+        entry: [
+          {
+            type: 'loadDataToStore'
+          },
+          {
+            type: 'validateFile'
+          },
+          assign({
+            conceptSchemeIRI: () => {
+              const conceptSchemes = shui.value.store.getQuads(
+                null,
+                rdf.type,
+                skos.ConceptScheme,
+                DATA_GRAPH
+              )
+              return conceptSchemes[0].subject.value
+            }
+          })
+        ],
         on: {
           'editor.menu.new.click': {
             target: 'openingAsNew'

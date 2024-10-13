@@ -7,27 +7,21 @@ import InputText from 'primevue/inputtext'
 const { send } = useVocPubMachine()
 
 const conceptSchemeIRI = ref('')
-const baseConceptIRI = ref('')
 
 const isValidIRI = (iri: string) => {
   const iriRegex = /^(http|https):\/\/[^ "]+$/
   return iriRegex.test(iri)
 }
 
-const isValidBaseConceptIRI = (iri: string) => {
-  return isValidIRI(iri) && (iri.endsWith('#') || iri.endsWith('/'))
-}
-
 const isFormValid = computed(() => {
-  return isValidIRI(conceptSchemeIRI.value) && isValidBaseConceptIRI(baseConceptIRI.value)
+  return isValidIRI(conceptSchemeIRI.value)
 })
 
 const handleSubmit = () => {
   if (isFormValid.value) {
     send({
       type: 'editor.project.new.submit',
-      conceptSchemeIRI: conceptSchemeIRI.value,
-      baseConceptIRI: baseConceptIRI.value
+      conceptSchemeIRI: conceptSchemeIRI.value
     })
   }
 }
@@ -51,18 +45,6 @@ const handleCancel = () => {
           v-if="conceptSchemeIRI && !isValidIRI(conceptSchemeIRI)"
         >
           Please enter a valid IRI (e.g., http://example.com/scheme)
-        </small>
-      </div>
-      <div class="flex flex-col">
-        <label for="baseConceptIRI" class="mb-2">Concept namespace</label>
-        <small class="text-sm text-gray-500 mb-2">The namespace for new concepts.</small>
-        <InputText id="baseConceptIRI" v-model="baseConceptIRI" type="text" class="w-full" />
-        <small
-          class="p-error text-red-500"
-          v-if="baseConceptIRI && !isValidBaseConceptIRI(baseConceptIRI)"
-        >
-          Please enter a valid IRI ending with '#' or '/' (e.g., http://example.com/concepts# or
-          http://example.com/concepts/)
         </small>
       </div>
       <div class="flex justify-end gap-2 mt-4">
