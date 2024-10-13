@@ -61,9 +61,12 @@ const items = computed(() => {
 </script>
 
 <template>
-  <Menu :model="items" :pt="{
-    root: {
-      class: 'h-[calc(100vh-7.4rem)] border rounded'
-    }
-  }" />
+  <Menu
+    :model="items"
+    :pt="{
+      root: {
+        class: 'h-[calc(100vh-7.4rem)] border rounded'
+      }
+    }"
+  />
 </template>

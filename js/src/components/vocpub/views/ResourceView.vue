@@ -30,9 +30,9 @@ const resourceType = computed(() => {
 })
 const nodeShapeTerm = computed(() => {
   if (resourceType.value === 'ConceptScheme') {
-    return namedNode("https://w3id.org/profile/vocpub/validator/Shui-ConceptScheme")
+    return namedNode('https://w3id.org/profile/vocpub/validator/Shui-ConceptScheme')
   }
-  return namedNode("https://w3id.org/profile/vocpub/validator/Shui-Concept")
+  return namedNode('https://w3id.org/profile/vocpub/validator/Shui-Concept')
 })
 </script>
 
@@ -46,7 +46,12 @@ const nodeShapeTerm = computed(() => {
       <h1 class="text-2xl font-bold">{{ label }}</h1>
       <Chip v-if="resourceType" :label="resourceType" />
       <code class="block overflow-x-auto">{{ iri }}</code>
-      <FocusNode :focus-node="focusNodeTerm" :data-graph="DATA_GRAPH" :node-shape="nodeShapeTerm" :is-root-node="true" />
+      <FocusNode
+        :focus-node="focusNodeTerm"
+        :data-graph="DATA_GRAPH"
+        :node-shape="nodeShapeTerm"
+        :is-root-node="true"
+      />
     </div>
   </Page>
 </template>

@@ -8,12 +8,18 @@ import { useMachine } from '@xstate/vue'
 import { getMachine } from '@/components/vocpub/state.js'
 import { useRouter } from 'vue-router'
 import { useShui } from '@/composables/shui.js'
+import { provideVocPubMachine } from '@/components/vocpub/composables/vocpub-machine'
 
 const toast = useToast()
 const router = useRouter()
-const { shui } = useShui()
-const machine = getMachine(shui, router, toast)
+const { shui, reset, addQuads, removeQuads } = useShui()
+
+const machine = getMachine(shui, reset, addQuads, removeQuads, router, toast)
 const { snapshot, send } = useMachine(machine)
+
+// Provide the send function to child components
+provideVocPubMachine(send)
+
 const data = computed(() => snapshot.value.context)
 const filename = ref<string | null>(null)
 
@@ -30,19 +36,25 @@ watch(
 )
 
 const menubarItems = computed(() => {
-  let projectItems: MenuItem[] = [{
-    label: 'New',
-    icon: 'pi pi-folder-plus',
-    command: (e: MenuItemCommandEvent) => send({ type: 'editor.menu.new.click' })
-  }]
+  let projectItems: MenuItem[] = [
+    {
+      label: 'New',
+      icon: 'pi pi-folder-plus',
+      command: (e: MenuItemCommandEvent) => send({ type: 'editor.menu.new.click' })
+    }
+  ]
 
-  if (snapshot.value.matches('opened')) {
+  if (snapshot.value.matches('opened') || snapshot.value.matches('openedAsNew')) {
+    if (snapshot.value.matches('opened')) {
+      projectItems = projectItems.concat([
+        {
+          label: 'Save',
+          icon: 'pi pi-save',
+          command: (e: MenuItemCommandEvent) => send({ type: 'editor.menu.save.click' })
+        }
+      ])
+    }
     projectItems = projectItems.concat([
-      {
-        label: 'Save',
-        icon: 'pi pi-save',
-        command: (e: MenuItemCommandEvent) => send({ type: 'editor.menu.save.click' })
-      },
       {
         label: 'Save as',
         icon: 'pi pi-save',
@@ -54,13 +66,14 @@ const menubarItems = computed(() => {
         command: (e: MenuItemCommandEvent) => send({ type: 'editor.menu.close.click' })
       }
     ])
-  }
-  else {
-    projectItems = projectItems.concat([{
-      label: 'Open',
-      icon: 'pi pi-folder-open',
-      command: (e: MenuItemCommandEvent) => send({ type: 'editor.menu.open.click' })
-    }])
+  } else {
+    projectItems = projectItems.concat([
+      {
+        label: 'Open',
+        icon: 'pi pi-folder-open',
+        command: (e: MenuItemCommandEvent) => send({ type: 'editor.menu.open.click' })
+      }
+    ])
   }
 
   const items: MenuItem[] = [
@@ -86,7 +99,7 @@ const menubarItems = computed(() => {
     </Menubar>
 
     <RouterView v-slot="{ Component }">
-      <component :is="Component" :data="data.content" />
+      <component :is="Component" />
     </RouterView>
   </div>
 

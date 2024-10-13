@@ -12,7 +12,7 @@ interface Props {
   dataGraph: SNamedNode | SBlankNode
   isRootNode?: boolean
 }
-const props = withDefaults(defineProps<Props>(), {isRootNode: false})
+const props = withDefaults(defineProps<Props>(), { isRootNode: false })
 const focusNode = toRef(props, 'focusNode')
 const nodeShape = toRef(props, 'nodeShape')
 const dataGraph = toRef(props, 'dataGraph')
@@ -57,10 +57,7 @@ const propertyGroups = computed(() => {
 
 <template>
   <template v-if="uiSchema">
-    <div
-      v-for="(propertyGroup, index) in propertyGroups"
-      :key="propertyGroup.term.id"
-    >
+    <div v-for="(propertyGroup, index) in propertyGroups" :key="propertyGroup.term.id">
       <Fieldset
         :legend="propertyGroup.name"
         :toggleable="true"
