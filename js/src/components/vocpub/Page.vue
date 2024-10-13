@@ -3,7 +3,7 @@
 <template>
   <div>
     <div class="flex flex-row h-[calc(100vh-7.4rem)]">
-      <div class="overflow-y-auto max-w-[25rem]">
+      <div class="overflow-y-auto w-[20rem]">
         <slot name="side-nav" />
       </div>
 
