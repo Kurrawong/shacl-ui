@@ -9,6 +9,7 @@ import { getMachine } from '@/components/vocpub/state.js'
 import { useRouter } from 'vue-router'
 import { useShui } from '@/composables/shui.js'
 import { provideVocPubMachine } from '@/components/vocpub/composables/vocpub-machine'
+import CreateConceptDialog from '@/components/vocpub/CreateConceptDialog.vue'
 
 const toast = useToast()
 const router = useRouter()
@@ -16,21 +17,19 @@ const { shui, reset, addQuads, removeQuads } = useShui()
 
 const machine = getMachine(shui, reset, addQuads, removeQuads, router, toast)
 const { snapshot, send } = useMachine(machine)
-
-// Provide the send function to child components
-provideVocPubMachine(send)
+provideVocPubMachine(snapshot, send)
 
 const data = computed(() => snapshot.value.context)
 const filename = ref<string | null>(null)
 
 watch(
-  () => data.value.fileHandle, // Watch for changes in fileHandle
+  () => data.value.fileHandle,
   async (newFileHandle) => {
     if (newFileHandle) {
       const file = await newFileHandle.getFile()
-      filename.value = file.name // Set the filename once fileHandle resolves
+      filename.value = file.name
     } else {
-      filename.value = null // Reset filename when no fileHandle is present
+      filename.value = null
     }
   }
 )
@@ -76,13 +75,27 @@ const menubarItems = computed(() => {
     ])
   }
 
-  const items: MenuItem[] = [
+  let items: MenuItem[] = [
     {
       label: 'Project',
       icon: 'pi pi-file',
       items: projectItems
     }
   ]
+
+  if (
+    snapshot.value.matches('opened') ||
+    snapshot.value.matches('openedAsNew') ||
+    snapshot.value.matches('creatingConcept')
+  ) {
+    items = items.concat([
+      {
+        label: 'Create concept',
+        icon: 'pi pi-plus',
+        command: (e: MenuItemCommandEvent) => send({ type: 'editor.menu.create-concept.click' })
+      }
+    ])
+  }
 
   return items
 })
@@ -101,7 +114,8 @@ const menubarItems = computed(() => {
     <RouterView v-slot="{ Component }">
       <component :is="Component" />
     </RouterView>
-  </div>
 
-  <Toast />
+    <CreateConceptDialog />
+    <Toast />
+  </div>
 </template>

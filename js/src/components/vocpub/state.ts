@@ -15,6 +15,7 @@ type Context = {
   content: string
   fileHandle: FileSystemFileHandle | null
   conceptSchemeIRI: string
+  openedStateType: 'opened' | 'openedAsNew' | null
 }
 
 export function getMachine(
@@ -38,6 +39,9 @@ export function getMachine(
         | { type: 'editor.menu.save-as.click' }
         | { type: 'editor.project.new.submit'; conceptSchemeIRI: string }
         | { type: 'editor.project.new.cancel' }
+        | { type: 'editor.menu.create-concept.click' }
+        | { type: 'new.concept.dialog.cancel' }
+        | { type: 'new.concept.dialog.create'; conceptIRI: string }
     },
     actions: {
       assignFileData: assign({
@@ -99,7 +103,8 @@ export function getMachine(
       assignNewProjectDetails: assign({
         conceptSchemeIRI: (context) => context.event.conceptSchemeIRI,
         content: () => '', // Reset content for new project
-        fileHandle: () => null // Reset file handle for new project
+        fileHandle: () => null, // Reset file handle for new project
+        openedStateType: () => 'openedAsNew' as const
       }),
       addConceptSchemeTriple: (params) => {
         const { conceptSchemeIRI } = params.context
@@ -111,48 +116,6 @@ export function getMachine(
       }
     },
     actors: {
-      loadDataToStore: (() => {
-        return fromPromise(async (params) => {
-          reset()
-          const parser = new Parser()
-          const quads = parser
-            .parse(params.context.content)
-            .map((q) => quad(q.subject, q.predicate, q.object, DATA_GRAPH))
-          addQuads(quads)
-
-          const shaclQuads = parser
-            .parse(vocpub)
-            .map((q) => quad(q.subject, q.predicate, q.object, SHACL_GRAPH))
-          addQuads(shaclQuads)
-
-          const conceptSchemes = shui.value.store.getQuads(
-            null,
-            rdf.type,
-            skos.ConceptScheme,
-            DATA_GRAPH
-          )
-
-          if (conceptSchemes.length === 0) {
-            toast.add({
-              severity: 'error',
-              summary: 'Error',
-              detail: 'No concept scheme found in the file',
-              life: 5000
-            })
-            throw new Error('No concept scheme found in the file')
-          } else if (conceptSchemes.length > 1) {
-            toast.add({
-              severity: 'error',
-              summary: 'Error',
-              detail: 'Multiple concept schemes found in the file',
-              life: 5000
-            })
-            throw new Error('Multiple concept schemes found in the file')
-          }
-
-          router.push('/edit')
-        })
-      })(),
       openFileDialog: (() => {
         const filePickerOptions: OpenFilePickerOptions = {
           types: [
@@ -168,7 +131,7 @@ export function getMachine(
           const [fileHandle] = await window.showOpenFilePicker(filePickerOptions)
           const file = await fileHandle.getFile()
           const content = await file.text()
-          return { type: 'editor.menu.open.success', data: { content, fileHandle } }
+          return { data: { content, fileHandle } }
         })
       })(),
       saveFile: (() => {
@@ -206,7 +169,8 @@ export function getMachine(
     context: {
       content: '',
       fileHandle: null,
-      conceptSchemeIRI: ''
+      conceptSchemeIRI: '',
+      openedStateType: null
     },
     id: 'editor',
     initial: 'empty',
@@ -232,16 +196,32 @@ export function getMachine(
         on: {
           'editor.menu.open.cancel': {
             target: 'empty'
-          },
-          'editor.menu.open.success': {
-            target: 'opened'
           }
         },
         invoke: {
           src: 'openFileDialog',
           onDone: {
             target: 'opened',
-            actions: 'assignFileData'
+            actions: [
+              'assignFileData',
+              {
+                type: 'loadDataToStore'
+              },
+              {
+                type: 'validateFile'
+              },
+              assign({
+                conceptSchemeIRI: () => {
+                  const conceptSchemes = shui.value.store.getQuads(
+                    null,
+                    rdf.type,
+                    skos.ConceptScheme,
+                    DATA_GRAPH
+                  )
+                  return conceptSchemes[0].subject.value
+                }
+              })
+            ]
           },
           onError: {
             target: 'empty'
@@ -264,25 +244,6 @@ export function getMachine(
         }
       },
       opened: {
-        entry: [
-          {
-            type: 'loadDataToStore'
-          },
-          {
-            type: 'validateFile'
-          },
-          assign({
-            conceptSchemeIRI: () => {
-              const conceptSchemes = shui.value.store.getQuads(
-                null,
-                rdf.type,
-                skos.ConceptScheme,
-                DATA_GRAPH
-              )
-              return conceptSchemes[0].subject.value
-            }
-          })
-        ],
         on: {
           'editor.menu.new.click': {
             target: 'openingAsNew'
@@ -301,6 +262,12 @@ export function getMachine(
             actions: (params) => {
               console.log('Save as button clicked')
             }
+          },
+          'editor.menu.create-concept.click': {
+            target: 'creatingConcept',
+            actions: assign({
+              openedStateType: () => 'opened'
+            })
           }
         }
       },
@@ -318,7 +285,74 @@ export function getMachine(
             actions: (params) => {
               console.log('Save as button clicked')
             }
+          },
+          'editor.menu.create-concept.click': {
+            target: 'creatingConcept',
+            actions: assign({
+              openedStateType: () => 'openedAsNew'
+            })
           }
+        }
+      },
+      creatingConcept: {
+        on: {
+          'new.concept.dialog.cancel': [
+            {
+              target: 'opened',
+              guard: (context) => context.openedStateType === 'opened' || !context.openedStateType
+            },
+            {
+              target: 'openedAsNew',
+              guard: (context) => context.openedStateType === 'openedAsNew'
+            }
+          ],
+          'new.concept.dialog.create': [
+            {
+              target: 'opened',
+              guard: (context) => context.openedStateType === 'opened' || !context.openedStateType,
+              actions: [
+                ({ event }) => {
+                  console.log('new concept dialog create targeting opened')
+                  const newQuad = quad(
+                    namedNode(event.conceptIRI),
+                    rdf.type,
+                    skos.Concept,
+                    DATA_GRAPH
+                  )
+                  addQuads([newQuad])
+                  toast.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: `Created new concept: ${event.conceptIRI}`,
+                    life: 3000
+                  })
+                  router.push(`/edit/resource?iri=${event.conceptIRI}`)
+                }
+              ]
+            },
+            {
+              target: 'openedAsNew',
+              guard: (context) => context.openedStateType === 'openedAsNew',
+              actions: [
+                ({ event }) => {
+                  console.log('new concept dialog create targeting openedAsNew')
+                  const newQuad = quad(
+                    namedNode(event.conceptIRI),
+                    rdf.type,
+                    skos.Concept,
+                    DATA_GRAPH
+                  )
+                  addQuads([newQuad])
+                  toast.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: `Created new concept: ${event.conceptIRI}`,
+                    life: 3000
+                  })
+                }
+              ]
+            }
+          ]
         }
       },
       saving: {
