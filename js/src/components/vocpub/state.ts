@@ -74,6 +74,13 @@ export function getMachine(
 
         router.push('/edit')
       },
+      loadShaclDataToStore: () => {
+        const parser = new Parser()
+        const shaclQuads = parser
+          .parse(vocpub)
+          .map((q) => quad(q.subject, q.predicate, q.object, SHACL_GRAPH))
+        addQuads(shaclQuads)
+      },
       validateFile: (params) => {
         const conceptSchemes = shui.value.store.getQuads(
           null,
@@ -272,7 +279,11 @@ export function getMachine(
         }
       },
       openedAsNew: {
-        entry: [() => router.push('/edit'), 'addConceptSchemeTriple'],
+        entry: [
+          'addConceptSchemeTriple',
+          'loadShaclDataToStore',
+          ({ context }) => router.push(`/edit/resource?iri=${context.conceptSchemeIRI}`)
+        ],
         on: {
           'editor.menu.new.click': {
             target: 'openingAsNew'
