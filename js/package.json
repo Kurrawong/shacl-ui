@@ -3,6 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
@@ -21,9 +27,10 @@
     "@hydrofoil/shape-to-query": "^0.13.1",
     "@rdfjs/data-model": "^2.0.2",
     "@rdfjs/dataset": "^2.0.2",
+    "@xstate/vue": "^3.1.4",
     "clownface": "^2.0.2",
     "grapoi": "^1.1.2",
-    "n3": "^1.20.4",
+    "n3": "^1.21.1",
     "primeicons": "^7.0.0",
     "primevue": "3.53.0",
     "rdf-ext": "^2.5.2",
@@ -32,7 +39,8 @@
     "uuid": "^10.0.0",
     "vue": "^3.4.29",
     "vue-codemirror": "^6.1.1",
-    "vue-router": "^4.3.3"
+    "vue-router": "^4.4.0",
+    "xstate": "^5.18.2"
   },
   "devDependencies": {
     "@babel/core": "^7.24.7",
@@ -51,7 +59,7 @@
     "@storybook/vue3-vite": "^8.1.11",
     "@tsconfig/node20": "^20.1.4",
     "@types/clownface": "^2.0.8",
-    "@types/n3": "^1.16.4",
+    "@types/n3": "^1.21.0",
     "@types/node": "^20.14.5",
     "@types/rdf-ext": "^2.5.0",
     "@types/rdfjs__data-model": "^2.0.8",
@@ -59,6 +67,7 @@
     "@types/rdfjs__namespace": "^2.0.10",
     "@types/sparqljs": "^3.1.11",
     "@types/uuid": "^10.0.0",
+    "@types/wicg-file-system-access": "^2023.10.5",
     "@vitejs/plugin-vue": "^5.0.5",
     "@vue/eslint-config-prettier": "^9.0.0",
     "@vue/eslint-config-typescript": "^13.0.0",

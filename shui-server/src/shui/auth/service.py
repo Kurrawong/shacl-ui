@@ -21,7 +21,8 @@ class UserService(BaseUserDatabase):
         super().__init__()
         self._client = client
 
-    def _to_model(self, result) -> UserCreateDb:
+    @staticmethod
+    def _to_model(result) -> UserCreateDb:
         graph = Graph().parse(data=result, format="turtle")
         # TODO: handle when iri is None.
         iri = graph.value(predicate=RDF.type, object=OLIS.User)

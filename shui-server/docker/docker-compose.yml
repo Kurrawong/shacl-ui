@@ -9,17 +9,24 @@ services:
     volumes:
       - rdf-delta-data:/opt/rdf-delta/databases
     command: java -jar /opt/rdf-delta/rdf-delta-server.jar --base /opt/rdf-delta/databases --file
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:1066" ]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   fuseki:
     profiles:
       - stack
-    image: ghcr.io/kurrawong/rdf-delta
+    build:
+      context: .
     container_name: fuseki
     ports:
       - 9998:3030
     command: ["/bin/bash", "-c", "/opt/rdf-delta/fuseki-entrypoint.sh"]
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://rdf-delta-server:1066"]
+      test: ["CMD", "curl", "-I", "http://localhost:3030/ds"]
       interval: 5s
       timeout: 10s
       retries: 3
@@ -51,7 +58,7 @@ services:
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
-      - auth.type='LOGIN_FORM'
+      - AUTH_TYPE=LOGIN_FORM
       - SPRING_SECURITY_USER_NAME=admin
       - SPRING_SECURITY_USER_PASSWORD=admin
 
@@ -72,6 +79,23 @@ services:
       - OLIS_DELTA_KAFKA_SINK__RDF_DELTA_URL=http://rdf-delta-server:1066
       - OLIS_DELTA_KAFKA_SINK__KAFKA_TOPIC=rdf-patch-log
       - OLIS_DELTA_KAFKA_SINK__KAFKA_BOOTSTRAP_SERVER=kafka:9092
+    depends_on:
+      rdf-delta-server:
+        condition: service_healthy
+
+  asb-rdf-delta-consumer:
+    profiles:
+      - stack
+    image: ghcr.io/kurrawong/gswa-rdf-delta-consumer:0.1.1
+    environment:
+      - DELTA_CONSUMER__CONN_STR=Endpoint=sb://gswaservicebus.servicebus.windows.net/;SharedAccessKeyName=testSAP;SharedAccessKey=yLGmjFj9bYA2DDeEEi2VOYMrUmza5urAW+ASbFXC428=
+      - DELTA_CONSUMER__SUBSCRIPTION=rdf-patch-consumer
+      - DELTA_CONSUMER__TOPIC=rdf-patch-log
+      - DELTA_CONSUMER__SESSION_ID=main
+      - DELTA_CONSUMER__RDF_DELTA_URL=http://rdf-delta-server:1066
+    depends_on:
+      rdf-delta-server:
+        condition: service_healthy
 
 volumes:
   rdf-delta-data:

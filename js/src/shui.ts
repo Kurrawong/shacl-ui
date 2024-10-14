@@ -9,7 +9,7 @@ import type {
   Quad_Subject,
   Term
 } from 'n3'
-import n3, { Store } from 'n3'
+import n3, { DataFactory, Store } from 'n3'
 // @ts-ignore
 import { PathList } from 'grapoi'
 import rdfDataset from '@rdfjs/dataset'
@@ -17,11 +17,7 @@ import rdfDataset from '@rdfjs/dataset'
 import { Validator } from 'shacl-engine'
 import fs from 'fs'
 import { QueryEngine } from '@comunica/query-sparql'
-import type {
-  STerm,
-  UISchema,
-  Validator as IValidator
-} from '@/types'
+import type { STerm, UISchema, Validator as IValidator } from '@/types'
 import type {
   DatasetCore,
   NamedNode as RDFSNamedNode,
@@ -36,6 +32,7 @@ import {
 import { ClassConstraintComponent } from '@/core/constraint-components/value-type/class'
 import { NodeConstraintComponent } from '@/core/constraint-components/shape-based/node'
 import { shapeToSparql, sparqlAutoCompleteRewrite } from '@/core/sparql'
+import quad = DataFactory.quad
 
 const { namedNode, literal } = n3.DataFactory
 
@@ -220,6 +217,14 @@ export class Shui {
 
   quadsToString(graph: NamedNode | BlankNode | null) {
     return writer.quadsToString(this.store.getQuads(null, null, null, graph))
+  }
+
+  quadsToTriplesString(graph: NamedNode | BlankNode | null) {
+    return writer.quadsToString(
+      this.store
+        .getQuads(null, null, null, graph)
+        .map((q) => quad(q.subject, q.predicate, q.object))
+    )
   }
 
   nodeLabel(subject: RDFSNamedNode | RDFJSBlankNode) {

@@ -114,14 +114,14 @@ function handleAddNewDefaultValue() {
     <!-- Button disabled for now. Will need more work to correctly infer what the
     default value should be by inspecting existing values and available constraint
     components -->
-    <Button
-      @click="handleAddNewDefaultValue"
-      icon="pi pi-plus"
-      aria-label="Submit"
-      v-tooltip.bottom="'Add new value'"
-      disabled
-      outlined
-    />
+    <!--    <Button-->
+    <!--      @click="handleAddNewDefaultValue"-->
+    <!--      icon="pi pi-plus"-->
+    <!--      aria-label="Submit"-->
+    <!--      v-tooltip.bottom="'Add new value'"-->
+    <!--      disabled-->
+    <!--      outlined-->
+    <!--    />-->
 
     <Button
       icon="pi pi-angle-down"

@@ -18,6 +18,14 @@ dependencies = [
     "jinja2>=3.1.4",
     "dominate>=2.9.1",
     "starlette-wtf>=0.4.5",
+    "pyld>=2.0.4",
+    "beautifulsoup4>=4.12.3",
+]
+
+[project.optional-dependencies]
+azure = [
+    "azure-servicebus>=7.12.3",
+    "aiohttp>=3.10.6",
 ]
 
 [build-system]
