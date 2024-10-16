@@ -149,14 +149,17 @@ async def record_new_route(
     collection_id: str,
     user: User = Depends(current_active_user),
     content_type_service: ContentTypeService = Depends(get_content_type_service),
+    shacl_service: ShaclService = Depends(get_shacl_service),
 ):
     content_type = await content_type_service.get_one_by_id(collection_id)
     graph_name = content_type.value(CRUD.graph)
     namespace = Namespace(content_type.value(CRUD.namespace))
     iri = namespace[str(uuid4())]
     target_class = content_type.value(CRUD.targetClass)
-    record_data = f"<{iri}> a <{target_class}> {graph_name} ."
-    node_shape = content_type.value(CRUD.nodeShape)
+    record_data = f"<{iri}> a <{target_class}> <{graph_name}> ."
+    node_shape_iri = content_type.value(CRUD.nodeShape)
+    node_shape_graph = await shacl_service.get_nodeshape_graph_closure(node_shape_iri)
+    node_shape_data = node_shape_graph.serialize(format="ntriples")
     submission_url = str(
         request.url_for(
             "record_new_submit_route", collection_id=collection_id
@@ -168,7 +171,8 @@ async def record_new_route(
         collection_id,
         iri,
         graph_name,
-        node_shape,
+        node_shape_iri,
+        node_shape_data,
         record_data,
         submission_url,
         [],
