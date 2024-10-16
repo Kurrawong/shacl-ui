@@ -310,17 +310,19 @@ export function getMachine(
           'new.concept.dialog.cancel': [
             {
               target: 'opened',
-              guard: (context) => context.openedStateType === 'opened' || !context.openedStateType
+              guard: ({ context }) =>
+                context.openedStateType === 'opened' || !context.openedStateType
             },
             {
               target: 'openedAsNew',
-              guard: (context) => context.openedStateType === 'openedAsNew'
+              guard: ({ context }) => context.openedStateType === 'openedAsNew'
             }
           ],
           'new.concept.dialog.create': [
             {
               target: 'opened',
-              guard: (context) => context.openedStateType === 'opened' || !context.openedStateType,
+              guard: ({ context }) =>
+                context.openedStateType === 'opened' || !context.openedStateType,
               actions: [
                 ({ event }) => {
                   console.log('new concept dialog create targeting opened')
@@ -343,7 +345,7 @@ export function getMachine(
             },
             {
               target: 'openedAsNew',
-              guard: (context) => context.openedStateType === 'openedAsNew',
+              guard: ({ context }) => context.openedStateType === 'openedAsNew',
               actions: [
                 ({ event }) => {
                   console.log('new concept dialog create targeting openedAsNew')
