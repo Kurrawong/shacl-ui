@@ -11,6 +11,7 @@ import type { SLiteral } from '@/shui'
 import { useShui } from '@/composables/shui'
 import { NodeConstraintComponent } from '@/core/constraint-components/shape-based/node'
 import { ConstraintComponent } from '@/core/constraint-components/constraint-component'
+import AutoCompleteEditor from '@/components/dash/editors/AutoCompleteEditor.vue'
 import LiteralEditor from '@/components/dash/editors/LiteralEditor.vue'
 import BooleanSelectEditor from '@/components/dash/editors/BooleanSelectEditor.vue'
 import URIEditor from '@/components/dash/editors/URIEditor.vue'
@@ -98,8 +99,18 @@ const detailsEditorNodeShapes = computed(() => {
 <template>
   <div class="flex flex-row p-3 bg-slate-50" :class="isHoverGreen ? 'hover:bg-green-100' : ''">
     <div class="content flex-auto">
+      <!-- dash:AutoCompleteEditor -->
+      <template v-if="selectedWidget?.type.equals(dash.AutoCompleteEditor)">
+        <AutoCompleteEditor
+          :term="object as NamedNode"
+          :constraint-components="constraintComponents"
+          :data-graph="dataGraph as NamedNode"
+          @update="handleUpdate"
+        />
+      </template>
+
       <!-- dash:BlankNodeEditor -->
-      <template v-if="selectedWidget?.type.equals(dash.BlankNodeEditor)">
+      <template v-else-if="selectedWidget?.type.equals(dash.BlankNodeEditor)">
         <BlankNodeEditor :term="object as BlankNode" @update="handleUpdate" />
       </template>
 
