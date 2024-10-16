@@ -39,7 +39,7 @@ def NavLink(value: str, href: str):
     )
 
 
-@div(cls=f"bg-[{PageColours.bg_primary.value}]", data_hx_boost="true")
+@div(cls=f"bg-[{PageColours.bg_primary.value}]", data_hx_boost="false")
 def Nav(request: Request, user: User):
     with div(cls="flex p-2"):
         Logo()
@@ -119,7 +119,9 @@ def BasePage(request: Request, title: str, user: User = None) -> document:
                         with div(cls="pb-4"):
                             for message in messages:
                                 alert = sl_alert(
-                                    cls="sticky", variant=message["category"]
+                                    cls="sticky",
+                                    variant=message["category"],
+                                    duration="3000",
                                 )
                                 alert["open"] = ""
                                 alert["closable"] = ""
