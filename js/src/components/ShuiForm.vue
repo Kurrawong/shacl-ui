@@ -22,9 +22,9 @@ interface Props {
 const props = defineProps<Props>()
 const toast = useToast()
 const { shui, addQuads, reset } = useShui()
-const focusNodeTerm = namedNode(props.focusNode)
-const nodeShapeTerm = namedNode(props.nodeShape)
-const graphNameTerm = namedNode(props.graphName)
+const focusNodeTerm = shui.value.toSNamedNode(namedNode(props.focusNode))
+const nodeShapeTerm = shui.value.toSNamedNode(namedNode(props.nodeShape))
+const graphNameTerm = shui.value.toSNamedNode(namedNode(props.graphName))
 const shapeGraphNameTerm = namedNode('urn:system:graph:shacl')
 
 const writer = new Writer()
