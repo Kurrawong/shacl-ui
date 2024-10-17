@@ -195,11 +195,13 @@ async def record_new_submit_route(
         content_type = await content_type_service.get_one_by_id(collection_id)
         graph_name = content_type.value(CRUD.graph)
         target_class = content_type.value(CRUD.targetClass)
-        patch_log_containing_class_statement = dedent(f"""\
+        patch_log_containing_class_statement = dedent(
+            f"""\
             TX .
             A <{iri}> <{RDF.type}> <{target_class}> <{graph_name}> .
             TC .
-        """)
+        """
+        )
         await record_service.create_change_event(
             user.id, iri, patch_log_containing_class_statement + patch_log
         )
@@ -237,6 +239,5 @@ async def record_change_events_route(
         per_page,
         action_status,
     )
-    print(len(change_events))
     component = li_change_events(request, collection_id, iri, change_events, page + 1)
     return HTMLResponse(component.render())
