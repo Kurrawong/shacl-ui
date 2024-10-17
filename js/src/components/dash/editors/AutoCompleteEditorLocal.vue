@@ -43,7 +43,7 @@ onMounted(async () => {
 
 function search(event: AutoCompleteCompleteEvent) {
   const query = event.query
-  console.log(query)
+
   const suggestionSet = new Set(
     suggestions.value
       .filter((s) => s.label.toLowerCase().startsWith(query.toLowerCase()))
@@ -52,17 +52,17 @@ function search(event: AutoCompleteCompleteEvent) {
   filteredSuggestions.value = Array.from(suggestionSet)
 }
 
-function handleUpdate(newValue: string | Suggestion) {
-  if (typeof newValue === 'string') {
-    inputValue.value = newValue
-  } else if (newValue.code) {
-    inputValue.value = newValue.label
-    value.value = namedNode(newValue.code)
+function handleUpdate(newValue: Suggestion | null) {
+  if (newValue !== null) {
+    if (typeof newValue === 'string') {
+      inputValue.value = newValue
+    } else if (newValue.code) {
+      inputValue.value = newValue.label
+      value.value = namedNode(newValue.code)
+    }
+  } else {
+    inputValue.value = shui.value.toSNamedNode(value.value).label
   }
-}
-
-function handleBlur() {
-  inputValue.value = shui.value.toSNamedNode(value.value).label
 }
 
 function emitUpdate() {
@@ -79,8 +79,8 @@ watch(value, () => emitUpdate())
     :loading="isLoading"
     option-label="label"
     dropdown
+    force-selection
     @complete="search"
-    @blur="handleBlur"
     :pt="{
       input: {
         style: 'width: 600px'
