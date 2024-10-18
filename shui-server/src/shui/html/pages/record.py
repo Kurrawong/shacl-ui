@@ -39,12 +39,14 @@ def li_change_events(
                 cls="mb-10 ms-4",
                 data_hx_trigger="intersect once",
                 data_hx_swap="afterend",
-                data_hx_get=request.url_for(
-                    "record_change_events_route",
-                    collection_id=collection_id,
-                ).include_query_params(iri=iri, page=page)
-                if i == len(change_events) - 1
-                else None,
+                data_hx_get=(
+                    request.url_for(
+                        "record_change_events_route",
+                        collection_id=collection_id,
+                    ).include_query_params(iri=iri, page=page)
+                    if i == len(change_events) - 1
+                    else None
+                ),
             ):
                 change_event_id = f"A{change_event.id.split(':')[-1]}"
                 div(
@@ -150,6 +152,7 @@ async def RecordPage(
     node_shape_data: str,
     data: str,
     submission_url: str,
+    sparql_url: str,
     change_events: list[ChangeEventTimelineItem],
 ):
     title = ""
@@ -157,7 +160,7 @@ async def RecordPage(
         main = doc.getElementById("main")
         with main:
             with div(cls="flex flex-row h-[calc(100vh-10rem)]"):
-                with div(cls="w-full overflow-y-auto space-y-8 pr-3"):
+                with div(cls="w-full overflow-y-auto space-y-8 p-3"):
                     shui_form(
                         request,
                         iri,
@@ -166,6 +169,7 @@ async def RecordPage(
                         node_shape_data,
                         data,
                         submission_url,
+                        sparql_url,
                     )
 
                 with div(cls="w-[20rem] overflow-y-auto"):

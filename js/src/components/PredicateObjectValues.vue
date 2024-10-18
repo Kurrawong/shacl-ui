@@ -35,7 +35,7 @@ const items = ref([
   {
     label: 'Add a literal value with a language tag',
     command: () => addNewValue(shui.value.toSTerm(literal('', 'en')))
-  },
+  }
   // {
   //   label: 'Add a literal value with a datatype',
   //   command: () => addNewValue(shui.value.toSTerm(literal('')))

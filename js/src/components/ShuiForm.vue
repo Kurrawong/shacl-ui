@@ -17,15 +17,19 @@ interface Props {
   data: string
   // csrf: string
   submissionUrl: string
+  sparqlUrl: string
 }
 
 const props = defineProps<Props>()
 const toast = useToast()
-const { shui, addQuads, reset } = useShui()
+const { shui, addQuads, reset, setServerMode, setSparqlUrl } = useShui()
 const focusNodeTerm = shui.value.toSNamedNode(namedNode(props.focusNode))
 const nodeShapeTerm = shui.value.toSNamedNode(namedNode(props.nodeShape))
 const graphNameTerm = shui.value.toSNamedNode(namedNode(props.graphName))
 const shapeGraphNameTerm = namedNode('urn:system:graph:shacl')
+
+setServerMode(true)
+setSparqlUrl(props.sparqlUrl)
 
 const writer = new Writer()
 const store = new Store()

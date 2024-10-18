@@ -240,7 +240,12 @@ export function getMachine(
         on: {
           'editor.project.new.submit': {
             target: 'openedAsNew',
-            actions: 'assignNewProjectDetails'
+            actions: [
+              'assignNewProjectDetails',
+              'addConceptSchemeTriple',
+              'loadShaclDataToStore',
+              ({ event }) => router.push(`/edit/resource?iri=${event.conceptSchemeIRI}`)
+            ]
           },
           'editor.project.new.cancel': {
             target: 'empty'
@@ -279,11 +284,11 @@ export function getMachine(
         }
       },
       openedAsNew: {
-        entry: [
-          'addConceptSchemeTriple',
-          'loadShaclDataToStore',
-          ({ context }) => router.push(`/edit/resource?iri=${context.conceptSchemeIRI}`)
-        ],
+        // entry: [
+        //   'addConceptSchemeTriple',
+        //   'loadShaclDataToStore',
+        //   ({ context }) => router.push(`/edit/resource?iri=${context.conceptSchemeIRI}`)
+        // ],
         on: {
           'editor.menu.new.click': {
             target: 'openingAsNew'
