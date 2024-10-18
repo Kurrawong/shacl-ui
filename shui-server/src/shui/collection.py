@@ -173,14 +173,19 @@ class CollectionService:
                 }
                 FROM <{{ graph_name }}>
                 WHERE {
+                
                     {{ subquery|indent(20, True) }}
-                    
-                    ?iri <{{ label_property }}> ?_label .
-                    BIND(STR(?_label) AS ?label)
-                    
-                    OPTIONAL {
-                        ?iri <{{ description_property }}> ?_description .
-                        BIND(STR(?_description) AS ?description)
+                
+                    {
+                        SELECT ?iri (STR(SAMPLE(?_label)) AS ?label) (STR(SAMPLE(?_description)) AS ?description)
+                        WHERE {
+                            ?iri <{{ label_property }}> ?_label .
+                        
+                            OPTIONAL {
+                                ?iri <{{ description_property }}> ?_description .
+                            }
+                        }
+                        GROUP BY ?iri
                     }
                 }
                 """

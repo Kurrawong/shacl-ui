@@ -44,13 +44,13 @@ async def CollectionsListPage(
                             href=request.url_for(
                                 "record_new_route", collection_id=collection_id
                             ),
-                            data_hx_boost="true",
+                            data_hx_boost="false",
                         )
 
                 p(content_type.description)
 
                 with form(
-                    data_hx_boost="true",
+                    data_hx_boost="false",
                     data_hx_target="body",
                     data_hx_swap="outerHTML show:body:top",
                     data_hx_trigger="sl-input delay:500ms, input delay:500ms",
@@ -78,7 +78,7 @@ async def CollectionsListPage(
                 else:
                     p(f"{count} {content_type.id} found", id="result-details")
 
-                with ul(id="results", cls="space-y-2", data_hx_boost="true"):
+                with ul(id="results", cls="space-y-2", data_hx_boost="false"):
                     for item in collection_items:
                         with li(cls="border-t pt-4 pb-3 min-h-16 max-h-32 space-y-1"):
                             a(
@@ -99,7 +99,7 @@ async def CollectionsListPage(
                                 cls="text-sm",
                             )
 
-                with sl_button_group(data_hx_boost="true"):
+                with sl_button_group(data_hx_boost="false"):
                     sl_link_button(
                         "Previous page",
                         href=request.url_for(

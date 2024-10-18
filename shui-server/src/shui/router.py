@@ -9,6 +9,7 @@ from rdflib import RDF, Namespace
 
 from shui.auth.core import current_active_user
 from shui.auth.models import User
+from shui.clients.sparql_client import SparqlClient, get_sparql_client
 from shui.collection import CollectionService, get_collection_service
 from shui.content_type import ContentTypeService, get_content_type_service
 from shui.html.flash import flash
@@ -95,6 +96,7 @@ async def record_route(
             "record_submit_route", collection_id=collection_id
         ).include_query_params(iri=iri)
     )
+    sparql_url = str(request.url_for("sparql_post_route"))
     change_events = await record_service.get_change_events(
         iri, 1, 10, [str(EVENT.accepted)]
     )
@@ -108,6 +110,7 @@ async def record_route(
         node_shape_data,
         record_data,
         submission_url,
+        sparql_url,
         change_events,
     )
     return HTMLResponse(page.render())
@@ -149,28 +152,34 @@ async def record_new_route(
     collection_id: str,
     user: User = Depends(current_active_user),
     content_type_service: ContentTypeService = Depends(get_content_type_service),
+    shacl_service: ShaclService = Depends(get_shacl_service),
 ):
     content_type = await content_type_service.get_one_by_id(collection_id)
     graph_name = content_type.value(CRUD.graph)
     namespace = Namespace(content_type.value(CRUD.namespace))
     iri = namespace[str(uuid4())]
     target_class = content_type.value(CRUD.targetClass)
-    record_data = f"<{iri}> a <{target_class}> {graph_name} ."
-    node_shape = content_type.value(CRUD.nodeShape)
+    record_data = f"<{iri}> a <{target_class}> <{graph_name}> ."
+    node_shape_iri = content_type.value(CRUD.nodeShape)
+    node_shape_graph = await shacl_service.get_nodeshape_graph_closure(node_shape_iri)
+    node_shape_data = node_shape_graph.serialize(format="ntriples")
     submission_url = str(
         request.url_for(
             "record_new_submit_route", collection_id=collection_id
         ).include_query_params(iri=iri)
     )
+    sparql_url = str(request.url_for("sparql_post_route"))
     page = await RecordPage(
         request,
         user,
         collection_id,
         iri,
         graph_name,
-        node_shape,
+        node_shape_iri,
+        node_shape_data,
         record_data,
         submission_url,
+        sparql_url,
         [],
     )
     return HTMLResponse(page.render())
@@ -191,11 +200,13 @@ async def record_new_submit_route(
         content_type = await content_type_service.get_one_by_id(collection_id)
         graph_name = content_type.value(CRUD.graph)
         target_class = content_type.value(CRUD.targetClass)
-        patch_log_containing_class_statement = dedent(f"""\
+        patch_log_containing_class_statement = dedent(
+            f"""\
             TX .
             A <{iri}> <{RDF.type}> <{target_class}> <{graph_name}> .
             TC .
-        """)
+        """
+        )
         await record_service.create_change_event(
             user.id, iri, patch_log_containing_class_statement + patch_log
         )
@@ -222,6 +233,7 @@ async def record_change_events_route(
     request: Request,
     collection_id: str,
     iri: str,
+    user: User = Depends(current_active_user),
     page: int = 1,
     per_page: int = 10,
     action_status: list[str] = (str(EVENT.accepted),),
@@ -233,6 +245,14 @@ async def record_change_events_route(
         per_page,
         action_status,
     )
-    print(len(change_events))
     component = li_change_events(request, collection_id, iri, change_events, page + 1)
     return HTMLResponse(component.render())
+
+
+@router.post("/sparql")
+async def sparql_post_route(
+    request: Request,
+    user: User = Depends(current_active_user),
+    sparql_client: SparqlClient = Depends(get_sparql_client),
+):
+    pass

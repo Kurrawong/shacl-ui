@@ -86,7 +86,7 @@ services:
   asb-rdf-delta-consumer:
     profiles:
       - stack
-    image: ghcr.io/kurrawong/gswa-rdf-delta-consumer:0.1.1
+    image: ghcr.io/kurrawong/gswa-rdf-delta-consumer:0.1.3
     environment:
       - DELTA_CONSUMER__CONN_STR=Endpoint=sb://gswaservicebus.servicebus.windows.net/;SharedAccessKeyName=testSAP;SharedAccessKey=yLGmjFj9bYA2DDeEEi2VOYMrUmza5urAW+ASbFXC428=
       - DELTA_CONSUMER__SUBSCRIPTION=rdf-patch-consumer

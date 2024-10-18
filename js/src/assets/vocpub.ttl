@@ -48,6 +48,12 @@ sdo:dateModified rdfs:label "date modified" .
         sh:class skos:Concept ;
         sh:group <Group-concept-relationships> ;
     ] ;
+    sh:property [
+        sh:path skos:broader ;
+        sh:nodeKind sh:IRI ;
+        sh:class skos:Concept ;
+        sh:group <Group-concept-relationships> ;
+    ] ;
 .
 
 <Shui-ConceptScheme> a sh:NodeShape ;
@@ -291,6 +297,7 @@ sdo:dateModified rdfs:label "date modified" .
     sh:property [
         dash:editor dash:AutoCompleteEditor ;
         sh:group <Group-concept-relationships> ;
+        sh:class skos:Concept ;
         sh:message "Requirement 2.1.9 Each vocabulary's Concept Scheme MUST link to at least one Concept within the vocabulary with the skos:hasTopConcept predicate" ;
         sh:path skos:hasTopConcept ;
         sh:minCount 1 ;

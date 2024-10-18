@@ -13,6 +13,7 @@ def shui_form(
     node_shape_data: str,
     data: str,
     submission_url: str,
+    sparql_url: str,
 ) -> html_tag:
     with div(id="shui-form") as component:
         form = ShuiForm()
@@ -22,6 +23,7 @@ def shui_form(
         form["node-shape-data"] = node_shape_data
         form["data"] = data
         form["submission-url"] = submission_url
+        form["sparql-url"] = sparql_url
         # TODO: add csrf token
 
         import_url = request.url_for("static", path="shui.js")

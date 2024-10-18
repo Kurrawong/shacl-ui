@@ -53,7 +53,7 @@ async def get_nav_items(request, content_type_service: ContentTypeService):
 
 
 def get_nav_html(nav_items: NavItems) -> str:
-    with ul(data_hx_boost="true") as component:
+    with ul(data_hx_boost="false") as component:
         for nav_item in nav_items:
             if isinstance(nav_item, NavItem):
                 with li(cls="p-2 hover:bg-blue-100"):

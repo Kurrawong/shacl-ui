@@ -115,29 +115,29 @@ const editorWidgets = new Map<
       return 0
     }
   ],
-  [
-    dash.LiteralEditor,
-    (object, constraintComponents) => {
-      // We implement the rules defined in https://datashapes.org/forms.html#LiteralViewer despite this
-      // being a Literal editor. Additionally, return 1 for any sh:nodeKind values that allow literals.
-      if (object.termType !== 'Literal') {
-        return 0
-      }
+  // [
+  //   dash.LiteralEditor,
+  //   (object, constraintComponents) => {
+  //     // We implement the rules defined in https://datashapes.org/forms.html#LiteralViewer despite this
+  //     // being a Literal editor. Additionally, return 1 for any sh:nodeKind values that allow literals.
+  //     if (object.termType !== 'Literal') {
+  //       return 0
+  //     }
 
-      for (const constraintComponent of constraintComponents) {
-        if (
-          constraintComponent instanceof NodeKindConstraintComponent &&
-          (constraintComponent.nodeKind.equals(sh.Literal) ||
-            constraintComponent.nodeKind.equals(sh.BlankNodeOrLiteral) ||
-            constraintComponent.nodeKind.equals(sh.IRIOrLiteral))
-        ) {
-          return 1
-        }
-      }
+  //     for (const constraintComponent of constraintComponents) {
+  //       if (
+  //         constraintComponent instanceof NodeKindConstraintComponent &&
+  //         (constraintComponent.nodeKind.equals(sh.Literal) ||
+  //           constraintComponent.nodeKind.equals(sh.BlankNodeOrLiteral) ||
+  //           constraintComponent.nodeKind.equals(sh.IRIOrLiteral))
+  //       ) {
+  //         return 1
+  //       }
+  //     }
 
-      return 1
-    }
-  ],
+  //     return 1
+  //   }
+  // ],
   [
     dash.TextAreaEditor,
     (object, constraintComponents) => {

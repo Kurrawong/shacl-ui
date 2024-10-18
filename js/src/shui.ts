@@ -32,6 +32,7 @@ import {
 import { ClassConstraintComponent } from '@/core/constraint-components/value-type/class'
 import { NodeConstraintComponent } from '@/core/constraint-components/shape-based/node'
 import { shapeToSparql, sparqlAutoCompleteRewrite } from '@/core/sparql'
+import { skos, rdfs } from '@/core/namespaces'
 import quad = DataFactory.quad
 
 const { namedNode, literal } = n3.DataFactory
@@ -233,7 +234,11 @@ export class Shui {
     // 2. With the current NodeShape, see whether there's a PropertyShape with the dash:propertyRole set to dash:LabelRole. If so, search with the sh:path value of the PropertyShape to retrieve a label.
     // 3. Return a curie based on the prefixes set in the store.
     // 4. Return the fully qualified IRI, or should we generate a curie?.
-    const labels = this.store.getObjects(subject, RDFS_label, null)
+
+    // get labels for RDFS_label and SKOS_prefLabel
+    const labels = []
+    labels.push(...this.store.getObjects(subject, rdfs.label, null))
+    labels.push(...this.store.getObjects(subject, skos.prefLabel, null))
     if (labels.length > 0) {
       return literal(labels[0].value)
     }

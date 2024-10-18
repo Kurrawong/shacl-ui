@@ -240,7 +240,12 @@ export function getMachine(
         on: {
           'editor.project.new.submit': {
             target: 'openedAsNew',
-            actions: 'assignNewProjectDetails'
+            actions: [
+              'assignNewProjectDetails',
+              'addConceptSchemeTriple',
+              'loadShaclDataToStore',
+              ({ event }) => router.push(`/edit/resource?iri=${event.conceptSchemeIRI}`)
+            ]
           },
           'editor.project.new.cancel': {
             target: 'empty'
@@ -279,11 +284,11 @@ export function getMachine(
         }
       },
       openedAsNew: {
-        entry: [
-          'addConceptSchemeTriple',
-          'loadShaclDataToStore',
-          ({ context }) => router.push(`/edit/resource?iri=${context.conceptSchemeIRI}`)
-        ],
+        // entry: [
+        //   'addConceptSchemeTriple',
+        //   'loadShaclDataToStore',
+        //   ({ context }) => router.push(`/edit/resource?iri=${context.conceptSchemeIRI}`)
+        // ],
         on: {
           'editor.menu.new.click': {
             target: 'openingAsNew'
@@ -310,17 +315,19 @@ export function getMachine(
           'new.concept.dialog.cancel': [
             {
               target: 'opened',
-              guard: (context) => context.openedStateType === 'opened' || !context.openedStateType
+              guard: ({ context }) =>
+                context.openedStateType === 'opened' || !context.openedStateType
             },
             {
               target: 'openedAsNew',
-              guard: (context) => context.openedStateType === 'openedAsNew'
+              guard: ({ context }) => context.openedStateType === 'openedAsNew'
             }
           ],
           'new.concept.dialog.create': [
             {
               target: 'opened',
-              guard: (context) => context.openedStateType === 'opened' || !context.openedStateType,
+              guard: ({ context }) =>
+                context.openedStateType === 'opened' || !context.openedStateType,
               actions: [
                 ({ event }) => {
                   console.log('new concept dialog create targeting opened')
@@ -343,7 +350,7 @@ export function getMachine(
             },
             {
               target: 'openedAsNew',
-              guard: (context) => context.openedStateType === 'openedAsNew',
+              guard: ({ context }) => context.openedStateType === 'openedAsNew',
               actions: [
                 ({ event }) => {
                   console.log('new concept dialog create targeting openedAsNew')
