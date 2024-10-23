@@ -21,13 +21,12 @@ RUN pnpm install
 RUN pnpm run build-only
 
 #
-# PYTHON
+# PYTHON BUILD
 #
-FROM python:${PYTHON_VERSION}-alpine
+FROM python:${PYTHON_VERSION}-alpine AS python-build
 
 RUN apk update && \
     apk add --no-cache \
-      bash \
       gcc \
       libffi-dev \
       librdkafka-dev \
@@ -38,7 +37,23 @@ COPY --from=ghcr.io/astral-sh/uv:0.4.18 /uv /bin/uv
 
 ADD ./shui-server /app
 WORKDIR /app
+RUN uv sync --frozen --all-extras
+
+#
+# FINAL PYTHON
+#
+FROM python:${PYTHON_VERSION}-alpine
+
+RUN apk update && \
+    apk add --no-cache \
+      bash \
+      librdkafka
+
+COPY --from=ghcr.io/astral-sh/uv:0.4.18 /uv /bin/uv
+COPY --from=python-build /app /app
+COPY --from=python-build /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
 COPY --from=js /app/dist/index.js /app/src/shui/html/static/shui.js
 COPY --from=js /app/dist/style.css /app/src/shui/html/static/shui.css
-RUN uv sync --frozen --all-extras
+
+WORKDIR /app
 CMD ["uv", "run", "uvicorn", "shui.app:app", "--host=0.0.0.0", "--port=8000", "--proxy-headers", "--forwarded-allow-ips=*"]
