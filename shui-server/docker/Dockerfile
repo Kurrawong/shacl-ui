@@ -37,6 +37,8 @@ COPY --from=ghcr.io/astral-sh/uv:0.4.18 /uv /bin/uv
 
 ADD ./shui-server /app
 WORKDIR /app
+COPY --from=js /app/dist/index.js /app/src/shui/html/static/shui.js
+COPY --from=js /app/dist/style.css /app/src/shui/html/static/shui.css
 RUN uv sync --frozen --all-extras
 
 #
@@ -49,11 +51,7 @@ RUN apk update && \
       bash \
       librdkafka
 
-COPY --from=ghcr.io/astral-sh/uv:0.4.18 /uv /bin/uv
 COPY --from=python-build /app /app
-COPY --from=python-build /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
-COPY --from=js /app/dist/index.js /app/src/shui/html/static/shui.js
-COPY --from=js /app/dist/style.css /app/src/shui/html/static/shui.css
 
 WORKDIR /app
-CMD ["uv", "run", "uvicorn", "shui.app:app", "--host=0.0.0.0", "--port=8000", "--proxy-headers", "--forwarded-allow-ips=*"]
+CMD ["./.venv/bin/uvicorn", "shui.app:app", "--host=0.0.0.0", "--port=8000", "--proxy-headers", "--forwarded-allow-ips=*"]
