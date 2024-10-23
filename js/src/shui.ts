@@ -469,8 +469,13 @@ export class Shui {
 
     if (nodes.length) {
       for (const node of nodes) {
-        const query = shapeToSparql(node, this.store, this.shaclGraphName)
-        const modifiedQuery = sparqlAutoCompleteRewrite(query, classes, dataGraphName)
+        const query = shapeToSparql(
+          node as NamedNode,
+          this.store,
+          classes as NamedNode[],
+          this.shaclGraphName
+        )
+        const modifiedQuery = sparqlAutoCompleteRewrite(query, dataGraphName)
         const quadStream = await this._queryEngine.queryQuads(modifiedQuery, {
           sources: [this.store]
         })

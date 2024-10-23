@@ -14,6 +14,7 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX sdo: <https://schema.org/>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX shx: <http://www.w3.org/ns/shacl-x#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
@@ -120,11 +121,16 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         sh:name "Search Words" ;
         sh:path sdo:keywords ;
         sh:class skos:Concept ;
+        shx:targetGraph <urn:graph:vocabs> ;
         sh:node [
             sh:property [
                 sh:path skos:inScheme ;
                 sh:hasValue <https://linked.data.gov.au/def/GSWA-vocabulary-themes> ;
-            ]
+            ] ;
+            sh:property [
+                sh:path skos:prefLabel ;
+                dash:propertyRole dash:LabelRole ;
+            ] ;
         ] ;
         sh:order 3 ;
         sh:group gswa-shapes:Dataset-metadata-group ;

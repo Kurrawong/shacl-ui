@@ -1,7 +1,44 @@
-FROM ghcr.io/kurrawong/rdf-delta
+ARG NODE_VERSION=20.18.0
+ARG PNPM_VERSION=9.0.5
+ARG PYTHON_VERSION=3.13
 
-WORKDIR /opt/rdf-delta
+#
+# JS
+#
+FROM node:${NODE_VERSION} AS js
 
-COPY config.ttl /opt/rdf-delta/config.ttl
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
-CMD [ "/bin/bash", "-c", "/opt/rdf-delta/entrypoint.sh" ]
+RUN corepack enable && \
+    corepack install --global pnpm@${PNPM_VERSION}
+
+COPY js /app
+WORKDIR /app
+RUN rm -rf node_modules
+RUN pnpm install
+RUN pnpm run build-only
+
+#
+# PYTHON
+#
+FROM python:${PYTHON_VERSION}-alpine
+
+RUN apk update && \
+    apk add --no-cache \
+      bash \
+      gcc \
+      libffi-dev \
+      librdkafka-dev \
+      musl-dev \
+      python3-dev
+
+COPY --from=ghcr.io/astral-sh/uv:0.4.18 /uv /bin/uv
+
+ADD ./shui-server /app
+WORKDIR /app
+COPY --from=js /app/dist/index.js /app/src/shui/html/static/shui.js
+COPY --from=js /app/dist/style.css /app/src/shui/html/static/shui.css
+RUN uv sync --frozen --all-extras
+CMD ["uv", "run", "uvicorn", "shui.app:app", "--host=0.0.0.0", "--port=8000", "--proxy-headers", "--forwarded-allow-ips=*"]

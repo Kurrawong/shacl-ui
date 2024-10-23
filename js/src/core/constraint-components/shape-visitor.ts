@@ -1,6 +1,6 @@
 import type { BlankNode, NamedNode } from '@rdfjs/types'
 import type { Shape, UISchema } from '@/types'
-import { dash, sh } from '@/core/namespaces'
+import { dash, sh, shx } from '@/core/namespaces'
 import { DatatypeConstraintComponent } from '@/core/constraint-components/value-type/datatype'
 import { NodeKindConstraintComponent } from '@/core/constraint-components/value-type/node-kind'
 import { ConstraintComponent } from '@/core/constraint-components/constraint-component'
@@ -9,7 +9,8 @@ import { MinCountConstraintComponent } from '@/core/constraint-components/cardin
 import { MaxCountConstraintComponent } from '@/core/constraint-components/cardinality/max-count'
 import { ClassConstraintComponent } from '@/core/constraint-components/value-type/class'
 import { NodeConstraintComponent } from '@/core/constraint-components/shape-based/node'
-import { SingleLineConstraintComponent } from './dash/single-line'
+import { SingleLineConstraintComponent } from '@/core/constraint-components/dash/single-line'
+import { TargetGraphConstraintComponent } from '@/core/constraint-components/target-graph'
 
 const parameterConstraintComponentMap = new Map<
   string,
@@ -22,7 +23,8 @@ const parameterConstraintComponentMap = new Map<
   [sh.maxCount.value, (shape) => new MaxCountConstraintComponent(shape)],
   [sh.minCount.value, (shape) => new MinCountConstraintComponent(shape)],
   [sh.node.value, (shape) => new NodeConstraintComponent(shape)],
-  [sh.nodeKind.value, (shape) => new NodeKindConstraintComponent(shape)]
+  [sh.nodeKind.value, (shape) => new NodeKindConstraintComponent(shape)],
+  [shx.targetGraph.value, (shape) => new TargetGraphConstraintComponent(shape)]
 ])
 
 export function visitShape(

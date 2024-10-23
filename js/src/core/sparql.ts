@@ -9,6 +9,7 @@ import sparqljs from 'sparqljs'
 import { rdf, sh } from '@/core/namespaces'
 import SparqlParser = sparqljs.Parser
 import SparqlGenerator = sparqljs.Generator
+import { Store, type Quad_Graph } from 'n3'
 
 const $rdf = new Environment([NamespaceFactory, DatasetFactory, DataFactory, ClownfaceFactory])
 const parser = new SparqlParser()
@@ -23,6 +24,7 @@ const generator = new SparqlGenerator()
 export function shapeToSparql(
   shape: NamedNode | BlankNode,
   dataset: DatasetCore,
+  classes: NamedNode[],
   shaclGraphName: NamedNode | BlankNode | null
 ) {
   // TODO: Get the concise bounded description of the shape in its own dataset.
@@ -30,17 +32,26 @@ export function shapeToSparql(
   //       We need to ensure the rdf:type statement is there for the constructQuery
   //       function to work correctly.
 
-  const statement = $rdf.quad(shape, rdf.type, sh.NodeShape, shaclGraphName)
-  dataset.add(statement)
-  const ptr: GraphPointer = $rdf.clownface({ dataset, term: shape })
+  const statement = $rdf.quad(shape, rdf.type, sh.NodeShape, shaclGraphName as Quad_Graph)
+
+  const store = new Store()
+  store.add(statement)
+
+  for (const quad of dataset.match(null, null, null, shaclGraphName as Quad_Graph)) {
+    store.addQuad(quad)
+  }
+
+  const ptr: GraphPointer = $rdf.clownface({ dataset: store, term: shape })
+  for (const cls of classes) {
+    ptr.addOut(sh.property, (property) => {
+      property.addOut(sh.path, rdf.type).addOut(sh.hasValue, cls)
+    })
+  }
+
   return constructQuery(ptr)
 }
 
-export function sparqlAutoCompleteRewrite(
-  query: string,
-  classes: NamedNode[],
-  graphName: NamedNode | BlankNode
-) {
+export function sparqlAutoCompleteRewrite(query: string, graphName: NamedNode | BlankNode) {
   const ast = parser.parse(query)
   ast['from'] = {
     default: [
@@ -50,31 +61,6 @@ export function sparqlAutoCompleteRewrite(
       }
     ],
     named: []
-  }
-
-  const where = ast['where']
-  if (where.length) {
-    const triples = where[0]?.['triples']
-    if (triples.length) {
-      for (const c of classes) {
-        triples.push({
-          subject: {
-            termType: 'Variable',
-            value: 'resource1'
-          },
-          predicate: {
-            termType: 'NamedNode',
-            value: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
-          },
-          object: {
-            termType: 'NamedNode',
-            value: c.value
-          }
-        })
-      }
-    }
-  } else {
-    throw Error()
   }
 
   return generator.stringify(ast)

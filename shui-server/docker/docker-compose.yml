@@ -10,7 +10,7 @@ services:
       - rdf-delta-data:/opt/rdf-delta/databases
     command: java -jar /opt/rdf-delta/rdf-delta-server.jar --base /opt/rdf-delta/databases --file
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:1066" ]
+      test: ["CMD", "curl", "-f", "http://localhost:1066"]
       interval: 5s
       timeout: 10s
       retries: 3
@@ -21,6 +21,7 @@ services:
       - stack
     build:
       context: .
+      dockerfile: Dockerfile.fuseki
     container_name: fuseki
     ports:
       - 9998:3030
@@ -86,7 +87,7 @@ services:
   asb-rdf-delta-consumer:
     profiles:
       - stack
-    image: ghcr.io/kurrawong/gswa-rdf-delta-consumer:0.1.3
+    image: ghcr.io/kurrawong/gswa-rdf-delta-consumer:0.1.5
     environment:
       - DELTA_CONSUMER__CONN_STR=Endpoint=sb://gswaservicebus.servicebus.windows.net/;SharedAccessKeyName=testSAP;SharedAccessKey=yLGmjFj9bYA2DDeEEi2VOYMrUmza5urAW+ASbFXC428=
       - DELTA_CONSUMER__SUBSCRIPTION=rdf-patch-consumer
@@ -96,6 +97,24 @@ services:
     depends_on:
       rdf-delta-server:
         condition: service_healthy
+
+  app:
+    profiles:
+      - stack
+    build:
+      context: ../../
+      dockerfile: shui-server/docker/Dockerfile
+    ports:
+      - 8001:8000
+    depends_on:
+      fuseki:
+        condition: service_healthy
+    env_file:
+      - ../.env
+    environment:
+      - SHUI__SPARQL_ENDPOINT=http://fuseki:3030/ds
+      - SHUI_KAFKA__BOOTSTRAP_SERVER=kafka:9997
+      - SHUI__REDIS_CONNECTION=redis://redis:6379
 
 volumes:
   rdf-delta-data:
