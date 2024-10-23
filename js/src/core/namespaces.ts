@@ -7,4 +7,5 @@ export const rdfs: NamespaceBuilder = $rdf.namespace('http://www.w3.org/2000/01/
 export const sdo: NamespaceBuilder = $rdf.namespace('https://schema.org/')
 export const skos: NamespaceBuilder = $rdf.namespace('http://www.w3.org/2004/02/skos/core#')
 export const sh: NamespaceBuilder = $rdf.namespace('http://www.w3.org/ns/shacl#')
+export const shx: NamespaceBuilder = $rdf.namespace('http://www.w3.org/ns/shacl-x#')
 export const xsd: NamespaceBuilder = $rdf.namespace('http://www.w3.org/2001/XMLSchema#')
