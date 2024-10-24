@@ -1,5 +1,13 @@
-import redis.asyncio
+from redis.asyncio import Redis
+from redis.exceptions import ConnectionError
 
 from shui.settings import settings
 
-redis = redis.asyncio.from_url(settings.redis_connection, decode_responses=True)
+redis = Redis(
+    host=settings.redis_host,
+    port=settings.redis_port,
+    password=settings.redis_password,
+    ssl=settings.redis_ssl,
+    decode_responses=True,
+    retry_on_error=[ConnectionError],
+)
