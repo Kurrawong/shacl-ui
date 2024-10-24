@@ -7,6 +7,7 @@ from azure.servicebus import ServiceBusMessage, TransportType
 from azure.servicebus.aio import ServiceBusClient
 from loguru import logger
 from rdflib import SDO, Graph, URIRef
+from shui.settings import settings
 
 SUPPORTED_FORMATS = ["application/rdf-patch", "text/turtle", "application/trig"]
 path = pathlib.Path(__file__).parent.absolute()
@@ -48,8 +49,8 @@ async def main(content_type: str, filename: str, session_id: str):
         content = file.read()
         graph = Graph().parse(data=content, format=content_type)
         async with Client(
-            "Endpoint=sb://gswaservicebus.servicebus.windows.net/;SharedAccessKeyName=testSAP;SharedAccessKey=ebuQ1+rDYiVUA+IAhoOt9qE6lQHOirGi4+ASbOPweG4=",
-            "rdf-patch-log",
+            conn_str=settings.service_bus.conn_str,
+            topic=settings.service_bus.topic
         ) as client:
             metadata = {
                 SDO.encodingFormat: content_type,
