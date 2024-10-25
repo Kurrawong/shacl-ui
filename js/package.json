@@ -19,7 +19,8 @@
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.config.js",
-    "main": "tsx src/shui.ts"
+    "main": "tsx src/shui.ts",
+    "prepare": "vite build"
   },
   "dependencies": {
     "@comunica/query-sparql": "^3.2.3",
