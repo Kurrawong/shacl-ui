@@ -8,5 +8,6 @@ import 'primeicons/primeicons.css'
 import Aura from '@/presets/aura'
 
 import ShuiForm from '@/components/ShuiForm.vue'
+import VocPubEditor from '@/components/vocpub/VocPubEditor.vue'
 
-export { createApp, PrimeVue, Aura, Tooltip, ToastService, ShuiForm }
+export { createApp, PrimeVue, Aura, Tooltip, ToastService, ShuiForm, VocPubEditor }
