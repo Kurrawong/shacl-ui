@@ -42,6 +42,11 @@
     "vue-router": "^4.4.0",
     "xstate": "^5.18.2"
   },
+  "peerDependencies": {
+    "vue": "^3.4.29",
+    "primevue": "3.53.0",
+    "primeicons": "^7.0.0",
+  },
   "devDependencies": {
     "@babel/core": "^7.24.7",
     "@babel/preset-env": "^7.24.7",
