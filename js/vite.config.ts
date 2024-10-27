@@ -18,7 +18,25 @@ export default defineConfig({
     },
     rollupOptions: {
       // Externalize deps that shouldn't be bundled into the library.
-      external: ['vue', 'primevue', 'primeicons'],
+      external: [
+        'vue',
+        'primevue',
+        '@comunica/query-sparql',
+        '@hydrofoil/shape-to-query',
+        '@rdfjs/data-model',
+        '@rdfjs/dataset',
+        '@xstate/vue',
+        'clownface',
+        'grapoi',
+        'n3',
+        'primeicons',
+        'rdf-ext',
+        'shacl-engine',
+        'sparqljs',
+        'uuid',
+        'vue-codemirror',
+        'xstate'
+      ],
       output: {
         globals: {
           vue: 'Vue',
