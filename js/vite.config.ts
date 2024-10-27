@@ -3,6 +3,18 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
+function preserveSubpathImports() {
+  return {
+    name: 'preserve-subpath-imports',
+    resolveId(id: string, importer: any) {
+      // Preserve the exact import paths for these specific imports
+      if (id === '@rdfjs/data-model/Factory' || id === 'clownface/Factory') {
+        return { id, external: true, moduleSideEffects: false }
+      }
+    }
+  }
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
@@ -44,7 +56,11 @@ export default defineConfig({
         },
         // Add this to create a separate chunk for composables
         preserveModules: true,
-        preserveModulesRoot: 'src'
+        preserveModulesRoot: 'src',
+        paths: {
+          '@rdfjs/data-model/Factory': '@rdfjs/data-model/Factory',
+          'clownface/Factory': 'clownface/Factory'
+        }
       }
     },
     sourcemap: true,
@@ -53,7 +69,7 @@ export default defineConfig({
     // Leave minification up to applications.
     minify: false
   },
-  plugins: [vue()],
+  plugins: [vue(), preserveSubpathImports()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
