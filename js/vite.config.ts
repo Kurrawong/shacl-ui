@@ -2,19 +2,6 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { resolve } from 'path'
-
-function preserveSubpathImports() {
-  return {
-    name: 'preserve-subpath-imports',
-    resolveId(id: string, importer: any) {
-      // Preserve the exact import paths for these specific imports
-      if (id === '@rdfjs/data-model/Factory' || id === 'clownface/Factory') {
-        return { id, external: true, moduleSideEffects: false }
-      }
-    }
-  }
-}
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -37,9 +24,11 @@ export default defineConfig({
         '@comunica/query-sparql',
         '@hydrofoil/shape-to-query',
         '@rdfjs/data-model',
+        '@rdfjs/data-model/Factory',
         '@rdfjs/dataset',
         '@xstate/vue',
         'clownface',
+        'clownface/Factory',
         'grapoi',
         'n3',
         'primeicons',
@@ -58,10 +47,6 @@ export default defineConfig({
         // Add this to create a separate chunk for composables
         preserveModules: true,
         preserveModulesRoot: 'src',
-        paths: {
-          '@rdfjs/data-model/Factory': '@rdfjs/data-model/Factory',
-          'clownface/Factory': 'clownface/Factory'
-        }
       }
     },
     sourcemap: true,
@@ -70,12 +55,10 @@ export default defineConfig({
     // Leave minification up to applications.
     minify: false
   },
-  plugins: [vue(), preserveSubpathImports()],
+  plugins: [vue()],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '@rdfjs/data-model': resolve(__dirname, 'node_modules/@rdfjs/data-model'),
-      clownface: resolve(__dirname, 'node_modules/clownface')
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   }
 })
