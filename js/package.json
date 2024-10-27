@@ -20,7 +20,7 @@
     "./core/namespaces": {
       "import": "./dist/core/namespaces.js"
     },
-    "./style.css": "./dist/style.css"
+    "./styles/style.css": "./dist/style.css"
   },
   "scripts": {
     "dev": "vite",
