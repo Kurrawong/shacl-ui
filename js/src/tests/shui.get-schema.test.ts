@@ -156,8 +156,8 @@ test('Simple NodeShape extraction of UI schema', async () => {
   `)
   const schema = await shui.getSchema(
     namedNode('https://example.com/aussies/Holger'),
-    namedNode('https://example.com/aushapes/AustralianPersonShape'),
-    namedNode('urn:graph:data')
+    namedNode('urn:graph:data'),
+    namedNode('https://example.com/aushapes/AustralianPersonShape')
   )
 
   expect(

@@ -1,8 +1,10 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import type { Quad } from '@rdfjs/types'
-import { Shui } from '@/shui'
+import { Shui } from '@/core/shui'
 
 const shui = ref(new Shui())
+const _serverMode = ref(false)
+const _sparqlUrl = ref('')
 
 export function useShui() {
   const addQuads = (newQuads: Quad[]) => {
@@ -30,11 +32,27 @@ export function useShui() {
     shui.value = new Shui()
   }
 
+  const serverMode = computed(() => _serverMode.value)
+
+  const setServerMode = (value: boolean) => {
+    _serverMode.value = value
+  }
+
+  const sparqlUrl = computed(() => _sparqlUrl.value)
+
+  const setSparqlUrl = (value: string) => {
+    _sparqlUrl.value = value
+  }
+
   return {
     shui,
     addQuads,
     removeQuads,
     parse,
-    reset
+    reset,
+    serverMode,
+    setServerMode,
+    sparqlUrl,
+    setSparqlUrl
   }
 }

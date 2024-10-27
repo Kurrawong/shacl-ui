@@ -3,7 +3,7 @@ import { computed, toRef } from 'vue'
 import type { BlankNode, NamedNode } from '@rdfjs/types'
 
 import PredicateObjectValues from '@/components/PredicateObjectValues.vue'
-import { SBlankNode, type SNamedNode } from '@/shui'
+import { SBlankNode, type SNamedNode } from '@/core/shui'
 import type { PredicateConstraints } from '@/types'
 import AddNewPredicate from '@/components/AddNewPredicate.vue'
 

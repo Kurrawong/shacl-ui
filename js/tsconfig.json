@@ -6,9 +6,8 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "esModuleInterop": true
+    "esModuleInterop": true,
   },
-  "files": [],
   "references": [
     {
       "path": "./tsconfig.node.json"

@@ -1,26 +1,30 @@
+import type { BlankNode, NamedNode } from '@rdfjs/types'
 import type { Shape, UISchema } from '@/types'
-import { sh } from '@/core/namespaces'
+import { dash, sh, shx } from '@/core/namespaces'
 import { DatatypeConstraintComponent } from '@/core/constraint-components/value-type/datatype'
 import { NodeKindConstraintComponent } from '@/core/constraint-components/value-type/node-kind'
 import { ConstraintComponent } from '@/core/constraint-components/constraint-component'
-import type { BlankNode, NamedNode } from '@rdfjs/types'
 import { PropertyConstraintComponent } from '@/core/constraint-components/shape-based/property'
 import { MinCountConstraintComponent } from '@/core/constraint-components/cardinality/min-count'
 import { MaxCountConstraintComponent } from '@/core/constraint-components/cardinality/max-count'
 import { ClassConstraintComponent } from '@/core/constraint-components/value-type/class'
 import { NodeConstraintComponent } from '@/core/constraint-components/shape-based/node'
+import { SingleLineConstraintComponent } from '@/core/constraint-components/dash/single-line'
+import { TargetGraphConstraintComponent } from '@/core/constraint-components/target-graph'
 
 const parameterConstraintComponentMap = new Map<
   string,
   (shape: Shape) => ConstraintComponent | null
 >([
+  [dash.singleLine.value, (shape) => new SingleLineConstraintComponent(shape)],
   [sh.class.value, (shape) => new ClassConstraintComponent(shape)],
   [sh.datatype.value, (shape) => new DatatypeConstraintComponent(shape)],
   [sh.property.value, (shape) => new PropertyConstraintComponent(shape)],
   [sh.maxCount.value, (shape) => new MaxCountConstraintComponent(shape)],
   [sh.minCount.value, (shape) => new MinCountConstraintComponent(shape)],
   [sh.node.value, (shape) => new NodeConstraintComponent(shape)],
-  [sh.nodeKind.value, (shape) => new NodeKindConstraintComponent(shape)]
+  [sh.nodeKind.value, (shape) => new NodeKindConstraintComponent(shape)],
+  [shx.targetGraph.value, (shape) => new TargetGraphConstraintComponent(shape)]
 ])
 
 export function visitShape(
@@ -39,9 +43,9 @@ export function visitShape(
     const constraintComponentFunction = parameterConstraintComponentMap.get(parameter.value)
     if (constraintComponentFunction) {
       const constraintComponent = constraintComponentFunction(shape)
-      if (constraintComponent !== null && !doneConstraints.has(constraintComponent.type)) {
+      if (constraintComponent !== null && !doneConstraints.has(constraintComponent.type.value)) {
         constraintComponent.evaluateUserInterface(focusNode, shapesGraphName, schema)
-        doneConstraints.add(constraintComponent.type)
+        doneConstraints.add(constraintComponent.type.value)
       }
     }
   }

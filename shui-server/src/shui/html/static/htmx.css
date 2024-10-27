@@ -1,0 +1,12 @@
+.htmx-indicator{
+    display:none;
+}
+.htmx-request .htmx-indicator{
+    display:inline;
+}
+.htmx-request.htmx-indicator{
+    display:inline;
+}
+#page-loading-indicator:not(.htmx-request) {
+    display: none;
+}

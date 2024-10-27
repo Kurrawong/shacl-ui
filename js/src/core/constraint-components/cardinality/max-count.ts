@@ -1,7 +1,6 @@
 import { ConstraintComponent } from '@/core/constraint-components/constraint-component'
-import type { Shape, UISchema } from '@/types'
+import type { Shape } from '@/types'
 import { sh, xsd } from '@/core/namespaces'
-import type { BlankNode, NamedNode } from '@rdfjs/types'
 
 export class MaxCountConstraintComponent extends ConstraintComponent {
   _maxCount
@@ -24,7 +23,7 @@ export class MaxCountConstraintComponent extends ConstraintComponent {
 
     if (!shape.isPropertyShape) {
       throw Error(
-        `MaxCountConstraintComponent can only be present on a PropertyShape, not a NodeShape. See property shape ${shape.ptr.term.id}`
+        `MaxCountConstraintComponent can only be present on a PropertyShape, not a NodeShape. See shape ${shape.ptr.term.id}`
       )
     }
 
@@ -49,18 +48,10 @@ export class MaxCountConstraintComponent extends ConstraintComponent {
   }
 
   get type() {
-    return 'MaxCountConstraintComponent'
+    return sh.MaxCountConstraintComponent
   }
 
   get maxCount() {
     return this._maxCount
-  }
-
-  evaluateUserInterface(
-    focusNode: NamedNode | BlankNode,
-    shapesGraphName: NamedNode | BlankNode,
-    schema: UISchema
-  ) {
-    this.addToUISchema(focusNode, schema)
   }
 }
