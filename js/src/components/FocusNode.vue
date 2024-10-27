@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, toRef, watch } from 'vue'
 import Fieldset from 'primevue/fieldset'
-import { SBlankNode, type SNamedNode } from '@/shui'
+import { SBlankNode, type SNamedNode } from '@/core/shui'
 import { useShui } from '@/composables/shui'
 import type { PredicateConstraints, PropertyGroupsMap, UISchema } from '@/types'
 import PredicatesObjectValues from '@/components/PredicatesObjectValues.vue'

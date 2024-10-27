@@ -9,24 +9,33 @@ export default defineConfig({
     lib: {
       entry: 'src/index.ts',
       formats: ['es'],
-      fileName: 'index',
+      fileName: (format, entryName) => {
+        if (entryName === 'index') {
+          return `index.js`
+        }
+        return `${entryName}.js`
+      }
     },
     rollupOptions: {
       // Externalize deps that shouldn't be bundled into the library.
-      external: ['vue'],
+      external: ['vue', 'primevue', 'primeicons'],
       output: {
-        inlineDynamicImports: true
+        globals: {
+          vue: 'Vue',
+          primevue: 'PrimeVue'
+        },
+        // Add this to create a separate chunk for composables
+        preserveModules: true,
+        preserveModulesRoot: 'src'
       }
     },
     sourcemap: true,
     // Reduce bloat from legacy polyfills.
     target: 'esnext',
     // Leave minification up to applications.
-    minify: false,
+    minify: false
   },
-  plugins: [
-    vue(),
-  ],
+  plugins: [vue()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

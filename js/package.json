@@ -4,9 +4,22 @@
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
+  "files": [
+    "dist/*"
+  ],
   "exports": {
-    ".": "./dist/index.js",
-    "./package.json": "./package.json"
+    ".": {
+      "import": "./dist/index.js"
+    },
+    "./composables/shui": {
+      "import": "./dist/composables/shui.js"
+    },
+    "./types": {
+      "import": "./dist/types/index.js"
+    },
+    "./core/namespaces": {
+      "import": "./dist/core/namespaces.js"
+    }
   },
   "scripts": {
     "dev": "vite",
