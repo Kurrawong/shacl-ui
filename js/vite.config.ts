@@ -20,15 +20,13 @@ export default defineConfig({
       // Externalize deps that shouldn't be bundled into the library.
       external: [
         'vue',
-        'primevue',
+        /^primevue(.*)$/,
+        /^@rdfjs\/data-model(.*)$/,
+        /^clownface(.*)$/,
         '@comunica/query-sparql',
         '@hydrofoil/shape-to-query',
-        '@rdfjs/data-model',
-        '@rdfjs/data-model/Factory',
         '@rdfjs/dataset',
         '@xstate/vue',
-        'clownface',
-        'clownface/Factory',
         'grapoi',
         'n3',
         'primeicons',
@@ -42,11 +40,13 @@ export default defineConfig({
       output: {
         globals: {
           vue: 'Vue',
-          primevue: 'PrimeVue'
+          primevue: 'PrimeVue',
+          '@rdfjs/data-model': 'RdfJsDataModel',
+          clownface: 'Clownface'
         },
         // Add this to create a separate chunk for composables
         preserveModules: true,
-        preserveModulesRoot: 'src',
+        preserveModulesRoot: 'src'
       }
     },
     sourcemap: true,
@@ -58,7 +58,11 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      // Add an alias for PrimeVue
+      primevue: 'primevue',
+      '@rdfjs/data-model': '@rdfjs/data-model',
+      clownface: 'clownface'
     }
   }
 })
