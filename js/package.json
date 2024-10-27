@@ -19,7 +19,8 @@
     },
     "./core/namespaces": {
       "import": "./dist/core/namespaces.js"
-    }
+    },
+    "./style.css": "./dist/style.css"
   },
   "scripts": {
     "dev": "vite",
