@@ -28,7 +28,7 @@ import { getWidgets, type ObjectParam } from '@/core/widgets/score-widget'
 import {
   ConstraintComponent,
   DEFAULT_SH_ORDER_VALUE
-} from './core/constraint-components/constraint-component'
+} from './constraint-components/constraint-component'
 import { ClassConstraintComponent } from '@/core/constraint-components/value-type/class'
 import { NodeConstraintComponent } from '@/core/constraint-components/shape-based/node'
 import { shapeToSparql, sparqlAutoCompleteRewrite } from '@/core/sparql'
