@@ -20,6 +20,9 @@
     "./core/namespaces": {
       "import": "./dist/core/namespaces.js"
     },
+    "./core/shui": {
+      "import": "./dist/core/shui.js"
+    },
     "./styles/style.css": "./dist/style.css"
   },
   "scripts": {
