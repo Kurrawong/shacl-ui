@@ -52,6 +52,8 @@ RUN apk update && \
       curl \
       librdkafka
 
+RUN apk upgrade
+
 COPY --from=python-build /app /app
 
 WORKDIR /app
