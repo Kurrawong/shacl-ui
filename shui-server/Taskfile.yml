@@ -23,8 +23,8 @@ tasks:
       - docker compose -f {{.COMPOSE_FILE}} --profile stack up -d
       #      - uv run docker/file_producer.py main docker/data/catalogs.trig --format application/trig
       #      - uv run docker/file_producer.py main docker/data/users.trig --format application/trig
-      - uv run docker/asb_file_producer.py rdf-patch-log data/catalogs.trig main --format application/trig
-      - uv run docker/asb_file_producer.py rdf-patch-log data/users.trig main --format application/trig
+      - uv run docker/asb_file_producer.py data/catalogs.trig --format application/trig
+      - uv run docker/asb_file_producer.py data/users.trig --format application/trig
 
   dev:down:
     cmd: docker compose -f {{.COMPOSE_FILE}} --profile stack down
@@ -35,6 +35,9 @@ tasks:
   dev:query:
     desc: Test connection with a query to Fuseki instance
     cmd: rsparql --service http://localhost:9998/ds --query query.rq
+
+  dev:
+    cmd: uv run python src/dev.py
 
   build:
     cmd: docker build -f docker/Dockerfile -t cms ../
