@@ -9,60 +9,27 @@ export default defineConfig({
     lib: {
       entry: 'src/index.ts',
       formats: ['es'],
-      fileName: (format, entryName) => {
-        if (entryName === 'index') {
-          return `index.js`
-        }
-        return `${entryName}.js`
-      }
+      fileName: 'index',
     },
     rollupOptions: {
       // Externalize deps that shouldn't be bundled into the library.
-      external: [
-        'vue',
-        /^primevue(.*)$/,
-        /^@rdfjs\/data-model(.*)$/,
-        /^clownface(.*)$/,
-        '@comunica/query-sparql',
-        '@hydrofoil/shape-to-query',
-        '@rdfjs/dataset',
-        '@xstate/vue',
-        'grapoi',
-        'n3',
-        'primeicons',
-        'rdf-ext',
-        'shacl-engine',
-        'sparqljs',
-        'uuid',
-        'vue-codemirror',
-        'xstate'
-      ],
+      external: ['vue'],
       output: {
-        globals: {
-          vue: 'Vue',
-          primevue: 'PrimeVue',
-          '@rdfjs/data-model': 'RdfJsDataModel',
-          clownface: 'Clownface'
-        },
-        // Add this to create a separate chunk for composables
-        preserveModules: true,
-        preserveModulesRoot: 'src'
+        inlineDynamicImports: true
       }
     },
     sourcemap: true,
     // Reduce bloat from legacy polyfills.
     target: 'esnext',
     // Leave minification up to applications.
-    minify: false
+    minify: false,
   },
-  plugins: [vue()],
+  plugins: [
+    vue(),
+  ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-      // Add an alias for PrimeVue
-      primevue: 'primevue',
-      '@rdfjs/data-model': '@rdfjs/data-model',
-      clownface: 'clownface'
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   }
 })
