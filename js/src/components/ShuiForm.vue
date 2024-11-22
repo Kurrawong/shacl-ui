@@ -37,7 +37,7 @@ const isSaving = ref(false)
 
 onMounted(() => {
   reset()
-  const parser = new Parser()
+  const parser = new Parser({ blankNodePrefix: '' })
 
   const quads = parser
     .parse(props.data)
