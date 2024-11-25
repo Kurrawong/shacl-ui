@@ -20,6 +20,7 @@ dependencies = [
     "starlette-wtf>=0.4.5",
     "pyld>=2.0.4",
     "beautifulsoup4>=4.12.3",
+    "starlette>=0.38.2",
 ]
 
 [project.optional-dependencies]
