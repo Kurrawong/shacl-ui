@@ -31,7 +31,7 @@ import {
 } from './constraint-components/constraint-component'
 import { ClassConstraintComponent } from '@/core/constraint-components/value-type/class'
 import { NodeConstraintComponent } from '@/core/constraint-components/shape-based/node'
-import { shapeToSparql, sparqlAutoCompleteRewrite } from '@/core/sparql'
+import { shapeToSparql, rewriteSparqlAutoComplete } from '@/core/sparql'
 import { skos, rdfs } from '@/core/namespaces'
 import quad = DataFactory.quad
 
@@ -475,7 +475,7 @@ export class Shui {
           classes as NamedNode[],
           this.shaclGraphName
         )
-        const modifiedQuery = sparqlAutoCompleteRewrite(query, dataGraphName)
+        const modifiedQuery = rewriteSparqlAutoComplete(query, null, dataGraphName)
         const quadStream = await this._queryEngine.queryQuads(modifiedQuery, {
           sources: [this.store]
         })

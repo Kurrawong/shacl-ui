@@ -1,10 +1,10 @@
 import { expect, test } from '@jest/globals'
-import { sparqlAutoCompleteRewrite } from '@/core/sparql'
+import { rewriteSparqlAutoComplete } from '@/core/sparql'
 import { DataFactory } from 'n3'
 import namedNode = DataFactory.namedNode
 
 test('', () => {
-  const query = sparqlAutoCompleteRewrite(
+  const query = rewriteSparqlAutoComplete(
     `
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
     CONSTRUCT { ?resource1 skos:inScheme ?resource2. }
