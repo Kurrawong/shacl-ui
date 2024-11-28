@@ -51,8 +51,7 @@ async def main(content_type: str, filename: str):
         content = file.read()
         graph = Graph().parse(data=content, format=content_type)
         async with Client(
-            settings.service_bus.conn_str,
-            settings.service_bus.topic,
+            conn_str=settings.service_bus.conn_str, topic=settings.service_bus.topic
         ) as client:
             metadata = {
                 SDO.encodingFormat: content_type,
