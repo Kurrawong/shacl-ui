@@ -83,20 +83,8 @@ services:
     depends_on:
       rdf-delta-server:
         condition: service_healthy
-
-  asb-rdf-delta-consumer:
-    profiles:
-      - stack
-    image: ghcr.io/kurrawong/gswa-rdf-delta-consumer:0.1.5
-    environment:
-      - DELTA_CONSUMER__CONN_STR=Endpoint=sb://gswaservicebus.servicebus.windows.net/;SharedAccessKeyName=testSAP;SharedAccessKey=yLGmjFj9bYA2DDeEEi2VOYMrUmza5urAW+ASbFXC428=
-      - DELTA_CONSUMER__SUBSCRIPTION=rdf-patch-consumer
-      - DELTA_CONSUMER__TOPIC=rdf-patch-log
-      - DELTA_CONSUMER__SESSION_ID=main
-      - DELTA_CONSUMER__RDF_DELTA_URL=http://rdf-delta-server:1066
-    depends_on:
-      rdf-delta-server:
-        condition: service_healthy
+  
+  # run asb consumer separately.
 
   app:
     profiles:
