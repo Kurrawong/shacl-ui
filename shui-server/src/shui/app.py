@@ -4,6 +4,7 @@ from typing import Awaitable, Callable
 
 from fastapi import FastAPI, Request, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 from starlette_wtf import CSRFProtectMiddleware
@@ -41,6 +42,7 @@ def register_routers(app: FastAPI):
 
 
 def register_middlewares(app: FastAPI):
+
     app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
     app.add_middleware(CSRFProtectMiddleware, csrf_secret=settings.secret_key)
 
@@ -76,6 +78,13 @@ def register_middlewares(app: FastAPI):
         return response
 
     app.add_middleware(NavMiddleware)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     # @app.middleware("breadcrumbs_middleware")
     # async def breadcrumbs_middleware(request: Request, call_next):

@@ -10,6 +10,7 @@ from rdflib import RDF, Graph, URIRef
 
 from shui.clients.sparql_client import SparqlClient, get_sparql_client
 from shui.namespaces import CRUD
+from shui.mime_types import N_TRIPLES
 
 GRAPH_NAME = "urn:system:graph:crud"
 
@@ -90,9 +91,9 @@ class ContentTypeService:
                 """
             ).render(graph_name=GRAPH_NAME)
         )
-        result = await client.post(query, accept="text/turtle")
+        result, _ = await client.post(query, accept=N_TRIPLES)
         graph = Graph()
-        graph.parse(data=result, format="turtle")
+        graph.parse(data=result, format=N_TRIPLES)
         doc = json.loads(graph.serialize(format="json-ld"))
         framed = jsonld.frame(doc, frame, {"omitGraph": False})
         values = [ContentType(**item) for item in framed["@graph"]]
@@ -114,9 +115,9 @@ class ContentTypeService:
                 """
             ).render(graph_name=GRAPH_NAME, content_type_id=content_type_id)
         )
-        result = await client.post(query, accept="text/turtle")
+        result, _ = await client.post(query, accept=N_TRIPLES)
         graph = Graph()
-        graph.parse(data=result, format="turtle")
+        graph.parse(data=result, format=N_TRIPLES)
         doc = json.loads(graph.serialize(format="json-ld"))
         framed = jsonld.frame(doc, frame)
         if "@graph" not in framed and "@id" not in framed:

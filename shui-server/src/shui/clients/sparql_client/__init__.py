@@ -1,7 +1,6 @@
 import json
 import logging
 import time
-from typing import Tuple, Union
 
 import httpx
 from pydantic import ValidationError
@@ -26,7 +25,7 @@ class SparqlClient(Client):
         sparql_endpoint: str,
         sparql_update_endpoint: str = None,
         timeout: int = 60,
-        auth: Tuple[Union[str, bytes], Union[str, bytes]] = None,
+        auth: tuple[str | bytes, str | bytes] = None,
     ) -> None:
         self._sparql_endpoint = sparql_endpoint
         self._sparql_update_endpoint = (
@@ -41,7 +40,7 @@ class SparqlClient(Client):
         query: str,
         is_update: bool = False,
         accept: str = "application/sparql-results+json",
-    ) -> SparqlJsonResults | SparqlBooleanResults | str | None:
+    ) -> tuple[SparqlJsonResults | SparqlBooleanResults | str | None, str | None]:
         # TODO: Add sparql parsing to check and prevent sending sparql update queries.
         if is_update:
             raise ValueError("SPARQL Update not supported with this client.")
@@ -74,21 +73,25 @@ class SparqlClient(Client):
             ) from err
 
         if response.status_code == 204:
-            return None
+            return None, response.headers.get("content-type")
 
         if "application/sparql-results+json" in response.headers.get("Content-Type"):
             data = response.json()
             try:
-                return SparqlBooleanResults(**data)
+                return SparqlBooleanResults(**data), response.headers.get(
+                    "content-type"
+                )
             except ValidationError:
                 try:
-                    return SparqlJsonResults(**data)
+                    return SparqlJsonResults(**data), response.headers.get(
+                        "content-type"
+                    )
                 except ValidationError as err:
                     raise SparqlResponseError(
                         f"Could not parse JSON SPARQL response to model. \n{json.dumps(data, indent=2)}\nError: {err}"
                     )
-        else:
-            return response.text
+
+        return response.text, response.headers.get("content-type")
 
     async def __aenter__(self):
         return self

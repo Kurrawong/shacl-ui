@@ -5,6 +5,8 @@ from abc import ABC, abstractmethod
 from pydantic import BaseModel, ConfigDict, Field
 from rdflib import SDO
 
+from shui.mime_types import RDF_PATCH_BODY
+
 
 class EventHeader(BaseModel):
     """
@@ -32,9 +34,9 @@ class EventHeader(BaseModel):
         ),
         alias=SDO.dateCreated,
     )
-    encoding_format: str = Field("application/rdf-patch-body", alias=SDO.encodingFormat)
-    schema_version: str = Field(
-        "https://spatial-information-qld.github.io/ladb-schemas/schema.ttl",
+    encoding_format: str = Field(RDF_PATCH_BODY, alias=SDO.encodingFormat)
+    schema_version: str | None = Field(
+        None,
         alias=SDO.schemaVersion,
     )
 

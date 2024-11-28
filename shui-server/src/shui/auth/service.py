@@ -9,6 +9,7 @@ from loguru import logger
 from rdflib import RDF, SDO, Graph, Literal
 
 from shui.clients.sparql_client import SparqlClient
+from shui.mime_types import TURTLE
 
 from .models import UserCreateDb
 from .namespaces import OLIS
@@ -60,7 +61,7 @@ class UserService(BaseUserDatabase):
                 """
             ).render(iri=id, graph_name=GRAPH_NAME)
         )
-        result = await client.post(query, accept="text/turtle")
+        result, _ = await client.post(query, accept=TURTLE)
         try:
             return self._to_model(result)
         except Exception:
@@ -87,7 +88,7 @@ class UserService(BaseUserDatabase):
                 """
             ).render(email=email, graph_name=GRAPH_NAME)
         )
-        result = await client.post(query, accept="text/turtle")
+        result, _ = await client.post(query, accept=TURTLE)
         try:
             return self._to_model(result)
         except Exception:

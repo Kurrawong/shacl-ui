@@ -9,6 +9,7 @@ from rdflib import SDO, Graph
 
 from shui.change_event import ChangeEventService, get_change_event_service
 from shui.clients.sparql_client import SparqlClient, get_sparql_client
+from shui.mime_types import N_TRIPLES, JSON_LD
 
 
 class ChangeEventAgent(BaseModel):
@@ -52,7 +53,7 @@ class RecordService:
                 """
             ).render(iri=iri, graph_name=graph_name)
         )
-        result = await client.post(query, accept="text/turtle")
+        result, _ = await client.post(query, accept=N_TRIPLES)
         return result
 
     async def create_change_event(
@@ -133,9 +134,9 @@ class RecordService:
                 offset=(page - 1) * per_page,
             )
         )
-        result = await client.post(query)
-        graph = Graph().parse(data=result)
-        doc = json.loads(graph.serialize(format="application/ld+json"))
+        result, content_type = await client.post(query)
+        graph = Graph().parse(data=result, format=content_type)
+        doc = json.loads(graph.serialize(format=JSON_LD))
         framed = jsonld.frame(
             doc,
             {

@@ -10,6 +10,7 @@ from rdflib import RDF, Graph
 from shui.clients.sparql_client import SparqlClient, get_sparql_client
 from shui.content_type import ContentTypeService
 from shui.namespaces import CRUD
+from shui.mime_types import N_TRIPLES
 
 frame = {
     "@context": {
@@ -130,8 +131,8 @@ class CollectionService:
                 q=q,
             )
         )
-        result = await client.post(query, accept="text/turtle")
-        graph = Graph().parse(data=result)
+        result, _ = await client.post(query, accept=N_TRIPLES)
+        graph = Graph().parse(data=result, format=N_TRIPLES)
         value = next(graph.objects())
         if value is None:
             raise ValueError("Failed to get the count.")
@@ -202,9 +203,9 @@ class CollectionService:
                 offset=offset,
             )
         )
-        result = await client.post(query, accept="text/turtle")
+        result, _ = await client.post(query, accept=N_TRIPLES)
         graph = Graph()
-        graph.parse(data=result, format="turtle")
+        graph.parse(data=result, format=N_TRIPLES)
         doc = json.loads(graph.serialize(format="json-ld"))
         framed = jsonld.frame(doc, frame, {"omitGraph": False})
         values = [CollectionItem(**item) for item in framed["@graph"]]

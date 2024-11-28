@@ -3,13 +3,17 @@ from textwrap import dedent
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, Request, status
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from loguru import logger
 from rdflib import RDF, Namespace
 
 from shui.auth.core import current_active_user
 from shui.auth.models import User
-from shui.clients.sparql_client import SparqlClient, get_sparql_client
+from shui.contrib.accept_header_parser import get_best_match
+from shui.clients.sparql_client import (
+    SparqlClient,
+    get_sparql_client,
+)
 from shui.collection import CollectionService, get_collection_service
 from shui.content_type import ContentTypeService, get_content_type_service
 from shui.html.flash import flash
@@ -20,6 +24,7 @@ from shui.html.pages.record import RecordPage, li_change_events
 from shui.namespaces import CRUD, EVENT
 from shui.record import RecordService, get_record_service
 from shui.shacl import ShaclService, get_shacl_service
+from shui.mime_types import N_TRIPLES, TURTLE
 
 router = APIRouter()
 
@@ -128,6 +133,7 @@ async def record_submit_route(
         body = await request.body()
         patch_log = body.decode("utf-8")
         await record_service.create_change_event(user.id, iri, patch_log)
+        # TODO: wait for eventual consistency before redirecting
         flash(request, "Changes saved.")
         return JSONResponse(
             {
@@ -252,7 +258,15 @@ async def record_change_events_route(
 @router.post("/sparql")
 async def sparql_post_route(
     request: Request,
-    user: User = Depends(current_active_user),
+    # TODO: sparql security?? need to reuse same session in shacl-ui requests
+    # user: User = Depends(current_active_user),
     sparql_client: SparqlClient = Depends(get_sparql_client),
 ):
-    pass
+    query = (await request.body()).decode("utf-8")
+    accept_header = request.headers.get("Accept", "")
+    if get_best_match(accept_header, [N_TRIPLES, TURTLE]) == N_TRIPLES:
+        result, _ = await sparql_client.post(query, accept=N_TRIPLES)
+        return Response(result, media_type=N_TRIPLES)
+
+    result, content_type = await sparql_client.post(query)
+    return Response(result, media_type=content_type)
