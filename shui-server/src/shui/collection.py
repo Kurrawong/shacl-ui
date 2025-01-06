@@ -9,8 +9,8 @@ from rdflib import RDF, Graph
 
 from shui.clients.sparql_client import SparqlClient, get_sparql_client
 from shui.content_type import ContentTypeService
-from shui.namespaces import CRUD
 from shui.mime_types import N_TRIPLES
+from shui.namespaces import CRUD
 
 frame = {
     "@context": {

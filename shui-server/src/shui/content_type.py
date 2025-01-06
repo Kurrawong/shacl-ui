@@ -9,8 +9,8 @@ from pyld import jsonld
 from rdflib import RDF, Graph, URIRef
 
 from shui.clients.sparql_client import SparqlClient, get_sparql_client
-from shui.namespaces import CRUD
 from shui.mime_types import N_TRIPLES
+from shui.namespaces import CRUD
 
 GRAPH_NAME = "urn:system:graph:crud"
 

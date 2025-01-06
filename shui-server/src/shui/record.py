@@ -9,7 +9,7 @@ from rdflib import SDO, Graph
 
 from shui.change_event import ChangeEventService, get_change_event_service
 from shui.clients.sparql_client import SparqlClient, get_sparql_client
-from shui.mime_types import N_TRIPLES, JSON_LD
+from shui.mime_types import JSON_LD, N_TRIPLES
 
 
 class ChangeEventAgent(BaseModel):

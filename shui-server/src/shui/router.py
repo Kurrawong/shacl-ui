@@ -9,22 +9,22 @@ from rdflib import RDF, Namespace
 
 from shui.auth.core import current_active_user
 from shui.auth.models import User
-from shui.contrib.accept_header_parser import get_best_match
 from shui.clients.sparql_client import (
     SparqlClient,
     get_sparql_client,
 )
 from shui.collection import CollectionService, get_collection_service
 from shui.content_type import ContentTypeService, get_content_type_service
+from shui.contrib.accept_header_parser import get_best_match
 from shui.html.flash import flash
 from shui.html.pages.collections import CollectionsListPage
 from shui.html.pages.error import ErrorPage
 from shui.html.pages.index import IndexPage
 from shui.html.pages.record import RecordPage, li_change_events
+from shui.mime_types import N_TRIPLES, TURTLE
 from shui.namespaces import CRUD, EVENT
 from shui.record import RecordService, get_record_service
 from shui.shacl import ShaclService, get_shacl_service
-from shui.mime_types import N_TRIPLES, TURTLE
 
 router = APIRouter()
 

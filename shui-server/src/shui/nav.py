@@ -116,7 +116,10 @@ class NavMiddleware(BaseHTTPMiddleware):
                         path=request.url.path, call=get_content_type_service
                     )
                     solved = await solve_dependencies(
-                        request=request, dependant=dependant, async_exit_stack=stack, embed_body_fields=True
+                        request=request,
+                        dependant=dependant,
+                        async_exit_stack=stack,
+                        embed_body_fields=True,
                     )
                     client = solved.values["client"]
                     content_type_service = ContentTypeService(client)

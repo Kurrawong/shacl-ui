@@ -14,4 +14,5 @@ def get_command():
             settings.service_bus.session_id,
             settings.service_bus.topic,
             conn_str=settings.service_bus.conn_str,
+            ws=settings.service_bus.ws,
         )

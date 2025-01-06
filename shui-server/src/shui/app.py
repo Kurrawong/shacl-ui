@@ -3,8 +3,8 @@ from pathlib import Path
 from typing import Awaitable, Callable
 
 from fastapi import FastAPI, Request, Response, status
-from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 from starlette_wtf import CSRFProtectMiddleware
@@ -42,7 +42,6 @@ def register_routers(app: FastAPI):
 
 
 def register_middlewares(app: FastAPI):
-
     app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
     app.add_middleware(CSRFProtectMiddleware, csrf_secret=settings.secret_key)
 

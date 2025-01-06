@@ -1,67 +1,67 @@
 services:
-  rdf-delta-server:
-    profiles:
-      - stack
-    image: ghcr.io/kurrawong/rdf-delta
-    container_name: rdf-delta-server
-    ports:
-      - 9999:1066
-    volumes:
-      - rdf-delta-data:/opt/rdf-delta/databases
-    command: java -jar /opt/rdf-delta/rdf-delta-server.jar --base /opt/rdf-delta/databases --file
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:1066"]
-      interval: 5s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
+  # rdf-delta-server:
+  #   profiles:
+  #     - stack
+  #   image: ghcr.io/kurrawong/rdf-delta
+  #   container_name: rdf-delta-server
+  #   ports:
+  #     - 9999:1066
+  #   volumes:
+  #     - rdf-delta-data:/opt/rdf-delta/databases
+  #   command: java -jar /opt/rdf-delta/rdf-delta-server.jar --base /opt/rdf-delta/databases --file
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:1066"]
+  #     interval: 5s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 20s
 
-  fuseki:
-    profiles:
-      - stack
-    build:
-      context: .
-      dockerfile: Dockerfile.fuseki
-    container_name: fuseki
-    ports:
-      - 9998:3030
-    command: ["/bin/bash", "-c", "/opt/rdf-delta/fuseki-entrypoint.sh"]
-    healthcheck:
-      test: ["CMD", "curl", "-I", "http://localhost:3030/ds"]
-      interval: 5s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
+  # fuseki:
+  #   profiles:
+  #     - stack
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.fuseki
+  #   container_name: fuseki
+  #   ports:
+  #     - 9998:3030
+  #   command: ["/bin/bash", "-c", "/opt/rdf-delta/fuseki-entrypoint.sh"]
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-I", "http://localhost:3030/ds"]
+  #     interval: 5s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 20s
 
-  kafka:
-    profiles:
-      - stack
-    image: "bitnami/kafka:3.6.1"
-    container_name: kafka
-    ports:
-      - 9997:9997
-    environment:
-      - KAFKA_CFG_NODE_ID=0
-      - KAFKA_CFG_PROCESS_ROLES=controller,broker
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9997
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9997
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+  # kafka:
+  #   profiles:
+  #     - stack
+  #   image: "bitnami/kafka:3.6.1"
+  #   container_name: kafka
+  #   ports:
+  #     - 9997:9997
+  #   environment:
+  #     - KAFKA_CFG_NODE_ID=0
+  #     - KAFKA_CFG_PROCESS_ROLES=controller,broker
+  #     - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9997
+  #     - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9997
+  #     - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+  #     - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+  #     - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
 
-  kafka-ui:
-    profiles:
-      - stack
-    container_name: kafka-ui
-    image: provectuslabs/kafka-ui:latest
-    ports:
-      - 9090:8080
-    environment:
-      - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
-      - AUTH_TYPE=LOGIN_FORM
-      - SPRING_SECURITY_USER_NAME=admin
-      - SPRING_SECURITY_USER_PASSWORD=admin
+  # kafka-ui:
+  #   profiles:
+  #     - stack
+  #   container_name: kafka-ui
+  #   image: provectuslabs/kafka-ui:latest
+  #   ports:
+  #     - 9090:8080
+  #   environment:
+  #     - KAFKA_CLUSTERS_0_NAME=local
+  #     - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+  #     - AUTH_TYPE=LOGIN_FORM
+  #     - SPRING_SECURITY_USER_NAME=admin
+  #     - SPRING_SECURITY_USER_PASSWORD=admin
 
   redis:
     image: redis:7.2.4-alpine
@@ -71,18 +71,18 @@ services:
     ports:
       - 6379:6379
 
-  olis-delta-kafka-sink:
-    profiles:
-      - stack
-    image: ghcr.io/kurrawong/rdf-delta-kafka-sink:0.2.2
-    environment:
-      - OLIS_DELTA_KAFKA_SINK__SPARQL_ENDPOINT=http://fuseki:3030/ds
-      - OLIS_DELTA_KAFKA_SINK__RDF_DELTA_URL=http://rdf-delta-server:1066
-      - OLIS_DELTA_KAFKA_SINK__KAFKA_TOPIC=rdf-patch-log
-      - OLIS_DELTA_KAFKA_SINK__KAFKA_BOOTSTRAP_SERVER=kafka:9092
-    depends_on:
-      rdf-delta-server:
-        condition: service_healthy
+  # olis-delta-kafka-sink:
+  #   profiles:
+  #     - stack
+  #   image: ghcr.io/kurrawong/rdf-delta-kafka-sink:0.2.2
+  #   environment:
+  #     - OLIS_DELTA_KAFKA_SINK__SPARQL_ENDPOINT=http://fuseki:3030/ds
+  #     - OLIS_DELTA_KAFKA_SINK__RDF_DELTA_URL=http://rdf-delta-server:1066
+  #     - OLIS_DELTA_KAFKA_SINK__KAFKA_TOPIC=rdf-patch-log
+  #     - OLIS_DELTA_KAFKA_SINK__KAFKA_BOOTSTRAP_SERVER=kafka:9092
+  #   depends_on:
+  #     rdf-delta-server:
+  #       condition: service_healthy
   
   # run asb consumer separately.
 
@@ -94,15 +94,15 @@ services:
       dockerfile: shui-server/docker/Dockerfile
     ports:
       - 8001:8000
-    depends_on:
-      fuseki:
-        condition: service_healthy
+    # depends_on:
+    #   fuseki:
+    #     condition: service_healthy
     env_file:
       - ../.env
     environment:
       - SHUI__SPARQL_ENDPOINT=http://fuseki:3030/ds
       - SHUI_KAFKA__BOOTSTRAP_SERVER=kafka:9997
-      - SHUI__REDIS_CONNECTION=redis://redis:6379
+      - SHUI__REDIS_HOST=redis
 
 volumes:
   rdf-delta-data:
