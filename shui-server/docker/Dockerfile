@@ -1,6 +1,6 @@
 ARG NODE_VERSION=20.18.0
 ARG PNPM_VERSION=9.0.5
-ARG PYTHON_VERSION=3.13
+ARG PYTHON_VERSION=3.12
 
 #
 # JS
@@ -49,7 +49,10 @@ FROM python:${PYTHON_VERSION}-alpine
 RUN apk update && \
     apk add --no-cache \
       bash \
+      curl \
       librdkafka
+
+RUN apk upgrade
 
 COPY --from=python-build /app /app
 
