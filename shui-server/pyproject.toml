@@ -12,21 +12,22 @@ dependencies = [
     "loguru>=0.7.2",
     "pydantic-settings>=2.4.0",
     "rdflib>=7.0.0",
-    "fastapi-users[redis]>=13.0.0",
+    "fastapi-users[redis]==14.0.1",
     "httpx>=0.27.2",
     "uvicorn>=0.30.6",
-    "jinja2>=3.1.4",
+    "jinja2==3.1.6",
     "dominate>=2.9.1",
     "starlette-wtf>=0.4.5",
     "pyld>=2.0.4",
     "beautifulsoup4>=4.12.3",
     "starlette>=0.38.2",
+    "python-multipart>=0.0.17",
 ]
 
 [project.optional-dependencies]
 azure = [
-    "azure-servicebus>=7.12.3",
-    "aiohttp>=3.10.6",
+    "azure-servicebus>=7.14.1",
+    "aiohttp>=3.11.16",
 ]
 
 [build-system]

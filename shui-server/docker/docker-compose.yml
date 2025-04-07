@@ -70,6 +70,8 @@ services:
     container_name: redis
     ports:
       - 6379:6379
+    networks:
+      - gswa-rdf-delta-consumer_devcontainer_default
 
   # olis-delta-kafka-sink:
   #   profiles:
@@ -83,10 +85,10 @@ services:
   #   depends_on:
   #     rdf-delta-server:
   #       condition: service_healthy
-  
+
   # run asb consumer separately.
 
-  app:
+  shui:
     profiles:
       - stack
     build:
@@ -100,9 +102,15 @@ services:
     env_file:
       - ../.env
     environment:
+      - SHUI__REDIS_HOST=redis
       - SHUI__SPARQL_ENDPOINT=http://fuseki:3030/ds
       - SHUI_KAFKA__BOOTSTRAP_SERVER=kafka:9997
-      - SHUI__REDIS_HOST=redis
+    networks:
+      - gswa-rdf-delta-consumer_devcontainer_default
+
+networks:
+  gswa-rdf-delta-consumer_devcontainer_default:
+    external: true
 
 volumes:
   rdf-delta-data:

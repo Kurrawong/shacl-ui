@@ -9,11 +9,9 @@ FROM node:${NODE_VERSION} AS js
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
-RUN corepack enable && \
-    corepack install --global pnpm@${PNPM_VERSION}
+RUN npm install -g pnpm@${PNPM_VERSION}
 
 COPY js /app
 WORKDIR /app
