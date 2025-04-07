@@ -51,8 +51,21 @@ export function shapeToSparql(
   return constructQuery(ptr)
 }
 
-export function sparqlAutoCompleteRewrite(query: string, graphName: NamedNode | BlankNode) {
-  const ast = parser.parse(query)
+export function rewriteSparqlAutoComplete(
+  query: string,
+  labelProperty: NamedNode | null,
+  graphName: NamedNode | BlankNode,
+  search: string = ''
+) {
+  const ast = parser.parse(query) as sparqljs.SparqlQuery & {
+    from: {
+      default: Array<{ termType: string; value: string }>
+      named: any[]
+    }
+    where: any[]
+    limit?: number
+  }
+
   ast['from'] = {
     default: [
       {
@@ -62,6 +75,40 @@ export function sparqlAutoCompleteRewrite(query: string, graphName: NamedNode | 
     ],
     named: []
   }
+
+  if (search && labelProperty) {
+    // label
+    ast.where.push({
+      type: 'bgp',
+      triples: [
+        {
+          subject: $rdf.variable('resource1'),
+          predicate: labelProperty,
+          object: $rdf.variable('label')
+        }
+      ]
+    })
+
+    // filter
+    ast.where.push({
+      type: 'filter',
+      expression: {
+        type: 'operation',
+        operator: 'regex',
+        args: [
+          {
+            type: 'operation',
+            operator: 'str',
+            args: [$rdf.variable('label')]
+          },
+          $rdf.literal(`^${search}`),
+          $rdf.literal('i')
+        ]
+      }
+    })
+  }
+
+  ast.limit = 100
 
   return generator.stringify(ast)
 }

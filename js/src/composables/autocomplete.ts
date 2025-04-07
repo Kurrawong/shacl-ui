@@ -22,9 +22,8 @@ export function useAutocomplete(
         method: 'POST',
         body: query
       })
-      const data = await response.json()
       isLoading.value = false
-      return data
+      return await response.text()
     } catch (error) {
       isLoading.value = false
       isError.value = true

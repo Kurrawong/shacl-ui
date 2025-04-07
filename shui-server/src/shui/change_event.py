@@ -8,6 +8,7 @@ from rdflib import SDO, XSD, BNode, Graph
 
 from shui.commands import get_command
 from shui.commands.base import Command, EventHeader
+from shui.mime_types import JSON_LD, RDF_PATCH_BODY, TRIG
 from shui.namespaces import CHANGE_EVENTS_GRAPH, EVENT
 
 context = {
@@ -42,7 +43,7 @@ class MediaObject(BaseModel):
 
     # With default values.
     id: str = Field(default_factory=lambda: f"_:{BNode()}", alias="@id")
-    encoding_format: str = Field("application/rdf-patch-body", alias=SDO.encodingFormat)
+    encoding_format: str = Field(RDF_PATCH_BODY, alias=SDO.encodingFormat)
     schema_version: Optional[str] = Field(
         None,
         alias=SDO.schemaVersion,
@@ -84,9 +85,7 @@ class ChangeEvent(BaseModel):
     def model_dump_trig(self, named_graph: str, content_type: str):
         data = {**self.model_dump(by_alias=True)}
         data_str = json.dumps(data)
-        graph = Graph(identifier=named_graph).parse(
-            data=data_str, format="application/ld+json"
-        )
+        graph = Graph(identifier=named_graph).parse(data=data_str, format=JSON_LD)
         return graph.serialize(format=content_type)
 
 
@@ -98,9 +97,7 @@ class ChangeEventService:
         self, user_id: str, iri: str, message: str, approve: bool = False, **kwargs
     ):
         command = self._command
-        headers = EventHeader(
-            about=iri, creator=user_id, encoding_format="application/trig"
-        )
+        headers = EventHeader(about=iri, creator=user_id, encoding_format=TRIG)
         change_event = ChangeEvent(
             id=headers.id,
             agent=user_id,
@@ -109,7 +106,7 @@ class ChangeEventService:
         )
         message = change_event.model_dump_trig(
             named_graph=CHANGE_EVENTS_GRAPH,
-            content_type="application/trig",
+            content_type=TRIG,
         )
         await command.send(
             key=kwargs.get("key") or command.key,

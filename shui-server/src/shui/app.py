@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Awaitable, Callable
 
 from fastapi import FastAPI, Request, Response, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
@@ -76,6 +77,13 @@ def register_middlewares(app: FastAPI):
         return response
 
     app.add_middleware(NavMiddleware)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     # @app.middleware("breadcrumbs_middleware")
     # async def breadcrumbs_middleware(request: Request, call_next):

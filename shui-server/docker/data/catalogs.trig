@@ -140,6 +140,13 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         sh:name "Publisher" ;
         sh:path sdo:publisher ;
         sh:class sdo:Organization ;
+        shx:targetGraph <urn:graph:catalogs> ;
+        sh:node [
+            sh:property [
+                sh:path sdo:name ;
+                dash:propertyRole dash:LabelRole ;
+            ]
+        ] ;
         sh:order 4 ;
         sh:group gswa-shapes:Dataset-metadata-group ;
     .
@@ -169,11 +176,16 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         sh:minCount 1 ;
         sh:maxCount 1 ;
         sh:class skos:Concept ;
+        shx:targetGraph <urn:graph:vocabs> ;
         sh:node [
             sh:property [
                 sh:path skos:inScheme ;
                 sh:hasValue gswa-status-cc: ;
-            ]
+            ] ;
+            sh:property [
+                sh:path skos:prefLabel ;
+                dash:propertyRole dash:LabelRole ;
+            ] ;
         ] ;
         sh:order 8 ;
         sh:group gswa-shapes:Dataset-metadata-group ;
@@ -185,10 +197,15 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         sh:minCount 1 ;
         sh:maxCount 1 ;
         sh:class skos:Concept ;
+        shx:targetGraph <urn:graph:vocabs> ;
         sh:node [
             sh:property [
                 sh:path skos:inScheme ;
                 sh:hasValue <http://purl.org/cld/freq> ;
+            ] ;
+            sh:property [
+                sh:path skos:prefLabel ;
+                dash:propertyRole dash:LabelRole ;
             ]
         ] ;
         sh:order 8 ;
@@ -200,6 +217,13 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         sh:path sdo:includeInDataCatalog ;
         sh:minCount 1 ;
         sh:class sdo:DataCatalog ;
+        shx:targetGraph <urn:graph:catalogs> ;
+        sh:node [
+            sh:property [
+                sh:path sdo:name ;
+                dash:propertyRole dash:LabelRole ;
+            ]
+        ] ;
         sh:order 9 ;
         sh:group gswa-shapes:Dataset-metadata-group ;
     .
@@ -222,10 +246,15 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         sh:path gswa:crs ;
         sh:class skos:Concept ;
         sh:maxCount 1 ;
+        shx:targetGraph <urn:graph:vocabs> ;
         sh:node [
             sh:property [
                 sh:path skos:inScheme ;
                 sh:hasValue gswa-epsg-cc: ;
+            ] ;
+            sh:property [
+                sh:path skos:prefLabel ;
+                dash:propertyRole dash:LabelRole ;
             ] ;
         ] ;
         sh:order 1 ;
@@ -342,10 +371,15 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
                 sh:class skos:Concept ;
                 sh:minCount 1 ;
                 sh:maxCount 1 ;
+                shx:targetGraph <urn:graph:vocabs> ;
                 sh:node [
                     sh:property [
                         sh:path skos:inScheme ;
                         sh:hasValue gswa-roles-cc: ;
+                    ] ;
+                    sh:property [
+                        sh:path skos:prefLabel ;
+                        dash:propertyRole dash:LabelRole ;
                     ] ;
                 ] ;
                 sh:order 0 ;
@@ -639,11 +673,25 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     #
     gswa-epsg-cc: a skos:ConceptScheme ;
         skos:prefLabel "GSWA EPSG Codes" ;
-        skos:hasTopConcept <https://epsg.io/4283> ;
+        skos:hasTopConcept <https://epsg.io/4283>,
+            <https://epsg.io/4326>,
+            <https://epsg.io/7844> ;
     .
 
     <https://epsg.io/4283> a skos:Concept ;
         skos:prefLabel "EPSG 4283" ;
+        skos:topConceptOf gswa-epsg-cc: ;
+        skos:inScheme gswa-epsg-cc: ;
+    .
+
+    <https://epsg.io/4326> a skos:Concept ;
+        skos:prefLabel "EPSG 4326" ;
+        skos:topConceptOf gswa-epsg-cc: ;
+        skos:inScheme gswa-epsg-cc: ;
+    .
+
+    <https://epsg.io/7844> a skos:Concept ;
+        skos:prefLabel "EPSG 7844" ;
         skos:topConceptOf gswa-epsg-cc: ;
         skos:inScheme gswa-epsg-cc: ;
     .
@@ -653,11 +701,18 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     #
     gswa-status-cc: a skos:ConceptScheme ;
         skos:prefLabel "GSWA Statuses Codes" ;
-        skos:hasTopConcept gswa-status:ongoing ;
+        skos:hasTopConcept gswa-status:ongoing,
+            gswa-status:one-off ;
     .
 
     gswa-status:ongoing a skos:Concept ;
         skos:prefLabel "ongoing" ;
+        skos:topConceptOf gswa-status-cc: ;
+        skos:inScheme gswa-status-cc: ;
+    .
+
+    gswa-status:one-off a skos:Concept ;
+        skos:prefLabel "one-off" ;
         skos:topConceptOf gswa-status-cc: ;
         skos:inScheme gswa-status-cc: ;
     .
@@ -667,12 +722,125 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     #
     <http://purl.org/cld/freq> a skos:ConceptScheme ;
         skos:prefLabel "Frequency Codes" ;
-        skos:hasTopConcept freq:weekly ;
+        skos:hasTopConcept freq:weekly,
+            freq:triennial,
+            freq:threeTimesAYear,
+            freq:threeTimesAWeek,
+            freq:threeTimesAMonth,
+            freq:semiweekly,
+            freq:semimonthly,
+            freq:semiannual,
+            freq:quarterly,
+            freq:monthly,
+            freq:irregular,
+            freq:daily,
+            freq:continuous,
+            freq:biweekly,
+            freq:bimonthly,
+            freq:biennial,
+            freq:annual ;
+    .
+
+    freq:annual a skos:Concept ;
+        skos:prefLabel "annual" ;
+        skos:topConceptOf freq:annual ;
+        skos:inScheme <http://purl.org/cld/freq> ;
+    .
+
+    freq:biennial a skos:Concept ;
+        skos:prefLabel "biennial" ;
+        skos:topConceptOf freq:biennial ;
+        skos:inScheme <http://purl.org/cld/freq> ;
+    .
+
+    freq:bimonthly a skos:Concept ;
+        skos:prefLabel "bimonthly" ;
+        skos:topConceptOf freq:bimonthly ;
+        skos:inScheme <http://purl.org/cld/freq> ;
+    .
+
+    freq:biweekly a skos:Concept ;
+        skos:prefLabel "biweekly" ;
+        skos:topConceptOf freq:biweekly ;
+        skos:inScheme <http://purl.org/cld/freq> ;
+    .
+
+    freq:continuous a skos:Concept ;
+        skos:prefLabel "continuous" ;
+        skos:topConceptOf freq:continuous ;
+        skos:inScheme <http://purl.org/cld/freq> ;
+    .
+
+    freq:daily a skos:Concept ;
+        skos:prefLabel "daily" ;
+        skos:topConceptOf freq:daily ;
+        skos:inScheme <http://purl.org/cld/freq> ;
+    .
+
+    freq:irregular a skos:Concept ;
+        skos:prefLabel "irregular" ;
+        skos:topConceptOf freq:irregular ;
+        skos:inScheme <http://purl.org/cld/freq> ;
+    .
+
+    freq:monthly a skos:Concept ;
+        skos:prefLabel "monthly" ;
+        skos:topConceptOf freq:monthly ;
+        skos:inScheme <http://purl.org/cld/freq> ;
+    .
+
+    freq:quarterly a skos:Concept ;
+        skos:prefLabel "quarterly" ;
+        skos:topConceptOf freq:quarterly ;
+        skos:inScheme <http://purl.org/cld/freq> ;
+    .
+
+    freq:semiannual a skos:Concept ;
+        skos:prefLabel "semiannual" ;
+        skos:topConceptOf freq:semiannual ;
+        skos:inScheme <http://purl.org/cld/freq> ;
+    .
+
+    freq:semimonthly a skos:Concept ;
+        skos:prefLabel "semimonthly" ;
+        skos:topConceptOf freq:semimonthly ;
+        skos:inScheme <http://purl.org/cld/freq> ;
+    .
+
+    freq:semiweekly a skos:Concept ;
+        skos:prefLabel "semiweekly" ;
+        skos:topConceptOf freq:semiweekly ;
+        skos:inScheme <http://purl.org/cld/freq> ;
+    .
+
+    freq:threeTimesAMonth a skos:Concept ;
+        skos:prefLabel "three times a month" ;
+        skos:topConceptOf freq:threeTimesAMonth ;
+        skos:inScheme <http://purl.org/cld/freq> ;
+    .
+
+    freq:threeTimesAWeek a skos:Concept ;
+        skos:prefLabel "three times a week" ;
+        skos:topConceptOf freq:threeTimesAWeek ;
+        skos:inScheme <http://purl.org/cld/freq> ;
+    .
+
+    freq:threeTimesAYear a skos:Concept ;
+        skos:prefLabel "three times a year" ;
+        skos:topConceptOf freq:threeTimesAYear ;
+        skos:inScheme <http://purl.org/cld/freq> ;
+    .
+
+    freq:triennial a skos:Concept ;
+        skos:prefLabel "triennial" ;
+        skos:topConceptOf freq:triennial ;
+        skos:inScheme <http://purl.org/cld/freq> ;
     .
 
     freq:weekly a skos:Concept ;
         skos:topConceptOf freq:weekly ;
         skos:inScheme <http://purl.org/cld/freq> ;
+        skos:prefLabel "weekly" ;
     .
 
     #

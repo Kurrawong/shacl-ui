@@ -7,7 +7,7 @@ import quad = DataFactory.quad
 
 import type { SIdentifiedNode, STerm } from '@/types'
 import type { Widgets } from '@/core/widgets/score-widget'
-import type { SLiteral } from '@/shui'
+import type { SLiteral } from '@/core/shui'
 import { useShui } from '@/composables/shui'
 import { NodeConstraintComponent } from '@/core/constraint-components/shape-based/node'
 import { ConstraintComponent } from '@/core/constraint-components/constraint-component'

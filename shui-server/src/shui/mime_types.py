@@ -1,0 +1,6 @@
+JSON_LD = "application/ld+json"
+N_TRIPLES = "application/n-triples"
+RDF_PATCH_BODY = "application/rdf-patch-body"
+SPARQL_RESULTS_JSON = "application/sparql-results+json"
+TRIG = "application/trig"
+TURTLE = "text/turtle"

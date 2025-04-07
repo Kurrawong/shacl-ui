@@ -15,3 +15,4 @@ class ServiceBusSettings(BaseBrokerSettings):
     subscription: str
     topic: str
     session_id: str
+    ws: bool = True

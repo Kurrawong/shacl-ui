@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import type { Quad } from '@rdfjs/types'
-import { Shui } from '@/shui'
+import { Shui } from '@/core/shui'
 
 const shui = ref(new Shui())
 const _serverMode = ref(false)

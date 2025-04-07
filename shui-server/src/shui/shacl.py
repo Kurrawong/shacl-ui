@@ -2,6 +2,7 @@ from fastapi import Depends
 from rdflib import SH, Graph, URIRef
 
 from shui.clients.sparql_client import SparqlClient, get_sparql_client
+from shui.mime_types import N_TRIPLES
 
 
 class ShaclService:
@@ -18,8 +19,8 @@ class ShaclService:
             if iri not in visited_nodes:
                 visited_nodes.add(iri)
                 query = f"DESCRIBE <{iri}>"
-                result = await client.post(query, accept="text/turtle")
-                current_graph = Graph().parse(data=result, format="turtle")
+                result, _ = await client.post(query, accept=N_TRIPLES)
+                current_graph = Graph().parse(data=result, format=N_TRIPLES)
                 node_shapes = current_graph.objects(None, SH.node)
                 for item in node_shapes:
                     if isinstance(item, URIRef):
