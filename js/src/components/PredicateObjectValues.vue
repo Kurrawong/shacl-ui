@@ -10,7 +10,7 @@ import blankNode = DataFactory.blankNode
 
 import ValueNode from '@/components/ValueNode.vue'
 import { useShui } from '@/composables/shui'
-import { SBlankNode, SLiteral, type SNamedNode } from '@/shui'
+import { SBlankNode, SLiteral, type SNamedNode } from '@/core/shui'
 import type { PredicateConstraints } from '@/types'
 import { getWidgets } from '@/core/widgets/score-widget'
 

@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import { createApp, type App } from 'vue'
 import PrimeVue from 'primevue/config'
 import Tooltip from 'primevue/tooltip'
 import ToastService from 'primevue/toastservice'
@@ -8,6 +8,22 @@ import 'primeicons/primeicons.css'
 import Aura from '@/presets/aura'
 
 import ShuiForm from '@/components/ShuiForm.vue'
-import VocPubEditor from '@/components/vocpub/VocPubEditor.vue'
+import FocusNode from '@/components/FocusNode.vue'
 
-export { createApp, PrimeVue, Aura, Tooltip, ToastService, ShuiForm, VocPubEditor }
+const shuiPlugin = {
+  install(app: App) {
+    app.use(PrimeVue, {
+      unstyled: true,
+      pt: Aura
+    })
+    app.directive('tooltip', Tooltip)
+    app.use(ToastService)
+    app.component('FocusNode', FocusNode)
+  }
+}
+
+export { createApp, PrimeVue, Aura, Tooltip, ToastService, ShuiForm, FocusNode, shuiPlugin }
+export * from '@/composables/shui'
+export * from '@/core/shui'
+export * from '@/types'
+export * from '@/core/namespaces'
