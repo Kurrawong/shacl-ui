@@ -1,4 +1,5 @@
 import traceback
+from datetime import datetime
 from textwrap import dedent
 from uuid import uuid4
 
@@ -31,6 +32,13 @@ async def home_route(
 ):
     page = await IndexPage(request, user)
     return HTMLResponse(page.render())
+
+
+@router.get("/ping", response_class=JSONResponse)
+async def ping():
+    return JSONResponse(
+        status_code=status.HTTP_200_OK, content={"pong": datetime.now().isoformat()}
+    )
 
 
 @router.get("/collections/{collection_id}")

@@ -29,7 +29,10 @@ class Settings(BaseSettings):
     service_bus: Optional[ServiceBusSettings] = None
 
     # Redis
-    redis_connection: str = "redis://localhost:6379"
+    redis_host: str = "localhost"
+    redis_port: int = 6379
+    redis_password: Optional[str] = None
+    redis_ssl: bool = False
 
     # SPARQL
     sparql_endpoint: str

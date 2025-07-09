@@ -19,10 +19,17 @@ tasks:
     cmd: docker compose -f {{.COMPOSE_FILE}} --profile stack build
 
   dev:up:
+    cmd: docker compose -f {{.COMPOSE_FILE}} --profile stack up -d
+
+  dev:up:load:
     cmds:
-      - docker compose -f {{.COMPOSE_FILE}} --profile stack up -d
-      #      - uv run docker/file_producer.py main docker/data/catalogs.trig --format application/trig
-      #      - uv run docker/file_producer.py main docker/data/users.trig --format application/trig
+      - task: dev:up
+      - uv run docker/file_producer.py main docker/data/catalogs.trig --format application/trig
+      - uv run docker/file_producer.py main docker/data/users.trig --format application/trig
+
+  dev:up:load:asb:
+    cmds:
+      - task: dev:up
       - uv run docker/asb_file_producer.py rdf-patch-log data/catalogs.trig main --format application/trig
       - uv run docker/asb_file_producer.py rdf-patch-log data/users.trig main --format application/trig
 
@@ -37,4 +44,4 @@ tasks:
     cmd: rsparql --service http://localhost:9998/ds --query query.rq
 
   build:
-    cmd: docker build -f docker/Dockerfile -t cms ../
+    cmd: docker build -f docker/Dockerfile -t kg-cms ../
