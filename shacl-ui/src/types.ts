@@ -1,4 +1,4 @@
-import type { BlankNode, Literal, NamedNode } from 'n3'
+import type { BlankNode, Literal, NamedNode } from '@rdfjs/types'
 
 type UIPredicate = {
   value: string

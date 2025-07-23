@@ -1,12 +1,14 @@
 import { describe, it, expect } from 'vitest'
-import { DataFactory, Store, Parser } from 'n3'
+import { DataFactory, Store, Parser, Writer } from 'n3'
 import { rdf, sh } from '@/lib/namespaces'
 import { ClassConstraintComponent } from '@/lib/constraint-components'
-import SHACLValidator from 'rdf-validate-shacl'
 import { Shape } from 'rdf-validate-shacl/src/shapes-graph'
+import { UISHACLValidator } from '@/lib/shapes-graph'
+import dashVocabularyFactory from '@/lib/dash-vocabulary'
 
 const { namedNode, blankNode, quad } = DataFactory
 const parser = new Parser()
+const writer = new Writer()
 
 describe('Test ClassConstraintComponent', () => {
   it('should throw error because no sh:class parameters are present', () => {
@@ -60,7 +62,7 @@ describe('Test ClassConstraintComponent', () => {
 })
 
 describe('Test rdf-validate-shacl', () => {
-  it('is a valid class constraint component with multiple classes', async () => {
+  it('example usage of rdf-validate-shacl', async () => {
     const dataQuads = parser.parse(`
 PREFIX schema: <https://schema.org/>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -119,7 +121,12 @@ BASE <https://linked.data.gov.au/def/vocpub/validator/>
 	sh:property [
 		sh:path [ sh:inversePath skos:topConceptOf ] ;
 		sh:node <ConceptList> ;
-	]
+	],
+  [
+    sh:path skos:prefLabel ;
+    dash:propertyRole dash:LabelRole ;
+    dash:singleLine true
+  ]
 .
 
 <ConceptList> a sh:NodeShape ;
@@ -138,9 +145,7 @@ BASE <https://linked.data.gov.au/def/vocpub/validator/>
     dataGraph.addQuads(dataQuads)
     const shapeGraph = new Store()
     shapeGraph.addQuads(shapesQuads)
-    const validator = new SHACLValidator(shapeGraph)
-    const result = await validator.validate(dataGraph)
-    expect(result.conforms).toBe(true)
+    const validator = new UISHACLValidator(shapeGraph)
 
     const focusNode = namedNode('https://example.com/fruits')
     const nodeShape = namedNode('https://linked.data.gov.au/def/vocpub/validator/ConceptSchemeList')
@@ -158,11 +163,29 @@ BASE <https://linked.data.gov.au/def/vocpub/validator/>
 
       if (constraint.component.node.equals(sh.PropertyConstraintComponent)) {
         const propertyShape = new Shape(validator, constraint.paramValue)
-        console.log(`Path object: ${JSON.stringify(propertyShape.pathObject)}`)
+        console.log(`Property Path object: ${JSON.stringify(propertyShape.pathObject)}`)
         console.log(
-          `Value nodes: ${JSON.stringify(propertyShape.getValueNodes(focusNode, dataGraphPointer))}`,
+          `Property Shape Value nodes: ${JSON.stringify(propertyShape.getValueNodes(focusNode, dataGraphPointer))}`,
         )
+        for (const constraint of propertyShape.constraints) {
+          console.log(`Property Shape Constraint: ${constraint.component.node.value}`)
+        }
       }
     }
+
+    const result = await validator.validate(dataGraph)
+    for (const res of result.results) {
+      const quads = Array.from(res.dataset.match(null, null, null, null))
+      console.log(`Result: ${writer.quadsToString(quads)}`)
+    }
+    expect(result.conforms).toBe(true)
+  })
+})
+
+describe('Test dash vocabulary', () => {
+  it('should create a dash vocabulary', () => {
+    const vocab = dashVocabularyFactory()
+    expect(vocab.dataset.size).toBeGreaterThan(0)
+    expect(vocab.out(sh.parameter).terms.length).toBeGreaterThan(0)
   })
 })

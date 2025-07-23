@@ -28,11 +28,24 @@ const valueNodes = computed(() => {
     <div class="text-sm font-mono text-gray-700">
       {{ label }}
     </div>
-    <div
-      v-if="uiTree.propertyPaths[propertyPathKey].order !== null"
-      class="text-xs text-gray-500"
-    >
-      {{ valueNodes }}
+    <div v-if="valueNodes.length" class="text-xs text-gray-500">
+      <div v-for="valueNode in valueNodes" :key="valueNode.value" class="flex items-center gap-2">
+        <div class="text-xs text-gray-500">
+          {{ valueNode.value }}
+        </div>
+        <div
+          v-if="valueNode.termType === 'Literal' && valueNode.language"
+          class="text-xs text-gray-500"
+        >
+          @{{ valueNode.language }}
+        </div>
+        <div
+          v-if="valueNode.termType === 'Literal' && valueNode.datatype"
+          class="text-xs text-gray-500"
+        >
+          {{ valueNode.datatype.value }}
+        </div>
+      </div>
     </div>
   </div>
 </template>

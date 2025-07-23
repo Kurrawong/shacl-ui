@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
-import type { NamedNode, BlankNode } from 'n3'
+import type { NamedNode, BlankNode } from '@rdfjs/types'
 import n3 from 'n3'
 
 import { useStore } from '@/composables/store'
@@ -115,8 +115,8 @@ function buildUITree() {
       // TODO: validate that the property path is well-formed.
 
       const propertyPath = propertyPathValues[0]
-
       const normalizedPropertyPath = normalizePropertyPath(propertyPath, shapesGraph.value)
+      
 
       // Predicate path
       if (propertyPath.termType === 'NamedNode') {

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 import { Collapsible } from '@/components/ui/collapsible'
 import { CollapsibleTrigger } from '@/components/ui/collapsible'
 import { CollapsibleContent } from '@/components/ui/collapsible'
 import PropertyPath from '@/components/PropertyPath.vue'
 import type { PropertyGroup, UITree } from '@/types'
 import n3 from 'n3'
+import IRIToolTip from '@/components/IRIToolTip.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -19,8 +20,15 @@ const props = withDefaults(
     isOpen: true,
   },
 )
+const { propertyGroup, uiTree, dataGraph, shapesGraph } = toRefs(props)
 
 const isOpen = ref(props.isOpen)
+const propertyGroupLabel = computed(() => {
+  return (
+    propertyGroup.value.labels[0]?.value ||
+    propertyGroup.value.term.value.split('#').slice(-1)[0].split('/').slice(-1)[0]
+  )
+})
 </script>
 
 <template>
@@ -28,8 +36,8 @@ const isOpen = ref(props.isOpen)
     <CollapsibleTrigger
       class="flex items-center justify-between w-full p-3 bg-gray-50 hover:bg-gray-100 rounded-lg border"
     >
-      <h3 class="font-medium text-gray-900">
-        {{ propertyGroup.labels[0]?.value || propertyGroup.term.value }}
+      <h3 class="font-medium text-gray-900 flex items-center gap-2">
+        {{ propertyGroupLabel }} <IRIToolTip :iri="propertyGroup.term.value" />
       </h3>
       <svg
         class="w-4 h-4 text-gray-600 transition-transform"

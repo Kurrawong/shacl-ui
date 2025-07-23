@@ -59,6 +59,8 @@ export const Default: Story = {
       <https://example.com/fruits>
         a skos:ConceptScheme ;
         skos:prefLabel "Fruits" ;
+        skos:alternateLabel "Fruits"@en ;
+        skos:alternateLabel "水果"@zh ;
         skos:definition "A fruits vocabulary" ;
         schema:dateCreated "2025-07-14"^^xsd:date ;
       .
@@ -96,6 +98,7 @@ export const Default: Story = {
           sh:targetClass skos:ConceptScheme ;
           sh:property	<prefLabel>,
               <definition>,
+              <alternateLabel>,
               <created>,
               [
                   sh:path [
@@ -115,6 +118,7 @@ export const Default: Story = {
           a sh:NodeShape ;
           sh:targetClass skos:Collection ;
           sh:property <prefLabel>,
+              <alternateLabel>,
               <definition>,
               [
                   sh:path skos:member ;
@@ -126,6 +130,7 @@ export const Default: Story = {
           a sh:NodeShape ;
           sh:targetClass skos:Concept ;
           sh:property	<prefLabel>,
+              <alternateLabel>,
               <definition> ;
       .
 
@@ -143,6 +148,14 @@ export const Default: Story = {
           ) ;
           sh:group <Annotation-group> ;
           sh:order 0 ;
+      .
+
+      <alternateLabel>
+          a sh:PropertyShape ;
+          sh:path skos:alternateLabel ;
+          sh:uniqueLang true ;
+          sh:group <Annotation-group> ;
+          sh:order 1 ;
       .
 
       <definition>
