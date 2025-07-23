@@ -16,6 +16,7 @@ export interface UITree {
   focusNode: NamedNode | BlankNode | Literal
   nodeShape: NamedNode | BlankNode | null
   propertyGroups: PropertyGroup[]
+  label: string | null
   propertyPaths: {
     [key: string]: {
       term: NamedNode

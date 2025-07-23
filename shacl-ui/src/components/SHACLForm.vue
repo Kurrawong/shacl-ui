@@ -4,7 +4,7 @@ import type { NamedNode, BlankNode } from '@rdfjs/types'
 import n3 from 'n3'
 
 import { useStore } from '@/composables/store'
-import { rdfs, sh } from '@/lib/namespaces'
+import { dash, rdfs, sh } from '@/lib/namespaces'
 import { getPropertyShapes } from '@/lib/shacl'
 import type { UITree } from '@/types'
 import FocusNode from '@/components/FocusNode.vue'
@@ -31,6 +31,7 @@ const uiTree = ref<UITree>({
   nodeShape: props.nodeShape,
   propertyGroups: [],
   propertyPaths: {},
+  label: null,
 })
 onMounted(() => {
   buildUITree()
@@ -95,7 +96,7 @@ function buildUITree() {
     // Sort the property groups by order.
     uiTree.value.propertyGroups.sort((a, b) => sortWithNulls(a.order, b.order))
 
-    // Assign the predicates to the UI tree.
+    // Assign the property paths to the UI tree.
     for (const propertyShape of propertyShapes) {
       const propertyPathValues = shapesGraph.value
         .getObjects(propertyShape, sh.path, null)
@@ -116,7 +117,19 @@ function buildUITree() {
 
       const propertyPath = propertyPathValues[0]
       const normalizedPropertyPath = normalizePropertyPath(propertyPath, shapesGraph.value)
-      
+
+      // Save the property path that has the dash:propertyRole dash:LabelRole.
+      const propertyRoleValues = shapesGraph.value
+        .getObjects(propertyShape, dash.propertyRole, null)
+        .filter((propertyRoleValue) => propertyRoleValue.equals(dash.LabelRole))
+
+      if (propertyRoleValues.length) {
+        for (const propertyRoleValue of propertyRoleValues) {
+          if (propertyRoleValue.equals(dash.LabelRole)) {
+            uiTree.value.label = normalizedPropertyPath
+          }
+        }
+      }
 
       // Predicate path
       if (propertyPath.termType === 'NamedNode') {
