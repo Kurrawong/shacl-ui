@@ -22,12 +22,19 @@ const { focusNode, nodeShape, dataGraph, validator } = withDefaults(
 const isIdentifiedNode = computed(
   () => focusNode.termType === 'NamedNode' || focusNode.termType === 'BlankNode',
 )
+
+const identifiedFocusNode = computed(() => {
+  if (isIdentifiedNode.value) {
+    return focusNode as NamedNode | BlankNode
+  }
+  return null
+})
 </script>
 
 <template>
   <template v-if="isIdentifiedNode">
     <IdentifiedFocusNode
-      :focus-node="focusNode"
+      :focus-node="identifiedFocusNode!"
       :node-shape="nodeShape"
       :data-graph="dataGraph"
       :validator="validator"

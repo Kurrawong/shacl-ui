@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed, provide, ref } from 'vue'
-import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
-import TermLabel from '@/components/TermLabel.vue'
+import { computed } from 'vue'
+import type { NamedNode, BlankNode } from '@rdfjs/types'
 import type { AnyPointer } from 'clownface'
 import { Shape } from 'rdf-validate-shacl/src/shapes-graph'
 import { UISHACLValidator } from '@/lib/shapes-graph'
@@ -12,6 +11,8 @@ import PropertyGroup from '@/components/PropertyGroup.vue'
 import { useProvidePredicateTracker } from '@/composables/predicate-tracking'
 import TermSet from '@rdfjs/term-set'
 import OtherPropertiesGroup from '@/components/OtherPropertiesGroup.vue'
+import { useProvideFormLabel } from '@/composables/form-label'
+import FocusNodeLabel from '@/components/FocusNodeLabel.vue'
 
 const { focusNode, nodeShape, dataGraph, validator } = defineProps<{
   focusNode: NamedNode | BlankNode
@@ -21,11 +22,7 @@ const { focusNode, nodeShape, dataGraph, validator } = defineProps<{
   isRootNode: boolean
 }>()
 
-const label = ref<NamedNode | BlankNode | Literal>(focusNode)
-const updateLabel = (newLabel: NamedNode | BlankNode | Literal) => {
-  label.value = newLabel
-}
-provide('updateLabel', updateLabel)
+const { getFormLabel } = useProvideFormLabel(focusNode)
 
 const { getPredicates } = useProvidePredicateTracker(
   Array.from(dataGraph.dataset.match(focusNode, null, null)).map(
@@ -151,27 +148,32 @@ const propertyGroups = computed<PropertyGroupType[]>(() => {
 </script>
 
 <template>
-  <TermLabel :term="label" />
-
-  <div v-if="propertyGroups.length > 0" class="space-y-4 mt-4">
-    <div v-for="propertyGroup in propertyGroups" :key="propertyGroup.term?.value">
-      <PropertyGroup
-        :term="propertyGroup.term"
-        :order="propertyGroup.order"
-        :labels="propertyGroup.labels"
-        :property-shapes="propertyGroup.propertyShapes"
-        :focus-node="propertyGroup.focusNode"
-        :data-graph="propertyGroup.dataGraph"
-        :validator="propertyGroup.validator"
-      />
+  <div class="space-y-4">
+    <div v-if="isRootNode">
+      <FocusNodeLabel :label="getFormLabel()" />
+      <div class="text-xs text-gray-500 font-mono">IRI: {{ focusNode.value }}</div>
     </div>
 
-    <OtherPropertiesGroup
-      :property-shapes="propertyShapesWithoutGroups"
-      :focus-node="focusNode"
-      :data-graph="dataGraph"
-      :validator="validator"
-      :predicates="getPredicates()"
-    />
+    <template v-if="propertyGroups.length > 0">
+      <div v-for="propertyGroup in propertyGroups" :key="propertyGroup.term?.value">
+        <PropertyGroup
+          :term="propertyGroup.term"
+          :order="propertyGroup.order"
+          :labels="propertyGroup.labels"
+          :property-shapes="propertyGroup.propertyShapes"
+          :focus-node="propertyGroup.focusNode"
+          :data-graph="propertyGroup.dataGraph"
+          :validator="propertyGroup.validator"
+        />
+      </div>
+
+      <OtherPropertiesGroup
+        :property-shapes="propertyShapesWithoutGroups"
+        :focus-node="focusNode"
+        :data-graph="dataGraph"
+        :validator="validator"
+        :predicates="getPredicates()"
+      />
+    </template>
   </div>
 </template>

@@ -21,7 +21,7 @@ const isOpen = ref(true)
 
 <template>
   <Collapsible v-model:open="isOpen" class="space-y-2">
-    <div class="flex items-center justify-between space-x-4">
+    <div class="flex items-center justify-between space-x-4 border-b-1 border-gray-200">
       <h4 class="text-md font-semibold text-blue-900">Other Properties</h4>
       <CollapsibleTrigger as-child>
         <Button variant="ghost" size="sm" class="w-9 p-0">
