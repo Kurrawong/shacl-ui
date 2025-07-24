@@ -53,6 +53,7 @@ export const Default: Story = {
     focusNode: 'https://example.com/fruits' as any,
 
     dataGraph: `
+      PREFIX owl: <http://www.w3.org/2002/07/owl#>
       PREFIX schema: <https://schema.org/>
       PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
       PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -63,6 +64,11 @@ export const Default: Story = {
         skos:alternateLabel "水果"@zh ;
         skos:definition "A fruits vocabulary" ;
         schema:dateCreated "2025-07-14"^^xsd:date ;
+        owl:versionIRI <https://example.com/fruits/1.0.0> ;
+        owl:versionInfo "1.0.0" ;
+        skos:historyNote "This is the first version of the fruits vocabulary." ;
+        schema:publisher "John Doe" ;
+        schema:status <https://linked.data.gov.au/def/reg-statuses/experimental> ;
       .
       <https://example.com/apple> a skos:Concept ;
         skos:prefLabel "apple" ;
