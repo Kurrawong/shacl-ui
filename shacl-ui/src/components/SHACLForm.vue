@@ -9,6 +9,7 @@ import { getPropertyShapes } from '@/lib/shacl'
 import type { UITree } from '@/types'
 import FocusNode from '@/components/FocusNode.vue'
 import { normalizePropertyPath } from '@/lib/shacl'
+import { UISHACLValidator } from '@/lib/shapes-graph'
 
 const props = withDefaults(
   defineProps<{
@@ -23,7 +24,7 @@ const props = withDefaults(
   },
 )
 
-const { store: dataGraph, addQuad } = useStore(props.dataGraph)
+const { store: dataGraph } = useStore(props.dataGraph)
 const { store: shapesGraph } = useStore(props.shapesGraph)
 
 const uiTree = ref<UITree>({
@@ -39,6 +40,9 @@ onMounted(() => {
 watch(shapesGraph, () => {
   buildUITree()
 })
+
+const validator = new UISHACLValidator(shapesGraph.value)
+const dataGraphPointer = validator.factory.clownface({ dataset: dataGraph.value })
 
 function getPropertyGroups(
   propertyShapes: (NamedNode | BlankNode)[],
@@ -152,7 +156,7 @@ function buildUITree() {
           )
         if (!uiTree.value.propertyPaths.hasOwnProperty(normalizedPropertyPath)) {
           uiTree.value.propertyPaths[normalizedPropertyPath] = {
-            term: propertyPath,
+            path: propertyPath,
             propertyShapes: [propertyShape],
             order,
             labels,
@@ -205,9 +209,10 @@ function buildUITree() {
 
 <template>
   <FocusNode
-    :ui-tree="uiTree"
-    :data-graph="dataGraph"
-    :shapes-graph="shapesGraph"
+    :focus-node="focusNode"
+    :node-shape="nodeShape"
+    :data-graph="dataGraphPointer"
+    :validator="validator"
     :is-root-node="true"
   />
 

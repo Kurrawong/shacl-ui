@@ -1,39 +1,38 @@
 <script setup lang="ts">
-import type { UITree } from '@/types'
-import n3 from 'n3'
-import PropertyGroup from './PropertyGroup.vue'
+import { computed } from 'vue'
+import type { BlankNode, NamedNode, Literal } from '@rdfjs/types'
+import type { AnyPointer } from 'clownface'
+import IdentifiedFocusNode from '@/components/IdentifiedFocusNode.vue'
+import { UISHACLValidator } from '@/lib/shapes-graph'
 
-const props = withDefaults(
+const { focusNode, nodeShape, dataGraph, validator } = withDefaults(
   defineProps<{
-    uiTree: UITree
-    dataGraph: n3.Store
-    shapesGraph: n3.Store
+    focusNode: NamedNode | BlankNode | Literal
+    nodeShape?: NamedNode | BlankNode | null
+    dataGraph: AnyPointer
+    validator: UISHACLValidator
     isRootNode?: boolean
   }>(),
   {
+    nodeShape: null,
     isRootNode: false,
   },
+)
+
+const isIdentifiedNode = computed(
+  () => focusNode.termType === 'NamedNode' || focusNode.termType === 'BlankNode',
 )
 </script>
 
 <template>
-  <div class="text-xl text-gray-900">Untitled</div>
-  <div v-if="props.isRootNode">
-    IRI: <code class="text-sm">{{ uiTree.focusNode.value }}</code>
-  </div>
-
-  <div>
-    <div
-      v-for="propertyGroup in uiTree.propertyGroups"
-      :key="propertyGroup.term.value"
-      class="mb-4"
-    >
-      <PropertyGroup
-        :propertyGroup="propertyGroup"
-        :uiTree="uiTree"
-        :dataGraph="dataGraph"
-        :shapesGraph="shapesGraph"
-      />
-    </div>
-  </div>
+  <template v-if="isIdentifiedNode">
+    <IdentifiedFocusNode
+      :focus-node="focusNode"
+      :node-shape="nodeShape"
+      :data-graph="dataGraph"
+      :validator="validator"
+      :is-root-node="isRootNode"
+    />
+  </template>
+  <template v-else> It's a literal! </template>
 </template>

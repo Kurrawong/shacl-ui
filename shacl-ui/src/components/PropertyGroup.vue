@@ -1,70 +1,45 @@
 <script setup lang="ts">
-import { computed, ref, toRefs } from 'vue'
-import { Collapsible } from '@/components/ui/collapsible'
-import { CollapsibleTrigger } from '@/components/ui/collapsible'
-import { CollapsibleContent } from '@/components/ui/collapsible'
-import PropertyPath from '@/components/PropertyPath.vue'
-import type { PropertyGroup, UITree } from '@/types'
-import n3 from 'n3'
-import IRIToolTip from '@/components/IRIToolTip.vue'
+import { computed, ref } from 'vue'
+import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
+import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
+import { ChevronsUpDown } from 'lucide-vue-next'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { Button } from '@/components/ui/button'
+import { sh } from '@/lib/namespaces'
 
-const props = withDefaults(
-  defineProps<{
-    propertyGroup: PropertyGroup
-    uiTree: UITree
-    dataGraph: n3.Store
-    shapesGraph: n3.Store
-    isOpen?: boolean
-  }>(),
-  {
-    isOpen: true,
-  },
-)
-const { propertyGroup, uiTree, dataGraph, shapesGraph } = toRefs(props)
+export type PropertyGroupType = {
+  term: NamedNode | BlankNode
+  order: number | null
+  labels: Literal[]
+  propertyShapes: Shape[]
+}
 
-const isOpen = ref(props.isOpen)
+const { labels, term, propertyShapes } = defineProps<PropertyGroupType>()
+const isOpen = ref(true)
 const propertyGroupLabel = computed(() => {
-  return (
-    propertyGroup.value.labels[0]?.value ||
-    propertyGroup.value.term.value.split('#').slice(-1)[0].split('/').slice(-1)[0]
-  )
+  // TODO: preference language tag, then no language tag, then first label
+  return labels[0]?.value || term.value.split('#').slice(-1)[0].split('/').slice(-1)[0]
 })
 </script>
 
 <template>
-  <Collapsible v-model:open="isOpen">
-    <CollapsibleTrigger
-      class="flex items-center justify-between w-full p-3 bg-gray-50 hover:bg-gray-100 rounded-lg border"
-    >
-      <h3 class="font-medium text-gray-900 flex items-center gap-2">
-        {{ propertyGroupLabel }} <IRIToolTip :iri="propertyGroup.term.value" />
-      </h3>
-      <svg
-        class="w-4 h-4 text-gray-600 transition-transform"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-      </svg>
-    </CollapsibleTrigger>
-
-    <CollapsibleContent class="mt-2 p-3 border border-gray-200 rounded-lg bg-white">
-      <div v-if="propertyGroup.propertyPaths.length > 0">
-        <div
-          v-for="predicate in propertyGroup.propertyPaths"
-          :key="predicate.value"
-          class="mb-2 p-2 bg-gray-50 rounded"
-        >
-          <PropertyPath
-            :property-path-key="predicate.value"
-            :ui-tree="uiTree"
-            :data-graph="dataGraph"
-            :shapes-graph="shapesGraph"
-          />
+  <Collapsible v-model:open="isOpen" class="space-y-2">
+    <div class="flex items-center justify-between space-x-4 px-4">
+      <h4 class="text-md font-semibold text-blue-900">{{ propertyGroupLabel }}</h4>
+      <CollapsibleTrigger as-child>
+        <Button variant="ghost" size="sm" class="w-9 p-0">
+          <ChevronsUpDown class="h-4 w-4" />
+          <span class="sr-only">Toggle</span>
+        </Button>
+      </CollapsibleTrigger>
+    </div>
+    <CollapsibleContent class="space-y-2">
+      <div v-for="propertyShape in propertyShapes" :key="propertyShape.shapeNode.value">
+        <div class="text-sm text-gray-500">
+          {{ propertyShape.shapeNodePointer.term.value }}
+          {{ propertyShape.shapeNodePointer.out(sh.order).term?.value }}
         </div>
       </div>
-      <div v-else class="text-sm text-gray-500 italic">No predicates in this group</div>
     </CollapsibleContent>
   </Collapsible>
 </template>

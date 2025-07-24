@@ -14,12 +14,12 @@ const label = computed(() => {
   if (uiTree.propertyPaths[propertyPathKey].labels.length > 0) {
     return uiTree.propertyPaths[propertyPathKey].labels[0].value
   }
-  return uiTree.propertyPaths[propertyPathKey].term.value
+  return uiTree.propertyPaths[propertyPathKey].path.value
 })
 
 const focusNode = uiTree.focusNode
 const valueNodes = computed(() => {
-  return dataGraph.getObjects(focusNode, uiTree.propertyPaths[propertyPathKey].term, null)
+  return dataGraph.getObjects(focusNode, uiTree.propertyPaths[propertyPathKey].path, null)
 })
 </script>
 

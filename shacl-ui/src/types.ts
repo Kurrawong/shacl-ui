@@ -19,7 +19,7 @@ export interface UITree {
   label: string | null
   propertyPaths: {
     [key: string]: {
-      term: NamedNode
+      path: NamedNode | BlankNode
       propertyShapes: (NamedNode | BlankNode)[]
       order: number | null
       labels: Literal[]

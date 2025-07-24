@@ -152,26 +152,26 @@ BASE <https://linked.data.gov.au/def/vocpub/validator/>
     const shape = new Shape(validator, nodeShape)
 
     // Convert N3 Store to clownface pointer for getValueNodes
-    const dataGraphPointer = validator.factory.clownface({ dataset: dataGraph })
-    console.log(`Value nodes: ${JSON.stringify(shape.getValueNodes(focusNode, dataGraphPointer))}`)
-    for (const constraint of shape.constraints) {
-      console.log('===')
-      console.log(`Focus Node: ${focusNode.value}`)
-      console.log(`Constraint Component: ${constraint.component.node.value}`)
-      console.log(`Constraint parameters: ${JSON.stringify(constraint.component.parameters)}`)
-      console.log(`Constraint parameter value: ${constraint.paramValue.value}`)
+    // const dataGraphPointer = validator.factory.clownface({ dataset: dataGraph })
+    // console.log(`Value nodes: ${JSON.stringify(shape.getValueNodes(focusNode, dataGraphPointer))}`)
+    // for (const constraint of shape.constraints) {
+    //   console.log('===')
+    //   console.log(`Focus Node: ${focusNode.value}`)
+    //   console.log(`Constraint Component: ${constraint.component.node.value}`)
+    //   console.log(`Constraint parameters: ${JSON.stringify(constraint.component.parameters)}`)
+    //   console.log(`Constraint parameter value: ${constraint.paramValue.value}`)
 
-      if (constraint.component.node.equals(sh.PropertyConstraintComponent)) {
-        const propertyShape = new Shape(validator, constraint.paramValue)
-        console.log(`Property Path object: ${JSON.stringify(propertyShape.pathObject)}`)
-        console.log(
-          `Property Shape Value nodes: ${JSON.stringify(propertyShape.getValueNodes(focusNode, dataGraphPointer))}`,
-        )
-        for (const constraint of propertyShape.constraints) {
-          console.log(`Property Shape Constraint: ${constraint.component.node.value}`)
-        }
-      }
-    }
+    //   if (constraint.component.node.equals(sh.PropertyConstraintComponent)) {
+    //     const propertyShape = new Shape(validator, constraint.paramValue)
+    //     console.log(`Property Path object: ${JSON.stringify(propertyShape.pathObject)}`)
+    //     console.log(
+    //       `Property Shape Value nodes: ${JSON.stringify(propertyShape.getValueNodes(focusNode, dataGraphPointer))}`,
+    //     )
+    //     for (const constraint of propertyShape.constraints) {
+    //       console.log(`Property Shape Constraint: ${constraint.component.node.value}`)
+    //     }
+    //   }
+    // }
 
     const result = await validator.validate(dataGraph)
     for (const res of result.results) {
