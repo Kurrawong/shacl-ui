@@ -176,7 +176,6 @@ export const Default: Story = {
               [ sh:datatype xsd:string ]
               [ sh:datatype rdf:langString ]
           ) ;
-          sh:group <Annotation-group> ;
           sh:order 1 ;
       .
 

@@ -1,36 +1,28 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
+import { ref } from 'vue'
+import type { NamedNode, BlankNode } from '@rdfjs/types'
 import type { AnyPointer } from 'clownface'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
+import type { UISHACLValidator } from '@/lib/shapes-graph'
 import { ChevronsUpDown } from 'lucide-vue-next'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
-import type { UISHACLValidator } from '@/lib/shapes-graph'
 import PropertyShape from '@/components/PropertyShape.vue'
 
-export type PropertyGroupType = {
-  term: NamedNode | BlankNode | null
-  order: number | null
-  labels: Literal[]
+const { propertyShapes, focusNode, dataGraph, validator, predicates } = defineProps<{
   propertyShapes: Shape[]
   focusNode: NamedNode | BlankNode
   dataGraph: AnyPointer
   validator: UISHACLValidator
-}
-
-const { labels, term, propertyShapes, validator } = defineProps<PropertyGroupType>()
+  predicates: NamedNode[]
+}>()
 const isOpen = ref(true)
-const propertyGroupLabel = computed(() => {
-  // TODO: preference language tag, then no language tag, then first label
-  return labels[0]?.value || term?.value.split('#').slice(-1)[0].split('/').slice(-1)[0]
-})
 </script>
 
 <template>
   <Collapsible v-model:open="isOpen" class="space-y-2">
     <div class="flex items-center justify-between space-x-4">
-      <h4 class="text-md font-semibold text-blue-900">{{ propertyGroupLabel }}</h4>
+      <h4 class="text-md font-semibold text-blue-900">Other Properties</h4>
       <CollapsibleTrigger as-child>
         <Button variant="ghost" size="sm" class="w-9 p-0">
           <ChevronsUpDown class="h-4 w-4" />
@@ -46,6 +38,10 @@ const propertyGroupLabel = computed(() => {
           :data-graph="dataGraph"
           :validator="validator"
         />
+      </div>
+
+      <div v-for="predicate in predicates" :key="predicate.value">
+        <div class="text-sm text-gray-500">{{ predicate.value }}</div>
       </div>
     </CollapsibleContent>
   </Collapsible>

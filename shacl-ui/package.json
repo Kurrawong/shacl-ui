@@ -20,6 +20,7 @@
   "dependencies": {
     "@comunica/query-sparql-rdfjs-lite": "^4.3.0",
     "@formkit/auto-animate": "^0.8.2",
+    "@rdfjs/term-set": "^2.0.3",
     "@tailwindcss/vite": "^4.1.11",
     "@vocabulary/dash": "^1.0.5",
     "@vocabulary/sh": "^1.1.6",
@@ -48,6 +49,7 @@
     "@types/n3": "^1.26.0",
     "@types/node": "^22.15.32",
     "@types/rdf-ext": "^2.5.2",
+    "@types/rdfjs__term-set": "^2.0.9",
     "@vitejs/plugin-vue": "^6.0.0",
     "@vitest/eslint-plugin": "^1.2.7",
     "@vue/eslint-config-prettier": "^10.2.0",

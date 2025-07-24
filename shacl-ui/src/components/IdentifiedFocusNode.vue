@@ -9,20 +9,56 @@ import { sh, rdfs } from '@/lib/namespaces'
 import { sortWithNulls } from '@/lib/utils'
 import type { PropertyGroupType } from '@/components/PropertyGroup.vue'
 import PropertyGroup from '@/components/PropertyGroup.vue'
+import { useProvidePredicateTracker } from '@/composables/predicate-tracking'
+import TermSet from '@rdfjs/term-set'
+import OtherPropertiesGroup from '@/components/OtherPropertiesGroup.vue'
 
-const { focusNode, nodeShape, validator } = defineProps<{
-  focusNode: NamedNode | BlankNode | Literal
+const { focusNode, nodeShape, dataGraph, validator } = defineProps<{
+  focusNode: NamedNode | BlankNode
   nodeShape: NamedNode | BlankNode | null
   dataGraph: AnyPointer
   validator: UISHACLValidator
   isRootNode: boolean
 }>()
 
-const label = ref(focusNode)
+const label = ref<NamedNode | BlankNode | Literal>(focusNode)
 const updateLabel = (newLabel: NamedNode | BlankNode | Literal) => {
   label.value = newLabel
 }
 provide('updateLabel', updateLabel)
+
+const { getPredicates } = useProvidePredicateTracker(
+  Array.from(dataGraph.dataset.match(focusNode, null, null)).map(
+    (quad) => quad.predicate as NamedNode,
+  ),
+)
+
+const propertyShapesWithoutGroups = computed<Shape[]>(() => {
+  if (!nodeShape) {
+    return []
+  }
+
+  const propertyShapes = validator.$shapes
+    .node(nodeShape)
+    .out(sh.property)
+    .terms.filter(
+      (propertyShape) =>
+        propertyShape.termType === 'NamedNode' || propertyShape.termType === 'BlankNode',
+    )
+  const propertyShapesSet = new TermSet(propertyShapes)
+  const propertyShapesWithGroups = new TermSet(
+    propertyShapes.filter((propertyShape) => {
+      return validator.$shapes.node(propertyShape).out(sh.group).terms.length > 0
+    }),
+  ) as TermSet<NamedNode | BlankNode>
+  const propertyShapesWithoutGroups = Array.from(propertyShapesSet).filter(
+    (propertyShape) => !propertyShapesWithGroups.has(propertyShape),
+  )
+
+  return Array.from(propertyShapesWithoutGroups).map(
+    (propertyShape) => new Shape(validator, propertyShape),
+  )
+})
 
 const propertyGroups = computed<PropertyGroupType[]>(() => {
   if (!nodeShape) {
@@ -40,8 +76,7 @@ const propertyGroups = computed<PropertyGroupType[]>(() => {
     )
     .map((propertyShape) => new Shape(validator, propertyShape))
 
-  const propertyGroupsSeen = new Set<string>()
-  const propertyGroups: (NamedNode | BlankNode)[] = []
+  const propertyGroups = new TermSet<NamedNode | BlankNode>()
   for (const propertyShape of propertyShapes) {
     const propertyGroupValues = validator.$shapes
       .node(propertyShape.shapeNode)
@@ -53,14 +88,11 @@ const propertyGroups = computed<PropertyGroupType[]>(() => {
           propertyGroup.termType === 'NamedNode' || propertyGroup.termType === 'BlankNode',
       )
     for (const propertyGroupValue of propertyGroupValues) {
-      if (!propertyGroupsSeen.has(propertyGroupValue.value)) {
-        propertyGroupsSeen.add(propertyGroupValue.value)
-        propertyGroups.push(propertyGroupValue)
-      }
+      propertyGroups.add(propertyGroupValue)
     }
   }
 
-  return propertyGroups
+  return Array.from(propertyGroups)
     .map((propertyGroup) => {
       const orderValues = validator.$shapes
         .node(propertyGroup)
@@ -109,6 +141,9 @@ const propertyGroups = computed<PropertyGroupType[]>(() => {
         order,
         labels,
         propertyShapes: propertyGroupShapes,
+        focusNode,
+        dataGraph,
+        validator,
       }
     })
     .sort((a, b) => sortWithNulls(a.order, b.order))
@@ -119,13 +154,24 @@ const propertyGroups = computed<PropertyGroupType[]>(() => {
   <TermLabel :term="label" />
 
   <div v-if="propertyGroups.length > 0" class="space-y-4 mt-4">
-    <div v-for="propertyGroup in propertyGroups" :key="propertyGroup.term.value">
+    <div v-for="propertyGroup in propertyGroups" :key="propertyGroup.term?.value">
       <PropertyGroup
         :term="propertyGroup.term"
         :order="propertyGroup.order"
         :labels="propertyGroup.labels"
         :property-shapes="propertyGroup.propertyShapes"
+        :focus-node="propertyGroup.focusNode"
+        :data-graph="propertyGroup.dataGraph"
+        :validator="propertyGroup.validator"
       />
     </div>
+
+    <OtherPropertiesGroup
+      :property-shapes="propertyShapesWithoutGroups"
+      :focus-node="focusNode"
+      :data-graph="dataGraph"
+      :validator="validator"
+      :predicates="getPredicates()"
+    />
   </div>
 </template>

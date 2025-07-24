@@ -14,6 +14,9 @@ importers:
       '@formkit/auto-animate':
         specifier: ^0.8.2
         version: 0.8.2
+      '@rdfjs/term-set':
+        specifier: ^2.0.3
+        version: 2.0.3
       '@tailwindcss/vite':
         specifier: ^4.1.11
         version: 4.1.11(rolldown-vite@7.0.9(@types/node@22.16.3)(esbuild@0.25.6)(jiti@2.4.2))
@@ -93,6 +96,9 @@ importers:
       '@types/rdf-ext':
         specifier: ^2.5.2
         version: 2.5.2
+      '@types/rdfjs__term-set':
+        specifier: ^2.0.9
+        version: 2.0.9
       '@vitejs/plugin-vue':
         specifier: ^6.0.0
         version: 6.0.0(rolldown-vite@7.0.9(@types/node@22.16.3)(esbuild@0.25.6)(jiti@2.4.2))(vue@3.5.17(typescript@5.8.3))
