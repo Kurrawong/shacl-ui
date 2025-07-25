@@ -9,6 +9,7 @@ import { useInjectPredicateTracker } from '@/composables/predicate-tracking'
 import { extractPropertyPath } from 'rdf-validate-shacl/src/property-path'
 import PredicatePathLabel from '@/components/PredicatePathLabel.vue'
 import { useInjectFormLabel } from '@/composables/form-label'
+import PropertyPathBase from '@/components/PropertyPathBase.vue'
 
 const { propertyShape, focusNode, dataGraph, validator } = defineProps<{
   propertyShape: Shape
@@ -94,19 +95,14 @@ const valueNodes = computed(() => {
 </script>
 
 <template>
-  <div class="flex items-start gap-4">
-    <!-- Left column: Field name -->
-    <div class="w-48 flex-shrink-0">
-      <div class="text-xs text-gray-500">
-        {{ pathType }}
-      </div>
-      <div class="font-semibold text-sm">
-        <PredicatePathLabel :label="pathLabel" :predicate-path="path" />
-      </div>
-    </div>
-
-    <!-- Right column: Input fields -->
-    <div class="flex-1">
+  <PropertyPathBase>
+    <template #path-type>
+      {{ pathType }}
+    </template>
+    <template #path-label>
+      <PredicatePathLabel :label="pathLabel" :predicate-path="path" />
+    </template>
+    <template #value-nodes>
       <div v-if="valueNodes.length === 0" class="text-sm text-gray-400 italic">No values</div>
       <div v-else class="space-y-2">
         <div v-for="valueNode in valueNodes" :key="valueNode.value" class="flex items-center gap-2">
@@ -118,6 +114,6 @@ const valueNodes = computed(() => {
           />
         </div>
       </div>
-    </div>
-  </div>
+    </template>
+  </PropertyPathBase>
 </template>
