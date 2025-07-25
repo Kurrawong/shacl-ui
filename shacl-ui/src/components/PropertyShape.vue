@@ -4,12 +4,11 @@ import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
 import type { AnyPointer } from 'clownface'
 import type { UISHACLValidator } from '@/lib/shapes-graph'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
-import { dash, sh } from '@/lib/namespaces'
+import { dash } from '@/lib/namespaces'
 import { useInjectPredicateTracker } from '@/composables/predicate-tracking'
 import { extractPropertyPath } from 'rdf-validate-shacl/src/property-path'
-import PredicatePathLabel from '@/components/PredicatePathLabel.vue'
 import { useInjectFormLabel } from '@/composables/form-label'
-import PropertyPathBase from '@/components/PropertyPathBase.vue'
+import PredicatePath from '@/components/PredicatePath.vue'
 
 const { propertyShape, focusNode, dataGraph, validator } = defineProps<{
   propertyShape: Shape
@@ -72,48 +71,18 @@ const pathType = computed<PathType>(() => {
 
   return 'other'
 })
-
-const path = computed(() => {
-  return propertyShape.path?.term as NamedNode
-})
-
-const pathLabel = computed(() => {
-  const shName = propertyShape.shapeNodePointer.out(sh`name`).terms
-  if (shName.length) {
-    // TODO: preference language tag, then no language tag, then first label
-    return shName[0].value
-  }
-
-  // TODO: labels graph?
-
-  return propertyShape.shapeNodePointer.term.value.split('#').slice(-1)[0].split('/').slice(-1)[0]
-})
-
-const valueNodes = computed(() => {
-  return dataGraph.node(focusNode).out(propertyShape.path).terms
-})
 </script>
 
 <template>
-  <PropertyPathBase>
-    <template #path-type>
-      {{ pathType }}
-    </template>
-    <template #path-label>
-      <PredicatePathLabel :label="pathLabel" :predicate-path="path" />
-    </template>
-    <template #value-nodes>
-      <div v-if="valueNodes.length === 0" class="text-sm text-gray-400 italic">No values</div>
-      <div v-else class="space-y-2">
-        <div v-for="valueNode in valueNodes" :key="valueNode.value" class="flex items-center gap-2">
-          <input
-            type="text"
-            :value="valueNode.value"
-            class="flex-1 px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            readonly
-          />
-        </div>
-      </div>
-    </template>
-  </PropertyPathBase>
+  <PredicatePath
+    v-if="pathType === 'predicate'"
+    :property-shape="propertyShape"
+    :focus-node="focusNode"
+    :data-graph="dataGraph"
+    :validator="validator"
+  />
+
+  <template v-else>
+    <div class="text-sm text-gray-500">{{ pathType }} path not supported yet.</div>
+  </template>
 </template>
