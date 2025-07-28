@@ -17,7 +17,7 @@ export type PropertyGroupType = {
   validator: UISHACLValidator
 }
 
-const { labels, term, propertyShapes, validator } = defineProps<PropertyGroupType>()
+const { labels, term, propertyShapes, validator, dataGraph } = defineProps<PropertyGroupType>()
 const propertyGroupLabel = computed(() => {
   // TODO: preference language tag, then no language tag, then first label
   return labels[0]?.value || term?.value.split('#').slice(-1)[0].split('/').slice(-1)[0]

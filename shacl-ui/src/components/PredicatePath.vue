@@ -1,39 +1,24 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { NamedNode, BlankNode } from '@rdfjs/types'
+import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
 import type { AnyPointer } from 'clownface'
 import type { UISHACLValidator } from '@/lib/shapes-graph'
-import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
-import { sh } from '@/lib/namespaces'
 import PredicatePathLabel from '@/components/PredicatePathLabel.vue'
 import PropertyPathBase from '@/components/PropertyPathBase.vue'
+import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
+import ValueNode from '@/components/ValueNode.vue'
 
-const { propertyShape, focusNode, dataGraph } = defineProps<{
-  propertyShape: Shape
+export type PathType = 'predicate' | 'inverse' | 'alternative' | null
+
+const { path, valueNodes, dataGraph, validator } = defineProps<{
   focusNode: NamedNode | BlankNode
+  path: NamedNode
+  pathType: PathType
+  pathLabel: string
+  valueNodes: (NamedNode | BlankNode | Literal)[]
   dataGraph: AnyPointer
   validator: UISHACLValidator
+  propertyShape?: Shape
 }>()
-
-const path = computed(() => {
-  return propertyShape.path?.term as NamedNode
-})
-
-const pathLabel = computed(() => {
-  const shName = propertyShape.shapeNodePointer.out(sh`name`).terms
-  if (shName.length) {
-    // TODO: preference language tag, then no language tag, then first label
-    return shName[0].value
-  }
-
-  // TODO: labels graph?
-
-  return propertyShape.shapeNodePointer.term.value.split('#').slice(-1)[0].split('/').slice(-1)[0]
-})
-
-const valueNodes = computed(() => {
-  return dataGraph.node(focusNode).out(propertyShape.path).terms
-})
 </script>
 
 <template>
@@ -44,7 +29,21 @@ const valueNodes = computed(() => {
     </template>
     <template #value-nodes>
       <div v-if="valueNodes.length === 0" class="text-sm text-gray-400 italic">No values</div>
-      <div v-else class="space-y-2">
+
+      <div v-else>
+        <div v-for="valueNode in valueNodes" :key="valueNode.value">
+          <ValueNode
+            :focus-node="focusNode"
+            :path="path"
+            :value-node="valueNode"
+            :data-graph="dataGraph"
+            :validator="validator"
+            :property-shape="propertyShape"
+          />
+        </div>
+      </div>
+
+      <!-- <div v-else class="space-y-2">
         <div v-for="valueNode in valueNodes" :key="valueNode.value" class="flex items-center gap-2">
           <input
             type="text"
@@ -53,7 +52,7 @@ const valueNodes = computed(() => {
             readonly
           />
         </div>
-      </div>
+      </div> -->
     </template>
   </PropertyPathBase>
 </template>

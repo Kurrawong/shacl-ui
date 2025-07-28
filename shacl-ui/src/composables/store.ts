@@ -13,5 +13,10 @@ export function useStore(data?: string) {
     triggerRef(store)
   }
 
-  return { store, addQuad }
+  function deleteQuad(quad: n3.Quad) {
+    store.value.delete(quad)
+    triggerRef(store)
+  }
+
+  return { store, addQuad, deleteQuad }
 }
