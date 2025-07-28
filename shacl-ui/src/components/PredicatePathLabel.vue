@@ -17,6 +17,7 @@ defineProps<{
           :href="predicatePath.value"
           target="_blank"
           class="underline inline-flex items-center gap-1 text-gray-800"
+          tabindex="-1"
         >
           {{ label }}
           <ExternalLink class="w-3 h-3" />

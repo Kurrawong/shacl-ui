@@ -29,7 +29,7 @@ const { path, valueNodes, dataGraph, validator } = defineProps<{
     <template #value-nodes>
       <div v-if="valueNodes.length === 0" class="text-sm text-gray-400 italic">No values</div>
 
-      <div v-else>
+      <div v-else class="space-y-1">
         <div v-for="valueNode in valueNodes" :key="valueNode.value">
           <ValueNode
             :focus-node="focusNode"
@@ -41,17 +41,6 @@ const { path, valueNodes, dataGraph, validator } = defineProps<{
           />
         </div>
       </div>
-
-      <!-- <div v-else class="space-y-2">
-        <div v-for="valueNode in valueNodes" :key="valueNode.value" class="flex items-center gap-2">
-          <input
-            type="text"
-            :value="valueNode.value"
-            class="flex-1 px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            readonly
-          />
-        </div>
-      </div> -->
     </template>
   </PropertyPathBase>
 </template>
