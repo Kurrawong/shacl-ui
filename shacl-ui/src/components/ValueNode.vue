@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject } from 'vue'
+import { computed, inject, ref } from 'vue'
 import type { NamedNode, BlankNode, Literal, DatasetCore } from '@rdfjs/types'
 import n3 from 'n3'
 import type { UISHACLValidator } from '@/lib/shapes-graph'
@@ -10,7 +10,7 @@ import { dash } from '@/lib/namespaces'
 
 const { quad } = n3.DataFactory
 
-const { focusNode, path, valueNode, propertyShape } = defineProps<{
+const props = defineProps<{
   focusNode: NamedNode | BlankNode
   path: NamedNode
   valueNode: NamedNode | BlankNode | Literal
@@ -24,18 +24,32 @@ const { addQuad, deleteQuad } = inject<{
   deleteQuad: (quad: n3.Quad) => void
 }>('DataStoreActions')!
 
+const updated = ref(false)
+const newValue = ref<NamedNode | BlankNode | Literal>(props.valueNode)
+
 const editorWidgets = computed(() => {
-  return getEditorWidgets(valueNode, propertyShape)
+  return getEditorWidgets(props.valueNode, props.propertyShape)
 })
 
 const primaryEditorWidget = computed(() => {
   return editorWidgets.value.at(0)!
 })
 
+const handleSave = () => {
+  if (!updated.value) {
+    return
+  }
+  updated.value = false
+  console.log(
+    `${props.focusNode.value} ${props.path.value} ${props.valueNode.value} -> ${newValue.value.value}`,
+  )
+  deleteQuad(quad(props.focusNode, props.path, props.valueNode))
+  addQuad(quad(props.focusNode, props.path, newValue.value))
+}
+
 const handleUpdate = (term: NamedNode | BlankNode | Literal) => {
-  console.log(`${valueNode.value} -> ${term.value}`)
-  deleteQuad(quad(focusNode, path, valueNode))
-  addQuad(quad(focusNode, path, term))
+  updated.value = true
+  newValue.value = term
 }
 </script>
 
@@ -44,6 +58,7 @@ const handleUpdate = (term: NamedNode | BlankNode | Literal) => {
     v-if="primaryEditorWidget.term.equals(dash.TextFieldEditor)"
     :term="valueNode as Literal"
     @update="handleUpdate"
+    @blur="handleSave"
   />
 
   <template v-else>

@@ -9,7 +9,7 @@ const { literal } = n3.DataFactory
 interface Props {
   term: Literal
 }
-const emit = defineEmits(['update'])
+const emit = defineEmits(['update', 'blur'])
 const props = defineProps<Props>()
 const term = toRef(props, 'term')
 const value = ref(term.value.value)
@@ -24,9 +24,13 @@ function emitUpdate() {
   }
 }
 
+function handleBlur() {
+  emit('blur')
+}
+
 watch([value, datatype, language], () => emitUpdate())
 </script>
 
 <template>
-  <Input type="text" v-model="value" />
+  <Input type="text" v-model="value" @blur="handleBlur" />
 </template>
