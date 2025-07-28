@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { NamedNode, BlankNode } from '@rdfjs/types'
-import type { AnyPointer } from 'clownface'
+import type { NamedNode, BlankNode, DatasetCore } from '@rdfjs/types'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
 import type { UISHACLValidator } from '@/lib/shapes-graph'
 import PropertyShape from '@/components/PropertyShape.vue'
@@ -9,7 +8,7 @@ import PropertyGroupBase from '@/components/PropertyGroupBase.vue'
 const { propertyShapes, focusNode, dataGraph, validator, predicates } = defineProps<{
   propertyShapes: Shape[]
   focusNode: NamedNode | BlankNode
-  dataGraph: AnyPointer
+  dataGraph: DatasetCore
   validator: UISHACLValidator
   predicates: NamedNode[]
 }>()

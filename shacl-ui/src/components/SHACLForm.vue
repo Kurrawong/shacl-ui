@@ -91,7 +91,7 @@ watch(
   <FocusNode
     :focus-node="focusNode"
     :node-shape="nodeShape"
-    :data-graph="dataGraphPointer"
+    :data-graph="dataGraph"
     :validator="validator"
     :is-root-node="true"
   />

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
-import type { AnyPointer } from 'clownface'
+import type { NamedNode, BlankNode, Literal, DatasetCore } from '@rdfjs/types'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
 import type { UISHACLValidator } from '@/lib/shapes-graph'
 import PropertyShape from '@/components/PropertyShape.vue'
@@ -13,14 +12,14 @@ export type PropertyGroupType = {
   labels: Literal[]
   propertyShapes: Shape[]
   focusNode: NamedNode | BlankNode
-  dataGraph: AnyPointer
+  dataGraph: DatasetCore
   validator: UISHACLValidator
 }
 
-const { labels, term, propertyShapes, validator, dataGraph } = defineProps<PropertyGroupType>()
+const props = defineProps<PropertyGroupType>()
 const propertyGroupLabel = computed(() => {
   // TODO: preference language tag, then no language tag, then first label
-  return labels[0]?.value || term?.value.split('#').slice(-1)[0].split('/').slice(-1)[0]
+  return props.labels[0]?.value || props.term?.value.split('#').slice(-1)[0].split('/').slice(-1)[0]
 })
 </script>
 

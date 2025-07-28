@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue'
-import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
-import type { AnyPointer } from 'clownface'
+import type { NamedNode, BlankNode, Literal, DatasetCore } from '@rdfjs/types'
 import n3 from 'n3'
 import type { UISHACLValidator } from '@/lib/shapes-graph'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
@@ -15,7 +14,7 @@ const { focusNode, path, valueNode, propertyShape } = defineProps<{
   focusNode: NamedNode | BlankNode
   path: NamedNode
   valueNode: NamedNode | BlankNode | Literal
-  dataGraph: AnyPointer
+  dataGraph: DatasetCore
   validator: UISHACLValidator
   propertyShape?: Shape
 }>()

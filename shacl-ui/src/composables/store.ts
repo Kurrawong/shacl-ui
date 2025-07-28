@@ -1,4 +1,4 @@
-import { ref, triggerRef } from 'vue'
+import { ref } from 'vue'
 import n3 from 'n3'
 
 export function useStore(data?: string) {
@@ -9,13 +9,11 @@ export function useStore(data?: string) {
   }
 
   function addQuad(quad: n3.Quad) {
-    store.value.addQuad(quad)
-    triggerRef(store)
+    store.value = new n3.Store(Array.from(store.value).concat([quad]))
   }
 
   function deleteQuad(quad: n3.Quad) {
-    store.value.delete(quad)
-    triggerRef(store)
+    store.value = new n3.Store(Array.from(store.value).filter((q) => !q.equals(quad)))
   }
 
   return { store, addQuad, deleteQuad }

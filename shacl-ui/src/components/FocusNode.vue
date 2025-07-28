@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
-import type { AnyPointer } from 'clownface'
+import type { NamedNode, BlankNode, Literal, DatasetCore } from '@rdfjs/types'
 import { Shape } from 'rdf-validate-shacl/src/shapes-graph'
 import { UISHACLValidator } from '@/lib/shapes-graph'
 import { sh, rdfs } from '@/lib/namespaces'
@@ -13,11 +12,11 @@ import OtherPropertiesGroup from '@/components/OtherPropertiesGroup.vue'
 import { useProvideFormLabel } from '@/composables/form-label'
 import FocusNodeLabel from '@/components/FocusNodeLabel.vue'
 
-const { focusNode, nodeShape, dataGraph, validator } = withDefaults(
+const props = withDefaults(
   defineProps<{
     focusNode: NamedNode | BlankNode
     nodeShape?: NamedNode | BlankNode | null
-    dataGraph: AnyPointer
+    dataGraph: DatasetCore
     validator: UISHACLValidator
     isRootNode?: boolean
   }>(),
@@ -27,21 +26,22 @@ const { focusNode, nodeShape, dataGraph, validator } = withDefaults(
   },
 )
 
-const { getFormLabel } = useProvideFormLabel(focusNode)
+const { getFormLabel } = useProvideFormLabel(props.focusNode)
+const dataGraphPointer = computed(() => props.validator.factory.clownface({ dataset: props.dataGraph }))
 
 const { getPredicates } = useProvidePredicateTracker(
-  Array.from(dataGraph.dataset.match(focusNode, null, null)).map(
+  Array.from(dataGraphPointer.value.dataset.match(props.focusNode, null, null)).map(
     (quad) => quad.predicate as NamedNode,
   ),
 )
 
 const propertyShapesWithoutGroups = computed<Shape[]>(() => {
-  if (!nodeShape) {
+  if (!props.nodeShape) {
     return []
   }
 
-  const propertyShapes = validator.$shapes
-    .node(nodeShape)
+  const propertyShapes = props.validator.$shapes
+    .node(props.nodeShape)
     .out(sh.property)
     .terms.filter(
       (propertyShape) =>
@@ -50,7 +50,7 @@ const propertyShapesWithoutGroups = computed<Shape[]>(() => {
   const propertyShapesSet = new TermSet(propertyShapes)
   const propertyShapesWithGroups = new TermSet(
     propertyShapes.filter((propertyShape) => {
-      return validator.$shapes.node(propertyShape).out(sh.group).terms.length > 0
+      return props.validator.$shapes.node(propertyShape).out(sh.group).terms.length > 0
     }),
   ) as TermSet<NamedNode | BlankNode>
   const propertyShapesWithoutGroups = Array.from(propertyShapesSet).filter(
@@ -58,7 +58,7 @@ const propertyShapesWithoutGroups = computed<Shape[]>(() => {
   )
 
   return Array.from(propertyShapesWithoutGroups).map(
-    (propertyShape) => new Shape(validator, propertyShape),
+    (propertyShape) => new Shape(props.validator, propertyShape),
   )
 })
 
@@ -70,12 +70,12 @@ const propertyGroups = computed<
     propertyShapes: Shape[]
   }[]
 >(() => {
-  if (!nodeShape) {
+  if (!props.nodeShape) {
     return []
   }
 
-  const propertyShapes = validator.$shapes
-    .node(nodeShape)
+  const propertyShapes = props.validator.$shapes
+    .node(props.nodeShape)
     .out(sh.property)
     .toArray()
     .map((propertyShape) => propertyShape.term)
@@ -83,11 +83,11 @@ const propertyGroups = computed<
       (propertyShape) =>
         propertyShape.termType === 'NamedNode' || propertyShape.termType === 'BlankNode',
     )
-    .map((propertyShape) => new Shape(validator, propertyShape))
+    .map((propertyShape) => new Shape(props.validator, propertyShape))
 
   const propertyGroups = new TermSet<NamedNode | BlankNode>()
   for (const propertyShape of propertyShapes) {
-    const propertyGroupValues = validator.$shapes
+    const propertyGroupValues = props.validator.$shapes
       .node(propertyShape.shapeNode)
       .out(sh.group)
       .toArray()
@@ -103,7 +103,7 @@ const propertyGroups = computed<
 
   return Array.from(propertyGroups)
     .map((propertyGroup) => {
-      const orderValues = validator.$shapes
+      const orderValues = props.validator.$shapes
         .node(propertyGroup)
         .out(sh.order)
         .toArray()
@@ -112,7 +112,7 @@ const propertyGroups = computed<
         throw new Error('A property group must contain only one sh:order property.')
       }
       const order = orderValues.length ? Number(orderValues[0].value) : null
-      const labels = validator.$shapes
+      const labels = props.validator.$shapes
         .node(propertyGroup)
         .out(rdfs.label)
         .toArray()
@@ -121,7 +121,7 @@ const propertyGroups = computed<
 
       const propertyGroupShapes = propertyShapes
         .filter((propertyShape) => {
-          const propertyGroupValues = validator.$shapes
+          const propertyGroupValues = props.validator.$shapes
             .node(propertyShape.shapeNode)
             .out(sh.group)
             .toArray()

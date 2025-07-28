@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
-import type { AnyPointer } from 'clownface'
+import type { NamedNode, BlankNode, Literal, DatasetCore } from '@rdfjs/types'
 import type { UISHACLValidator } from '@/lib/shapes-graph'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
 import { dash, sh } from '@/lib/namespaces'
@@ -10,23 +9,26 @@ import { extractPropertyPath } from 'rdf-validate-shacl/src/property-path'
 import { useInjectFormLabel } from '@/composables/form-label'
 import PredicatePath, { type PathType } from '@/components/PredicatePath.vue'
 
-const { propertyShape, focusNode, dataGraph, validator } = defineProps<{
+const props = defineProps<{
   propertyShape: Shape
   focusNode: NamedNode | BlankNode
-  dataGraph: AnyPointer
+  dataGraph: DatasetCore
   validator: UISHACLValidator
 }>()
 
 const { registerHandledPredicate } = useInjectPredicateTracker()
+const dataGraphPointer = computed(() =>
+  props.validator.factory.clownface({ dataset: props.dataGraph }),
+)
 
 onMounted(() => {
-  const path = propertyShape.path
+  const path = props.propertyShape.path
   if (path && path.term.termType === 'NamedNode') {
     registerHandledPredicate(path.term)
   } else if (path && path.term.termType === 'BlankNode') {
     // Check if it's an alternative path.
     // If so, add each predicate path to the tracker.
-    const _path = extractPropertyPath(path, validator.ns, true)
+    const _path = extractPropertyPath(path, props.validator.ns, true)
     if ('or' in _path) {
       const or = _path.or as NamedNode[]
       for (const alternativePath of or) {
@@ -37,11 +39,11 @@ onMounted(() => {
 })
 
 onMounted(() => {
-  const propertyRole = propertyShape.shapeNodePointer.out(dash.propertyRole).term
+  const propertyRole = props.propertyShape.shapeNodePointer.out(dash.propertyRole).term
   if (propertyRole && propertyRole.equals(dash.LabelRole)) {
-    const labels = dataGraph
-      .node(focusNode)
-      .out(propertyShape.path)
+    const labels = dataGraphPointer.value
+      .node(props.focusNode)
+      .out(props.propertyShape.path)
       .terms.filter((label) => label.termType === 'Literal') as Literal[]
     if (labels.length) {
       // TODO: get preferred language tag, then no language tag, then first label
@@ -53,9 +55,9 @@ onMounted(() => {
 })
 
 const propertyPath = computed(() => {
-  const path = propertyShape.path
+  const path = props.propertyShape.path
   if (path) {
-    return extractPropertyPath(path, validator.ns, true)
+    return extractPropertyPath(path, props.validator.ns, true)
   }
 
   return null
@@ -82,7 +84,7 @@ const pathType = computed<PathType>(() => {
 })
 
 const pathLabel = computed(() => {
-  const shName = propertyShape.shapeNodePointer.out(sh`name`).terms
+  const shName = props.propertyShape.shapeNodePointer.out(sh`name`).terms
   if (shName.length) {
     // TODO: preference language tag, then no language tag, then first label
     return shName[0].value
@@ -90,11 +92,19 @@ const pathLabel = computed(() => {
 
   // TODO: labels graph?
 
-  return propertyShape.shapeNodePointer.term.value.split('#').slice(-1)[0].split('/').slice(-1)[0]
+  return props.propertyShape.shapeNodePointer.term.value
+    .split('#')
+    .slice(-1)[0]
+    .split('/')
+    .slice(-1)[0]
 })
 
 const valueNodes = computed(() => {
-  return propertyShape.getValueNodes(focusNode, dataGraph) as (NamedNode | BlankNode | Literal)[]
+  return props.propertyShape.getValueNodes(props.focusNode, dataGraphPointer.value) as (
+    | NamedNode
+    | BlankNode
+    | Literal
+  )[]
 })
 </script>
 

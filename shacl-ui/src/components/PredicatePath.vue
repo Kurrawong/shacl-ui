@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
-import type { AnyPointer } from 'clownface'
+import type { NamedNode, BlankNode, Literal, DatasetCore } from '@rdfjs/types'
 import type { UISHACLValidator } from '@/lib/shapes-graph'
 import PredicatePathLabel from '@/components/PredicatePathLabel.vue'
 import PropertyPathBase from '@/components/PropertyPathBase.vue'
@@ -15,7 +14,7 @@ const { path, valueNodes, dataGraph, validator } = defineProps<{
   pathType: PathType
   pathLabel: string
   valueNodes: (NamedNode | BlankNode | Literal)[]
-  dataGraph: AnyPointer
+  dataGraph: DatasetCore
   validator: UISHACLValidator
   propertyShape?: Shape
 }>()
