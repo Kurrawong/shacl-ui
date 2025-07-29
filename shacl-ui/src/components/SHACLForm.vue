@@ -96,7 +96,7 @@ watch(
     :is-root-node="true"
   />
 
-  <pre v-if="dataGraphString" class="text-sm text-gray-800">
-    {{ dataGraphString }}
+  <pre v-if="dataGraphString" class="text-sm text-gray-800"
+    >{{ dataGraphString }}
   </pre>
 </template>
