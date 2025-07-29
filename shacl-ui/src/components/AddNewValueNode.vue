@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Plus } from 'lucide-vue-next'
 
 const emit = defineEmits(['add-new-value'])
 const { namedNode, literal } = n3.DataFactory
@@ -18,7 +19,7 @@ const { namedNode, literal } = n3.DataFactory
 <template>
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
-      <Button variant="outline">Add</Button>
+      <Button variant="outline"><Plus /></Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent class="w-56">
       <DropdownMenuLabel>Add new value</DropdownMenuLabel>

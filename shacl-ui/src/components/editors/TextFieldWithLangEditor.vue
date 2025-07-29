@@ -34,7 +34,7 @@ watch([value, datatype, language], () => emitUpdate())
 </script>
 
 <template>
-  <div class="flex gap-2 items-center">
+  <div class="flex gap-2 items-center grow">
     <Input type="text" v-model="value" @blur="handleBlur" />
     <Input
       type="text"

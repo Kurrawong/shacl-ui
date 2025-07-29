@@ -9,6 +9,7 @@ import TextFieldEditor from '@/components/editors/TextFieldEditor.vue'
 import { dash } from '@/lib/namespaces'
 import TextFieldWithLangEditor from '@/components/editors/TextFieldWithLangEditor.vue'
 import { Input } from '@/components/ui/input'
+import ValueNodeMenu from '@/components/ValueNodeMenu.vue'
 
 const { quad } = n3.DataFactory
 
@@ -30,7 +31,7 @@ const updated = ref(false)
 const newValue = ref<NamedNode | BlankNode | Literal>(props.valueNode)
 
 const editorWidgets = computed(() => {
-  return getEditorWidgets(props.valueNode, props.propertyShape)
+  return getEditorWidgets(props.valueNode, props.propertyShape).filter((widget) => widget.score > 0)
 })
 const selectedEditorWidget = ref(
   editorWidgets.value.at(0) && editorWidgets.value.at(0)!.score > 0
@@ -57,20 +58,31 @@ const handleUpdate = (term: NamedNode | BlankNode | Literal) => {
 </script>
 
 <template>
-  <TextFieldEditor
-    v-if="selectedEditorWidget?.term.equals(dash.TextFieldEditor)"
-    :term="valueNode as Literal"
-    @update="handleUpdate"
-    @blur="handleSave"
-  />
-  <TextFieldWithLangEditor
-    v-else-if="selectedEditorWidget?.term.equals(dash.TextFieldWithLangEditor)"
-    :term="valueNode as Literal"
-    @update="handleUpdate"
-    @blur="handleSave"
-  />
+  <div class="flex items-center gap-2">
+    <TextFieldEditor
+      v-if="selectedEditorWidget?.term.equals(dash.TextFieldEditor)"
+      :term="valueNode as Literal"
+      @update="handleUpdate"
+      @blur="handleSave"
+    />
 
-  <template v-else>
-    <Input type="text" :value="valueNode.value" disabled />
-  </template>
+    <TextFieldWithLangEditor
+      v-else-if="selectedEditorWidget?.term.equals(dash.TextFieldWithLangEditor)"
+      :term="valueNode as Literal"
+      @update="handleUpdate"
+      @blur="handleSave"
+    />
+
+    <Input v-else type="text" :value="valueNode.value" disabled />
+
+    <ValueNodeMenu
+      v-if="selectedEditorWidget"
+      :selected-editor-widget="selectedEditorWidget"
+      :editor-widgets="editorWidgets"
+      @change-editor-widget="
+        (editorWidget: NamedNode) =>
+          (selectedEditorWidget = editorWidgets.find((widget) => widget.term.equals(editorWidget)))
+      "
+    />
+  </div>
 </template>
