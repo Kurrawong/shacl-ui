@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import type { NamedNode, BlankNode, DatasetCore } from '@rdfjs/types'
+import type { NamedNode, BlankNode, DatasetCore, Literal } from '@rdfjs/types'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
 import type { UISHACLValidator } from '@/lib/shapes-graph'
 import PropertyShape from '@/components/PropertyShape.vue'
 import PropertyGroupBase from '@/components/PropertyGroupBase.vue'
+import PredicatePath from '@/components/PredicatePath.vue'
 
-const { propertyShapes, focusNode, dataGraph, validator, predicates } = defineProps<{
+defineProps<{
   propertyShapes: Shape[]
   focusNode: NamedNode | BlankNode
   dataGraph: DatasetCore
@@ -27,9 +28,21 @@ const { propertyShapes, focusNode, dataGraph, validator, predicates } = definePr
         />
       </div>
 
-      <div v-for="predicate in predicates" :key="predicate.value">
-        <div class="text-sm text-gray-500">{{ predicate.value }}</div>
-      </div>
+      <template v-for="predicate in predicates" :key="predicate.value">
+        <PredicatePath
+          :focus-node="focusNode"
+          :path="predicate"
+          :path-type="'predicate'"
+          :path-label="predicate.value.split('#').slice(-1)[0].split('/').slice(-1)[0]"
+          :value-nodes="
+            Array.from(dataGraph.match(focusNode, predicate, null))
+              .map((quad) => quad.object as NamedNode | BlankNode | Literal)
+              .sort((a, b) => a.value.localeCompare(b.value))
+          "
+          :data-graph="dataGraph"
+          :validator="validator"
+        />
+      </template>
     </template>
   </PropertyGroupBase>
 </template>

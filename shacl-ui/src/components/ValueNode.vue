@@ -8,6 +8,7 @@ import { getEditorWidgets } from '@/lib/widgets'
 import TextFieldEditor from '@/components/editors/TextFieldEditor.vue'
 import { dash } from '@/lib/namespaces'
 import TextFieldWithLangEditor from '@/components/editors/TextFieldWithLangEditor.vue'
+import { Input } from '@/components/ui/input'
 
 const { quad } = n3.DataFactory
 
@@ -31,7 +32,11 @@ const newValue = ref<NamedNode | BlankNode | Literal>(props.valueNode)
 const editorWidgets = computed(() => {
   return getEditorWidgets(props.valueNode, props.propertyShape)
 })
-const selectedEditorWidget = ref(editorWidgets.value.at(0)!)
+const selectedEditorWidget = ref(
+  editorWidgets.value.at(0) && editorWidgets.value.at(0)!.score > 0
+    ? editorWidgets.value.at(0)
+    : null,
+)
 
 const handleSave = () => {
   if (!updated.value) {
@@ -53,19 +58,19 @@ const handleUpdate = (term: NamedNode | BlankNode | Literal) => {
 
 <template>
   <TextFieldEditor
-    v-if="selectedEditorWidget.term.equals(dash.TextFieldEditor)"
+    v-if="selectedEditorWidget?.term.equals(dash.TextFieldEditor)"
     :term="valueNode as Literal"
     @update="handleUpdate"
     @blur="handleSave"
   />
   <TextFieldWithLangEditor
-    v-else-if="selectedEditorWidget.term.equals(dash.TextFieldWithLangEditor)"
+    v-else-if="selectedEditorWidget?.term.equals(dash.TextFieldWithLangEditor)"
     :term="valueNode as Literal"
     @update="handleUpdate"
     @blur="handleSave"
   />
 
   <template v-else>
-    {{ valueNode.value }}
+    <Input type="text" :value="valueNode.value" disabled />
   </template>
 </template>

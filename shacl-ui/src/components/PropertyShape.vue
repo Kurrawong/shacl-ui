@@ -100,11 +100,9 @@ const pathLabel = computed(() => {
 })
 
 const valueNodes = computed(() => {
-  return props.propertyShape.getValueNodes(props.focusNode, dataGraphPointer.value) as (
-    | NamedNode
-    | BlankNode
-    | Literal
-  )[]
+  return props.propertyShape
+    .getValueNodes(props.focusNode, dataGraphPointer.value)
+    .sort((a, b) => a.value.localeCompare(b.value)) as (NamedNode | BlankNode | Literal)[]
 })
 </script>
 
