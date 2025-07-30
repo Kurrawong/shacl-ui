@@ -32,6 +32,9 @@ const { namedNode, literal } = n3.DataFactory
         <DropdownMenuItem @click="emit('add-new-value', literal(''))">
           <span>Literal</span>
         </DropdownMenuItem>
+        <DropdownMenuItem @click="emit('add-new-value', literal('', ''))">
+          <span>Literal with language</span>
+        </DropdownMenuItem>
       </DropdownMenuGroup>
     </DropdownMenuContent>
   </DropdownMenu>
