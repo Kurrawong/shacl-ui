@@ -9,6 +9,7 @@ import TextFieldEditor from '@/components/editors/TextFieldEditor.vue'
 import { dash } from '@/lib/namespaces'
 import TextFieldWithLangEditor from '@/components/editors/TextFieldWithLangEditor.vue'
 import { Input } from '@/components/ui/input'
+import URIEditor from '@/components/editors/URIEditor.vue'
 import ValueNodeMenu from '@/components/ValueNodeMenu.vue'
 
 const { quad } = n3.DataFactory
@@ -31,10 +32,13 @@ const updated = ref(false)
 const newValue = ref<NamedNode | BlankNode | Literal>(props.valueNode)
 
 const editorWidgets = computed(() => {
-  return getEditorWidgets(props.valueNode, props.propertyShape).filter((widget) => widget.score > 0)
+  return getEditorWidgets(props.valueNode, props.propertyShape).filter(
+    (widget) => widget.score > 0 || widget.score === null,
+  )
 })
 const selectedEditorWidget = ref(
-  editorWidgets.value.at(0) && editorWidgets.value.at(0)!.score > 0
+  editorWidgets.value.at(0) &&
+    (editorWidgets.value.at(0)!.score > 0 || editorWidgets.value.at(0)!.score === null)
     ? editorWidgets.value.at(0)
     : null,
 )
@@ -79,7 +83,19 @@ const handleDelete = () => {
       @blur="handleSave"
     />
 
-    <Input v-else type="text" :value="valueNode.value" disabled />
+    <URIEditor
+      v-else-if="selectedEditorWidget?.term.equals(dash.URIEditor)"
+      :term="valueNode as NamedNode"
+      @update="handleUpdate"
+      @blur="handleSave"
+    />
+
+    <div v-else class="grow">
+      <Input :default-value="valueNode.value" disabled />
+      <span class="text-xs text-gray-500 italic"
+        >No widget found for {{ selectedEditorWidget?.term.value }}</span
+      >
+    </div>
 
     <ValueNodeMenu
       v-if="selectedEditorWidget"
