@@ -6,7 +6,7 @@ import { PrefixMapFactory } from 'rdf-ext'
 import n3 from 'n3'
 import { useStore } from '@/composables/store'
 import FocusNode from '@/components/FocusNode.vue'
-import { UISHACLValidator } from '@/lib/shapes-graph'
+import { UISHACLValidator } from '@/core/shapes-graph'
 
 const { namedNode } = n3.DataFactory
 

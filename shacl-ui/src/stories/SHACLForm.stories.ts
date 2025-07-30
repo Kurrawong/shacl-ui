@@ -105,6 +105,11 @@ export const Default: Story = {
           sh:property	<prefLabel>,
               <definition>,
               <alternateLabel>,
+              [
+                  sh:path rdfs:comment ;
+                  sh:datatype xsd:string ;
+                  sh:group <Annotation-group> ;
+              ],
               <created>,
               [
                   sh:path [

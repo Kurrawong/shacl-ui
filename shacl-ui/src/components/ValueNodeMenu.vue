@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { DropdownMenuPortal } from 'reka-ui'
-import type { EditorWidget } from '@/lib/widgets'
+import type { EditorWidget } from '@/core/widgets'
 
 const emit = defineEmits(['change-editor-widget', 'delete'])
 

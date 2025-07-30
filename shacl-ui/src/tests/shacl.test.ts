@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { getPropertyShapes, normalizePropertyPath } from '@/lib/shacl'
+import { getPropertyShapes, normalizePropertyPath } from '@/core/shacl'
 import { DataFactory, Store } from 'n3'
-import { sh, skos, foaf, dcterms, schema } from '@/lib/namespaces'
+import { sh, skos, foaf, dcterms, schema } from '@/core/namespaces'
 
 const { namedNode, blankNode, quad } = DataFactory
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { NamedNode, BlankNode, DatasetCore, Literal } from '@rdfjs/types'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
-import type { UISHACLValidator } from '@/lib/shapes-graph'
+import type { UISHACLValidator } from '@/core/shapes-graph'
 import PropertyShape from '@/components/PropertyShape.vue'
 import PropertyGroupBase from '@/components/PropertyGroupBase.vue'
 import PredicatePath from '@/components/PredicatePath.vue'

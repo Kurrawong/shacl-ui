@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { DataFactory, Store } from 'n3'
-import { Shape } from '@/lib/shape'
+import { Shape } from '@/core/shape'
 
 const { namedNode, blankNode } = DataFactory
 

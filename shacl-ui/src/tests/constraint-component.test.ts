@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { DataFactory, Store, Parser, Writer } from 'n3'
-import { rdf, sh } from '@/lib/namespaces'
-import { ClassConstraintComponent } from '@/lib/constraint-components'
+import { rdf, sh } from '@/core/namespaces'
+import { ClassConstraintComponent } from '@/core/constraint-components'
 import { Shape } from 'rdf-validate-shacl/src/shapes-graph'
-import { UISHACLValidator } from '@/lib/shapes-graph'
-import dashVocabularyFactory from '@/lib/dash-vocabulary'
+import { UISHACLValidator } from '@/core/shapes-graph'
+import dashVocabularyFactory from '@/core/dash-vocabulary'
 
 const { namedNode, blankNode, quad } = DataFactory
 const parser = new Parser()

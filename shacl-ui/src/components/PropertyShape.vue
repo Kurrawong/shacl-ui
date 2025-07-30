@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import type { NamedNode, BlankNode, Literal, DatasetCore } from '@rdfjs/types'
-import type { UISHACLValidator } from '@/lib/shapes-graph'
+import type { UISHACLValidator } from '@/core/shapes-graph'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
-import { dash, sh } from '@/lib/namespaces'
+import { dash, sh } from '@/core/namespaces'
 import { useInjectPredicateTracker } from '@/composables/predicate-tracking'
 import { extractPropertyPath } from 'rdf-validate-shacl/src/property-path'
 import { useInjectFormLabel } from '@/composables/form-label'

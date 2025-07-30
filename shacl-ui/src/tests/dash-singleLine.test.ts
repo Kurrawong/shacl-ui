@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { DataFactory, Store, Parser } from 'n3'
-import { dash, sh, skos } from '@/lib/namespaces'
-import { UISHACLValidator } from '@/lib/shapes-graph'
+import { dash, sh, skos } from '@/core/namespaces'
+import { UISHACLValidator } from '@/core/shapes-graph'
 
 const { namedNode } = DataFactory
 const parser = new Parser()
@@ -202,7 +202,9 @@ describe('Test dash:singleLine', () => {
         validator.factory.clownface({ dataset: dataGraph }),
       )) {
         console.log(`Value node: ${valueNode.value}`)
-        console.log(`Validate: ${constraint.validate(namedNode('https://example.com/fruits'), valueNode)}`)
+        console.log(
+          `Validate: ${constraint.validate(namedNode('https://example.com/fruits'), valueNode)}`,
+        )
       }
     }
   })
