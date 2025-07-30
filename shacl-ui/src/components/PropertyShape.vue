@@ -92,11 +92,9 @@ const pathLabel = computed(() => {
 
   // TODO: labels graph?
 
-  return props.propertyShape.shapeNodePointer.term.value
-    .split('#')
-    .slice(-1)[0]
-    .split('/')
-    .slice(-1)[0]
+  // PredicatePath
+  const path = propertyPath.value! as NamedNode
+  return path.value.split('#').slice(-1)[0].split('/').slice(-1)[0]
 })
 
 const valueNodes = computed(() => {
