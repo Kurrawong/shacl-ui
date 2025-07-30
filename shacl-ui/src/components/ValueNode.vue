@@ -33,15 +33,10 @@ const newValue = ref<NamedNode | BlankNode | Literal>(props.valueNode)
 
 const editorWidgets = computed(() => {
   return getEditorWidgets(props.valueNode, props.propertyShape).filter(
-    (widget) => widget.score > 0 || widget.score === null,
+    (widget) => widget.score === null || widget.score > 0,
   )
 })
-const selectedEditorWidget = ref(
-  editorWidgets.value.at(0) &&
-    (editorWidgets.value.at(0)!.score > 0 || editorWidgets.value.at(0)!.score === null)
-    ? editorWidgets.value.at(0)
-    : null,
-)
+const selectedEditorWidget = ref(editorWidgets.value.at(0) ?? null)
 
 // TODO: handleSave and handleDelete currently only works with property paths.
 
@@ -64,6 +59,11 @@ const handleUpdate = (term: NamedNode | BlankNode | Literal) => {
 
 const handleDelete = () => {
   deleteQuad(quad(props.focusNode, props.path, props.valueNode))
+}
+
+const handleChangeEditorWidget = (editorWidget: NamedNode) => {
+  selectedEditorWidget.value =
+    editorWidgets.value.find((widget) => widget.term.equals(editorWidget)) ?? null
 }
 </script>
 
@@ -92,19 +92,17 @@ const handleDelete = () => {
 
     <div v-else class="grow">
       <Input :default-value="valueNode.value" disabled />
-      <span class="text-xs text-gray-500 italic"
+      <span v-if="selectedEditorWidget" class="text-xs text-gray-500 italic"
         >No widget found for {{ selectedEditorWidget?.term.value }}</span
       >
+      <span v-else class="text-xs text-gray-500 italic">No widget found</span>
     </div>
 
     <ValueNodeMenu
       v-if="selectedEditorWidget"
       :selected-editor-widget="selectedEditorWidget"
       :editor-widgets="editorWidgets"
-      @change-editor-widget="
-        (editorWidget: NamedNode) =>
-          (selectedEditorWidget = editorWidgets.find((widget) => widget.term.equals(editorWidget)))
-      "
+      @change-editor-widget="handleChangeEditorWidget"
       @delete="handleDelete"
     />
   </div>
