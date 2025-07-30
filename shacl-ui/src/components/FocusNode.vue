@@ -27,7 +27,9 @@ const props = withDefaults(
 )
 
 const { getFormLabel } = useProvideFormLabel(props.focusNode)
-const dataGraphPointer = computed(() => props.validator.factory.clownface({ dataset: props.dataGraph }))
+const dataGraphPointer = computed(() =>
+  props.validator.factory.clownface({ dataset: props.dataGraph }),
+)
 
 const { getPredicates } = useProvidePredicateTracker(
   Array.from(dataGraphPointer.value.dataset.match(props.focusNode, null, null)).map(
@@ -175,14 +177,14 @@ const propertyGroups = computed<
           :validator="validator"
         />
       </div>
-
-      <OtherPropertiesGroup
-        :property-shapes="propertyShapesWithoutGroups"
-        :focus-node="focusNode"
-        :data-graph="dataGraph"
-        :validator="validator"
-        :predicates="getPredicates()"
-      />
     </template>
+
+    <OtherPropertiesGroup
+      :property-shapes="propertyShapesWithoutGroups"
+      :focus-node="focusNode"
+      :data-graph="dataGraph"
+      :validator="validator"
+      :predicates="getPredicates()"
+    />
   </div>
 </template>

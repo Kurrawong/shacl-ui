@@ -211,3 +211,65 @@ export const Default: Story = {
     isRootNode: true,
   },
 }
+
+
+export const NoShapes: Story = {
+  render: (args) => {
+    // Transform string inputs to objects using factory functions
+    const transformedArgs = {
+      ...args,
+      focusNode: typeof args.focusNode === 'string' ? namedNode(args.focusNode) : args.focusNode,
+      nodeShape: typeof args.nodeShape === 'string' ? namedNode(args.nodeShape) : args.nodeShape,
+    }
+
+    return {
+      components: { SHACLForm },
+      setup() {
+        return { args: transformedArgs }
+      },
+      template: '<SHACLForm v-bind="args" />',
+    }
+  },
+  args: {
+    focusNode: 'https://example.com/fruits' as any,
+
+    dataGraph: `
+      PREFIX owl: <http://www.w3.org/2002/07/owl#>
+      PREFIX schema: <https://schema.org/>
+      PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+      PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+      <https://example.com/fruits>
+        a skos:ConceptScheme ;
+        skos:prefLabel "Fruits" ;
+        skos:alternateLabel "Fruits"@en ;
+        skos:alternateLabel "水果"@zh ;
+        skos:definition "A fruits vocabulary" ;
+        schema:dateCreated "2025-07-14"^^xsd:date ;
+        owl:versionIRI <https://example.com/fruits/1.0.0> ;
+        owl:versionInfo "1.0.0" ;
+        skos:historyNote "This is the first version of the fruits vocabulary." ;
+        schema:publisher "John Doe" ;
+        schema:status <https://linked.data.gov.au/def/reg-statuses/experimental> ;
+      .
+      <https://example.com/apple> a skos:Concept ;
+        skos:prefLabel "apple" ;
+        skos:definition "An apple a day keeps the doctor away." ;
+        skos:inScheme <https://example.com/fruits> ;
+        skos:topConceptOf <https://example.com/fruits> ;
+      .
+      <http://example.com/red-fruits>
+        a skos:Collection ;
+        skos:prefLabel "Red Fruits" ;
+        skos:definition "A collection of red fruits." ;
+        skos:member <https://example.com/apple> ;
+      .
+    `,
+
+    shapesGraph: `
+
+    `,
+
+    nodeShape: null,
+    isRootNode: true,
+  },
+}
