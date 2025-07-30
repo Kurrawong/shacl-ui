@@ -128,6 +128,7 @@ const valueNodes = computed(() => {
   /> -->
 
   <template v-else>
-    <div class="text-sm text-gray-500">{{ pathType }} path not supported.</div>
+    <div v-if="pathType" class="text-sm text-gray-500">{{ pathType }} path not supported.</div>
+    <div v-else class="text-sm text-gray-500">{{ propertyPath }} not supported.</div>
   </template>
 </template>
