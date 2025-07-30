@@ -8,7 +8,7 @@ import { useInjectPredicateTracker } from '@/composables/predicate-tracking'
 import { extractPropertyPath } from 'rdf-validate-shacl/src/property-path'
 import { useInjectFormLabel } from '@/composables/form-label'
 import PredicatePath, { type PathType } from '@/components/PredicatePath.vue'
-import AlternativePath from '@/components/AlternativePath.vue'
+// import AlternativePath from '@/components/AlternativePath.vue'
 
 const props = defineProps<{
   propertyShape: Shape
