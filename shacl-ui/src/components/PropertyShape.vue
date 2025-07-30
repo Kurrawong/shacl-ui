@@ -8,6 +8,7 @@ import { useInjectPredicateTracker } from '@/composables/predicate-tracking'
 import { extractPropertyPath } from 'rdf-validate-shacl/src/property-path'
 import { useInjectFormLabel } from '@/composables/form-label'
 import PredicatePath, { type PathType } from '@/components/PredicatePath.vue'
+import AlternativePath from '@/components/AlternativePath.vue'
 
 const props = defineProps<{
   propertyShape: Shape
@@ -117,7 +118,16 @@ const valueNodes = computed(() => {
     :property-shape="propertyShape"
   />
 
+  <!-- <AlternativePath
+    v-else-if="pathType === 'alternative'"
+    :focus-node="focusNode"
+    :path="('or' in propertyPath! ? propertyPath.or : []) as NamedNode[]"
+    :value-nodes="valueNodes"
+    :data-graph="dataGraph"
+    :validator="validator"
+  /> -->
+
   <template v-else>
-    <div class="text-sm text-gray-500">{{ pathType }} path not supported yet.</div>
+    <div class="text-sm text-gray-500">{{ pathType }} path not supported.</div>
   </template>
 </template>
