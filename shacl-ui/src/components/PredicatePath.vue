@@ -44,7 +44,14 @@ const addNewValue = (value: NamedNode | Literal) => {
       <PredicatePathLabel :label="pathLabel" :predicate-path="path" />
     </template>
     <template #value-nodes>
-      <div v-if="_valueNodes.length === 0" class="text-sm text-gray-400 italic">No values</div>
+      <div
+        v-if="_valueNodes.length === 0"
+        class="text-sm text-gray-400 italic flex justify-between items-center"
+      >
+        No values
+
+        <AddNewValueNode @add-new-value="addNewValue" />
+      </div>
 
       <div v-else class="space-y-1">
         <div v-for="valueNode in _valueNodes" :key="valueNode.value">

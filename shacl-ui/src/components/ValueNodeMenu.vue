@@ -5,15 +5,20 @@ import { Ellipsis } from 'lucide-vue-next'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuLabel,
+  DropdownMenuGroup,
+  DropdownMenuItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { DropdownMenuPortal } from 'reka-ui'
 import type { EditorWidget } from '@/lib/widgets'
 
-const emit = defineEmits(['change-editor-widget'])
+const emit = defineEmits(['change-editor-widget', 'delete'])
 
 defineProps<{
   selectedEditorWidget: EditorWidget
@@ -26,25 +31,42 @@ const { namedNode } = n3.DataFactory
 <template>
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
-      <Button variant="outline">
+      <Button variant="ghost">
         <Ellipsis />
       </Button>
     </DropdownMenuTrigger>
+
     <DropdownMenuContent class="w-56">
-      <DropdownMenuLabel>Editor widget</DropdownMenuLabel>
-      <DropdownMenuSeparator />
-      <DropdownMenuRadioGroup
-        :model-value="selectedEditorWidget.term.value"
-        @update:model-value="emit('change-editor-widget', namedNode($event))"
-      >
-        <DropdownMenuRadioItem
-          v-for="editorWidget in editorWidgets"
-          :key="editorWidget.term.value"
-          :value="editorWidget.term.value"
-        >
-          <span>{{ editorWidget.term.value.split('#').slice(-1)[0].split('/').slice(-1)[0] }}</span>
-        </DropdownMenuRadioItem>
-      </DropdownMenuRadioGroup>
+      <DropdownMenuGroup>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <span>Editor widget</span>
+          </DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent>
+              <DropdownMenuRadioGroup
+                :model-value="selectedEditorWidget.term.value"
+                @update:model-value="emit('change-editor-widget', namedNode($event))"
+              >
+                <DropdownMenuRadioItem
+                  v-for="editorWidget in editorWidgets"
+                  :key="editorWidget.term.value"
+                  :value="editorWidget.term.value"
+                >
+                  <span>{{
+                    editorWidget.term.value.split('#').slice(-1)[0].split('/').slice(-1)[0]
+                  }}</span>
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
+
+        <DropdownMenuSeparator />
+        <DropdownMenuItem @click="emit('delete')">
+          <span>Delete</span>
+        </DropdownMenuItem>
+      </DropdownMenuGroup>
     </DropdownMenuContent>
   </DropdownMenu>
 </template>

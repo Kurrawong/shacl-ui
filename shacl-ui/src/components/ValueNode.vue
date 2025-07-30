@@ -39,6 +39,8 @@ const selectedEditorWidget = ref(
     : null,
 )
 
+// TODO: handleSave and handleDelete currently only works with property paths.
+
 const handleSave = () => {
   if (!updated.value) {
     return
@@ -54,6 +56,10 @@ const handleSave = () => {
 const handleUpdate = (term: NamedNode | BlankNode | Literal) => {
   updated.value = true
   newValue.value = term
+}
+
+const handleDelete = () => {
+  deleteQuad(quad(props.focusNode, props.path, props.valueNode))
 }
 </script>
 
@@ -83,6 +89,7 @@ const handleUpdate = (term: NamedNode | BlankNode | Literal) => {
         (editorWidget: NamedNode) =>
           (selectedEditorWidget = editorWidgets.find((widget) => widget.term.equals(editorWidget)))
       "
+      @delete="handleDelete"
     />
   </div>
 </template>

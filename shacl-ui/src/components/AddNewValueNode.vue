@@ -19,8 +19,9 @@ const { namedNode, literal } = n3.DataFactory
 <template>
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
-      <Button variant="outline"><Plus /></Button>
+      <Button variant="secondary"><Plus /></Button>
     </DropdownMenuTrigger>
+
     <DropdownMenuContent class="w-56">
       <DropdownMenuLabel>Add new value</DropdownMenuLabel>
       <DropdownMenuSeparator />
