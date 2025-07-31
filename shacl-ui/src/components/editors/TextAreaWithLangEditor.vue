@@ -32,7 +32,7 @@ watch([value, datatype, language], () => emitUpdate())
 </script>
 
 <template>
-  <div class="flex gap-2 items-center grow">
+  <div class="flex gap-2 items-start grow">
     <Textarea v-model="value" @blur="handleBlur" class="resize-y min-h-[160px]" />
     <Input type="text" placeholder="lang" v-model="language" @blur="handleBlur" class="w-18" />
   </div>

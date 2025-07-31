@@ -87,7 +87,7 @@ const handleChangeEditorWidget = (editorWidget: NamedNode) => {
 </script>
 
 <template>
-  <div class="flex items-center gap-2">
+  <div class="flex items-start gap-2">
     <TextAreaEditor
       v-if="selectedEditorWidget?.term.equals(dash.TextAreaEditor)"
       :term="valueNode as Literal"
