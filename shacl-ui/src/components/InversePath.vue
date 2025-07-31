@@ -56,12 +56,13 @@ const addNewValue = (value: NamedNode | BlankNode) => {
       <div v-else class="space-y-1">
         <div v-for="valueNode in _valueNodes" :key="valueNode.value">
           <ValueNode
-            :focus-node="valueNode"
+            :focus-node="focusNode"
             :path="path"
-            :value-node="focusNode"
+            :value-node="valueNode"
             :data-graph="dataGraph"
             :validator="validator"
             :property-shape="propertyShape"
+            :inverse="true"
           />
         </div>
 

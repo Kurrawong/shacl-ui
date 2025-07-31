@@ -14,14 +14,20 @@ import ValueNodeMenu from '@/components/ValueNodeMenu.vue'
 
 const { quad } = n3.DataFactory
 
-const props = defineProps<{
-  focusNode: NamedNode | BlankNode
-  path: NamedNode
-  valueNode: NamedNode | BlankNode | Literal
-  dataGraph: DatasetCore
-  validator: UISHACLValidator
-  propertyShape?: Shape
-}>()
+const props = withDefaults(
+  defineProps<{
+    focusNode: NamedNode | BlankNode
+    path: NamedNode
+    valueNode: NamedNode | BlankNode | Literal
+    dataGraph: DatasetCore
+    validator: UISHACLValidator
+    propertyShape?: Shape
+    inverse?: boolean
+  }>(),
+  {
+    inverse: false,
+  },
+)
 
 const { addQuad, deleteQuad } = inject<{
   addQuad: (quad: n3.Quad) => void
@@ -45,11 +51,20 @@ const handleSave = () => {
     return
   }
   updated.value = false
-  console.log(
-    `${props.focusNode.value} ${props.path.value} ${props.valueNode.value} -> ${newValue.value.value}`,
-  )
-  deleteQuad(quad(props.focusNode, props.path, props.valueNode))
-  addQuad(quad(props.focusNode, props.path, newValue.value))
+
+  if (props.inverse) {
+    deleteQuad(quad(props.valueNode as NamedNode, props.path, props.focusNode))
+    addQuad(quad(newValue.value as NamedNode, props.path, props.focusNode))
+    console.log(
+      `${props.valueNode.value} ${props.path.value} ${props.focusNode.value} -> ${newValue.value.value}`,
+    )
+  } else {
+    deleteQuad(quad(props.focusNode, props.path, props.valueNode))
+    addQuad(quad(props.focusNode, props.path, newValue.value))
+    console.log(
+      `${props.focusNode.value} ${props.path.value} ${props.valueNode.value} -> ${newValue.value.value}`,
+    )
+  }
 }
 
 const handleUpdate = (term: NamedNode | BlankNode | Literal) => {
