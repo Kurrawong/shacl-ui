@@ -17,7 +17,7 @@ import { rdf, xsd } from '@/core/namespaces'
 import type { NamedNode } from '@rdfjs/types'
 
 const emit = defineEmits(['add-new-value'])
-const { namedNode, literal } = n3.DataFactory
+const { namedNode, literal, blankNode } = n3.DataFactory
 const props = defineProps<{
   datatypes: TermSet<NamedNode>
 }>()
@@ -75,6 +75,12 @@ const otherXsdDatatypes = computed(() => {
           @click="emit('add-new-value', literal('', ''))"
         >
           <span>Literal with language</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          v-if="props.datatypes.size === 0"
+          @click="emit('add-new-value', blankNode(''))"
+        >
+          <span>Blank node</span>
         </DropdownMenuItem>
       </DropdownMenuGroup>
     </DropdownMenuContent>

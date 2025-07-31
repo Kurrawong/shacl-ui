@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, inject } from 'vue'
 import type { NamedNode, BlankNode, DatasetCore } from '@rdfjs/types'
 import type { UISHACLValidator } from '@/core/shapes-graph'
 import PredicatePathLabel from '@/components/PredicatePathLabel.vue'
@@ -10,6 +10,9 @@ import AddNewValueNode from '@/components/AddNewValueNode.vue'
 import { getSHOrDatatypes } from '@/core/widgets'
 import TermSet from '@rdfjs/term-set'
 import { sh } from '@/core/namespaces'
+import n3 from 'n3'
+
+const { quad } = n3.DataFactory
 
 export type PathType = 'predicate' | 'inverse' | 'alternative' | null
 
@@ -33,8 +36,17 @@ watch(
   },
 )
 
+const { addQuad } = inject<{
+  addQuad: (quad: n3.Quad) => void
+  deleteQuad: (quad: n3.Quad) => void
+}>('DataStoreActions')!
+
 const addNewValue = (value: NamedNode | BlankNode) => {
-  _valueNodes.value.push(value)
+  if (value.termType === 'BlankNode') {
+    addQuad(quad(value, props.path, props.focusNode))
+  } else {
+    _valueNodes.value.push(value)
+  }
 }
 
 // TODO: adding new value nodes depends on the cardinality constraints present on the property shape.
