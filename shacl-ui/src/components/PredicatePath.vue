@@ -39,7 +39,6 @@ const addNewValue = (value: NamedNode | Literal) => {
 
 <template>
   <PropertyPathBase>
-    <template #path-type> predicate </template>
     <template #path-label>
       <PredicatePathLabel :label="pathLabel" :predicate-path="path" />
     </template>
