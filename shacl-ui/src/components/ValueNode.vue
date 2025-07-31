@@ -14,6 +14,7 @@ import ValueNodeMenu from '@/components/ValueNodeMenu.vue'
 import BooleanSelectEditor from '@/components/editors/BooleanSelectEditor.vue'
 import TextAreaEditor from '@/components/editors/TextAreaEditor.vue'
 import TextAreaWithLangEditor from '@/components/editors/TextAreaWithLangEditor.vue'
+import DatePickerEditor from '@/components/editors/DatePickerEditor.vue'
 
 const { quad } = n3.DataFactory
 
@@ -88,8 +89,22 @@ const handleChangeEditorWidget = (editorWidget: NamedNode) => {
 
 <template>
   <div class="flex items-start gap-2">
+    <BooleanSelectEditor
+      v-if="selectedEditorWidget?.term.equals(dash.BooleanSelectEditor)"
+      :term="valueNode as Literal"
+      @update="handleUpdate"
+      @blur="handleSave"
+    />
+
+    <DatePickerEditor
+      v-else-if="selectedEditorWidget?.term.equals(dash.DatePickerEditor)"
+      :term="valueNode as Literal"
+      @update="handleUpdate"
+      @blur="handleSave"
+    />
+
     <TextAreaEditor
-      v-if="selectedEditorWidget?.term.equals(dash.TextAreaEditor)"
+      v-else-if="selectedEditorWidget?.term.equals(dash.TextAreaEditor)"
       :term="valueNode as Literal"
       @update="handleUpdate"
       @blur="handleSave"
@@ -119,13 +134,6 @@ const handleChangeEditorWidget = (editorWidget: NamedNode) => {
     <URIEditor
       v-else-if="selectedEditorWidget?.term.equals(dash.URIEditor)"
       :term="valueNode as NamedNode"
-      @update="handleUpdate"
-      @blur="handleSave"
-    />
-
-    <BooleanSelectEditor
-      v-else-if="selectedEditorWidget?.term.equals(dash.BooleanSelectEditor)"
-      :term="valueNode as Literal"
       @update="handleUpdate"
       @blur="handleSave"
     />

@@ -30,6 +30,24 @@ const editorWidgetsMap = new Map<
   (valueNode: NamedNode | BlankNode | Literal, propertyShape?: Shape) => number | null
 >([
   [
+    dash.DatePickerEditor,
+    (valueNode, propertyShape) => {
+      if (valueNode.termType === 'Literal' && valueNode.datatype.equals(xsd.date)) {
+        return 10
+      }
+
+      if (propertyShape) {
+        const shOrDatatypes = getSHOrDatatypes(propertyShape)
+        const datatype = propertyShape.shapeNodePointer.out(sh.datatype).term
+        if (datatype?.equals(xsd.date) || shOrDatatypes.has(xsd.date)) {
+          return 5
+        }
+      }
+
+      return 0
+    },
+  ],
+  [
     dash.BooleanSelectEditor,
     (valueNode, propertyShape) => {
       if (valueNode.termType === 'Literal' && valueNode.datatype.equals(xsd.boolean)) {

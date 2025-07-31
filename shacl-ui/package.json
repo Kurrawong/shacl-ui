@@ -20,6 +20,7 @@
   "dependencies": {
     "@comunica/query-sparql-rdfjs-lite": "^4.3.0",
     "@formkit/auto-animate": "^0.8.2",
+    "@internationalized/date": "^3.8.2",
     "@rdfjs/serializer-turtle": "^1.1.5",
     "@rdfjs/term-set": "^2.0.3",
     "@tailwindcss/vite": "^4.1.11",
