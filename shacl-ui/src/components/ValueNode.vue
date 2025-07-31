@@ -122,12 +122,14 @@ const handleChangeEditorWidget = (editorWidget: NamedNode) => {
       <span v-else class="text-xs text-gray-500 italic">No widget found</span>
     </div>
 
-    <ValueNodeMenu
-      v-if="selectedEditorWidget"
-      :selected-editor-widget="selectedEditorWidget"
-      :editor-widgets="editorWidgets"
-      @change-editor-widget="handleChangeEditorWidget"
-      @delete="handleDelete"
-    />
+    <div class="flex justify-end ml-auto">
+      <ValueNodeMenu
+        v-if="selectedEditorWidget"
+        :selected-editor-widget="selectedEditorWidget"
+        :editor-widgets="editorWidgets"
+        @change-editor-widget="handleChangeEditorWidget"
+        @delete="handleDelete"
+      />
+    </div>
   </div>
 </template>
