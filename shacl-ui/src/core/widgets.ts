@@ -6,7 +6,10 @@ import TermSet from '@rdfjs/term-set'
 
 const { literal } = n3.DataFactory
 
+const TRUE_LITERAL = literal('true', xsd.boolean)
 const FALSE_LITERAL = literal('false', xsd.boolean)
+const _RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+const _XSD = 'http://www.w3.org/2001/XMLSchema#'
 
 export type EditorWidget = {
   term: NamedNode
@@ -45,6 +48,45 @@ const editorWidgetsMap = new Map<
       }
 
       return null
+    },
+  ],
+  [
+    dash.TextAreaEditor,
+    (valueNode, propertyShape) => {
+      if (propertyShape) {
+        const singleLine = propertyShape.shapeNodePointer.out(dash.singleLine).term
+        if (singleLine?.equals(TRUE_LITERAL)) {
+          return 0
+        } else if (
+          singleLine?.equals(FALSE_LITERAL) &&
+          valueNode.termType === 'Literal' &&
+          valueNode.datatype.equals(xsd.string)
+        ) {
+          return 20
+        }
+      }
+
+      if (valueNode.termType === 'Literal' && valueNode.datatype.equals(xsd.string)) {
+        return 5
+      }
+
+      if (propertyShape) {
+        const shOrDatatypes = getSHOrDatatypes(propertyShape)
+        const datatype = propertyShape.shapeNodePointer.out(sh.datatype).term
+        if (datatype?.equals(xsd.string) || shOrDatatypes.has(xsd.string)) {
+          return 2
+        }
+
+        if (
+          datatype !== undefined &&
+          !datatype?.value.startsWith(_XSD) &&
+          !datatype?.value.startsWith(_RDF)
+        ) {
+          return null
+        }
+      }
+
+      return 0
     },
   ],
   [

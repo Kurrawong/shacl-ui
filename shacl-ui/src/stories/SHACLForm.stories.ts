@@ -874,3 +874,257 @@ gswa-shapes:Dataset-contact-group a sh:PropertyGroup ;
     isRootNode: true,
   },
 }
+
+export const VocPub: Story = {
+  render: (args) => {
+    // Transform string inputs to objects using factory functions
+    const transformedArgs = {
+      ...args,
+      focusNode: typeof args.focusNode === 'string' ? namedNode(args.focusNode) : args.focusNode,
+      nodeShape: typeof args.nodeShape === 'string' ? namedNode(args.nodeShape) : args.nodeShape,
+    }
+
+    return {
+      components: { SHACLForm },
+      setup() {
+        return { args: transformedArgs }
+      },
+      template: '<SHACLForm v-bind="args" />',
+    }
+  },
+  args: {
+    focusNode: 'http://linked.data.gov.au/def/data-access-rights' as any,
+
+    dataGraph: `
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sdo: <https://schema.org/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+PREFIX da: <http://linked.data.gov.au/def/data-access-rights/>
+
+<http://linked.data.gov.au/def/data-access-rights> a owl:Ontology , skos:ConceptScheme ;
+    skos:prefLabel "Data Access Rights"@en ;
+    skos:definition "Data access rights control how users and systems access a data resource."@en ;
+    skos:historyNote "This vocabulary is taken from the COAR Controlled Vocabularies Interest Group (http://vocabularies.coar-repositories.org/documentation/access_rights/) but is redelivered as that vocabulary isn't well presented online."@en ;
+    dcterms:source "http://vocabularies.coar-repositories.org/documentation/access_rights/"^^xsd:anyURI ;
+    dcterms:creator <http://linked.data.gov.au/org/gsq> ;
+    dcterms:created "2019-04-03"^^xsd:date ;
+    dcterms:modified "2019-09-10"^^xsd:date ;
+    dcterms:publisher <http://linked.data.gov.au/org/gsq> ;
+    skos:hasTopConcept da:open , da:restricted ;
+.
+
+<http://linked.data.gov.au/org/gsq> a sdo:Organization ;
+    sdo:name "Geological Survey of Queensland" ;
+    sdo:url "https://www.business.qld.gov.au/industries/mining-energy-water/resources/geoscience-information/gsq"^^xsd:anyURI .
+
+da:embargoed a skos:Concept ;
+    rdfs:isDefinedBy <http://linked.data.gov.au/def/data-access-rights> ;
+    skos:prefLabel "Embargoed access"@en ;
+    skos:definition "Embargoed access refers to a resource accessible as metadata only until released for open access on a specified date."@en ;
+    skos:inScheme <http://linked.data.gov.au/def/data-access-rights> ;
+    skos:broader da:protected ;
+    dcterms:provenance "Same origin as the whole vocabulary" ;
+.
+
+da:metadata-only a skos:Concept ;
+    rdfs:isDefinedBy <http://linked.data.gov.au/def/data-access-rights> ;
+    skos:prefLabel "Metadata only access"@en ;
+    skos:definition "Metadata only access refers to a resource in which access is limited to metadata only. Access to the resource requires granting of access rights."@en ;
+    skos:inScheme <http://linked.data.gov.au/def/data-access-rights> ;
+    skos:broader da:protected ;
+    dcterms:provenance "Same origin as the whole vocabulary" ;
+.
+
+da:open a skos:Concept ;
+    rdfs:isDefinedBy <http://linked.data.gov.au/def/data-access-rights> ;
+    skos:prefLabel "Open access"@en ;
+    skos:altLabel "Open file"@en ;
+    skos:definition "Open access refers to a resource that is immediately and permanently online, and free for all on the Web, without financial and technical barriers."@en ;
+    skos:inScheme <http://linked.data.gov.au/def/data-access-rights> ;
+    skos:topConceptOf <http://linked.data.gov.au/def/data-access-rights> ;
+    dcterms:provenance "Same origin as the whole vocabulary" ;
+.
+
+da:restricted a skos:Concept ;
+    rdfs:isDefinedBy <http://linked.data.gov.au/def/data-access-rights> ;
+    skos:prefLabel "Restricted access"@en ;
+    skos:definition "Restricted access refers to a resource that is stored in a system but is not freely accessible. Access is limited to specific personnel or user groups."@en ;
+    skos:inScheme <http://linked.data.gov.au/def/data-access-rights> ;
+    skos:topConceptOf <http://linked.data.gov.au/def/data-access-rights> ;
+    dcterms:provenance "Same origin as the whole vocabulary" ;
+.
+
+da:protected a skos:Concept ;
+    rdfs:isDefinedBy <http://linked.data.gov.au/def/data-access-rights> ;
+    skos:prefLabel "Protected access"@en ;
+    skos:definition "Protected access refers to a resource that is stored in a system but is not freely accessible due to specific legal or policy decisions, such as active legal proceedings or ministerial discretion. Access is limited to specific personnel or user groups. "@en ;
+    skos:inScheme <http://linked.data.gov.au/def/data-access-rights> ;
+    skos:broader da:protected ;
+    dcterms:provenance "Same origin as the whole vocabulary" ;
+.
+
+da:open-access-rights a skos:Collection ;
+    rdfs:isDefinedBy <http://linked.data.gov.au/def/data-access-rights> ;
+    dcterms:provenance "Created in this vocabulary" ;
+    skos:prefLabel "Open data access rights"@en ;
+    skos:definition "Data that is non-sensitive, freely available, easily discovered and accessed, and published in ways and with licences that allow easy reuse."@en ;
+    skos:member da:open ;
+    skos:inScheme <http://linked.data.gov.au/def/data-access-rights> ;
+.
+
+da:closed-access-rights a skos:Collection ;
+    rdfs:isDefinedBy <http://linked.data.gov.au/def/data-access-rights> ;
+    dcterms:provenance "Created in this vocabulary" ;
+    skos:prefLabel "Closed data access rights"@en ;
+    skos:definition "Selective restriction of access to data that is OFFICIAL (low or negligible confidentiality impact), SENSITIVE (moderate confidentiality impact) or PROTECTED (high confidentiality impact)."@en ;
+    skos:member da:embargoed,
+        da:metadata-only,
+        da:protected,
+        da:restricted ;
+    skos:inScheme <http://linked.data.gov.au/def/data-access-rights> ;
+.
+    `,
+
+    shapesGraph: `
+PREFIX dash: <http://datashapes.org/dash#>
+      PREFIX dcat: <http://www.w3.org/ns/dcat#>
+      PREFIX dcterms: <http://purl.org/dc/terms/>
+      PREFIX owl: <http://www.w3.org/2002/07/owl#>
+      PREFIX prov: <http://www.w3.org/ns/prov#>
+      PREFIX reg: <http://purl.org/linked-data/registry#>
+      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX schema: <https://schema.org/>
+      PREFIX sh: <http://www.w3.org/ns/shacl#>
+      PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+      PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+      BASE <https://linked.data.gov.au/def/vocpub/validator/>
+
+      <ConceptScheme>
+          a sh:NodeShape ;
+          sh:property	<prefLabel>,
+              <definition>,
+              <alternateLabel>,
+              [
+                  sh:path rdfs:comment ;
+                  sh:datatype xsd:string ;
+                  sh:group <Annotation-group> ;
+              ],
+              <created>,
+              [
+                  sh:path [
+                      sh:inversePath skos:inScheme ;
+                  ] ;
+                  sh:class skos:Concept ;
+              ],
+              [
+                  sh:path [
+                      sh:inversePath skos:topConceptOf ;
+                  ] ;
+                  sh:class skos:Concept ;
+              ] ;
+          sh:property [
+            sh:path schema:isAccessibleForFree ;
+            sh:datatype xsd:boolean ;
+            sh:group <Annotation-group> ;
+          ] ;
+      .
+
+      <Collection>
+          a sh:NodeShape ;
+          sh:targetClass skos:Collection ;
+          sh:property <prefLabel>,
+              <alternateLabel>,
+              <definition>,
+              [
+                  sh:path skos:member ;
+                  sh:class skos:Concept ;
+              ] ;
+      .
+
+      <Concept>
+          a sh:NodeShape ;
+          sh:targetClass skos:Concept ;
+          sh:property	<prefLabel>,
+              <alternateLabel>,
+              <definition> ;
+      .
+
+      <prefLabel>
+          a sh:PropertyShape ;
+          sh:name "preferred label" ;
+          sh:message "Requirement 2.1.4, 2.2.1 or 2.3.1 Each vocabulary, Collection or Concept MUST have exactly one title and at least one definition indicated using the skos:prefLabel and the skos:definition predicates respectively that must give textual literal values. Only one definition per language is allowed" ;
+          dash:singleLine true ;
+          dash:propertyRole dash:LabelRole ;
+          sh:path skos:prefLabel ;
+          sh:minCount 1 ;
+          sh:maxCount 1 ;
+          sh:uniqueLang true ;
+          sh:or (
+              [ sh:datatype xsd:string ]
+              [ sh:datatype rdf:langString ]
+          ) ;
+          sh:group <Annotation-group> ;
+          sh:order 0 ;
+      .
+
+      <alternateLabel>
+          a sh:PropertyShape ;
+          sh:path skos:alternateLabel ;
+          sh:uniqueLang true ;
+          sh:group <Annotation-group> ;
+          sh:order 1 ;
+      .
+
+      <definition>
+          a sh:PropertyShape ;
+          sh:message "Requirement 2.1.4, 2.2.1 or 2.3.1 Each vocabulary, Collection or Concept MUST have exactly one title and at least one definition indicated using the skos:prefLabel and the skos:definition predicates respectively that must give textual literal values. Only one definition per language is allowed" ;
+          sh:path skos:definition ;
+          sh:minCount 1 ;
+          sh:uniqueLang true ;
+          dash:singleLine false ;
+          sh:or (
+              [ sh:datatype xsd:string ]
+              [ sh:datatype rdf:langString ]
+          ) ;
+          sh:group <Annotation-group> ;
+          sh:order 1 ;
+      .
+
+      <created>
+          a sh:PropertyShape ;
+          sh:message "Requirement 2.15 - created date - violated" ;
+          sh:path [
+              sh:alternativePath (
+                  schema:dateCreated
+                  dcterms:created
+              ) ;
+          ] ;
+          sh:minCount 1 ;
+          sh:maxCount 1 ;
+          sh:group <Metadata-group> ;
+          sh:or (
+              [ sh:datatype xsd:dateTime ]
+              [ sh:datatype xsd:date ]
+              [ sh:datatype xsd:dateTimeStamp ]
+          ) ;
+      .
+
+      <Annotation-group> a sh:PropertyGroup ;
+          sh:order 0 ;
+          rdfs:label "Annotations" ;
+      .
+
+      <Metadata-group> a sh:PropertyGroup ;
+      .
+    `,
+
+    nodeShape: 'https://linked.data.gov.au/def/vocpub/validator/ConceptScheme' as any,
+    isRootNode: true,
+  },
+}
