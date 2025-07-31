@@ -13,11 +13,11 @@ export type EditorWidget = {
   score: number | null
 }
 
-function getSHOrDatatypes(propertyShape: Shape) {
-  return new TermSet(
+export function getSHOrDatatypes(propertyShape: Shape) {
+  return new TermSet<NamedNode>(
     Array.from(propertyShape.shapeNodePointer.out(sh.or).list() || [])
       .map((pointer) => pointer.out(sh.datatype).term)
-      .filter((term) => term !== undefined),
+      .filter((term) => term !== undefined && term.termType === 'NamedNode'),
   )
 }
 

@@ -42,6 +42,7 @@ const editorWidgets = computed(() => {
     (widget) => widget.score === null || widget.score > 0,
   )
 })
+// TODO: set editor widget if dash:editor exists on property shape.
 const selectedEditorWidget = ref(editorWidgets.value.at(0) ?? null)
 
 // TODO: handleSave and handleDelete currently only works with property paths.

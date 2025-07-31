@@ -464,6 +464,11 @@ gswa-shapes:DataCatalog-identifier a sh:PropertyShape ;
 gswa-shapes:Dataset a sh:NodeShape ;
     rdfs:label "Dataset" ;
     sh:targetClass sdo:Dataset ;
+    sh:property [
+      sh:path sdo:isAccessibleForFree ;
+      sh:datatype xsd:boolean ;
+      sh:group gswa-shapes:Dataset-metadata-group ;
+    ] ;
     sh:property gswa-shapes:Dataset-name ;
     sh:property gswa-shapes:Dataset-identifier ;
     sh:property gswa-shapes:Dataset-abstract ;
