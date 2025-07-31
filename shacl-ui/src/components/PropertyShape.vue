@@ -8,6 +8,7 @@ import { useInjectPredicateTracker } from '@/composables/predicate-tracking'
 import { extractPropertyPath } from 'rdf-validate-shacl/src/property-path'
 import { useInjectFormLabel } from '@/composables/form-label'
 import PredicatePath, { type PathType } from '@/components/PredicatePath.vue'
+// import InversePath from '@/components/InversePath.vue'
 // import AlternativePath from '@/components/AlternativePath.vue'
 
 const props = defineProps<{
@@ -93,6 +94,11 @@ const pathLabel = computed(() => {
 
   // TODO: labels graph?
 
+  if (propertyPath.value && 'inverse' in propertyPath.value) {
+    const path = propertyPath.value.inverse as NamedNode
+    return path.value.split('#').slice(-1)[0].split('/').slice(-1)[0]
+  }
+
   // PredicatePath
   const path = propertyPath.value! as NamedNode
   return path.value.split('#').slice(-1)[0].split('/').slice(-1)[0]
@@ -125,6 +131,18 @@ const valueNodes = computed(() => {
     :value-nodes="valueNodes"
     :data-graph="dataGraph"
     :validator="validator"
+  /> -->
+
+  <!-- <InversePath
+    v-else-if="pathType === 'inverse'"
+    :focus-node="focusNode"
+    :path="propertyPath!.inverse as NamedNode"
+    :path-type="pathType"
+    :path-label="pathLabel"
+    :value-nodes="valueNodes"
+    :data-graph="dataGraph"
+    :validator="validator"
+    :property-shape="propertyShape"
   /> -->
 
   <template v-else>
