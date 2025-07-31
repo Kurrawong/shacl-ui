@@ -13,6 +13,7 @@ import URIEditor from '@/components/editors/URIEditor.vue'
 import ValueNodeMenu from '@/components/ValueNodeMenu.vue'
 import BooleanSelectEditor from '@/components/editors/BooleanSelectEditor.vue'
 import TextAreaEditor from '@/components/editors/TextAreaEditor.vue'
+import TextAreaWithLangEditor from '@/components/editors/TextAreaWithLangEditor.vue'
 
 const { quad } = n3.DataFactory
 
@@ -89,6 +90,13 @@ const handleChangeEditorWidget = (editorWidget: NamedNode) => {
   <div class="flex items-center gap-2">
     <TextAreaEditor
       v-if="selectedEditorWidget?.term.equals(dash.TextAreaEditor)"
+      :term="valueNode as Literal"
+      @update="handleUpdate"
+      @blur="handleSave"
+    />
+
+    <TextAreaWithLangEditor
+      v-else-if="selectedEditorWidget?.term.equals(dash.TextAreaWithLangEditor)"
       :term="valueNode as Literal"
       @update="handleUpdate"
       @blur="handleSave"

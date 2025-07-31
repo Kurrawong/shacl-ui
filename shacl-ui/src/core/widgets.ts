@@ -90,6 +90,39 @@ const editorWidgetsMap = new Map<
     },
   ],
   [
+    dash.TextAreaWithLangEditor,
+    (valueNode, propertyShape) => {
+      if (propertyShape) {
+        const singleLine = propertyShape.shapeNodePointer.out(dash.singleLine).term
+        if (singleLine?.equals(TRUE_LITERAL)) {
+          return 0
+        }
+
+        if (
+          valueNode.termType === 'Literal' &&
+          valueNode.datatype.equals(rdf.langString) &&
+          singleLine?.equals(FALSE_LITERAL)
+        ) {
+          return 15
+        }
+      }
+
+      if (valueNode.termType === 'Literal' && valueNode.datatype.equals(rdf.langString)) {
+        return 5
+      }
+
+      if (propertyShape) {
+        const shOrDatatypes = getSHOrDatatypes(propertyShape)
+        const datatype = propertyShape.shapeNodePointer.out(sh.datatype).term
+        if (datatype?.equals(xsd.string) || shOrDatatypes.has(xsd.string)) {
+          return 5
+        }
+      }
+
+      return 0
+    },
+  ],
+  [
     dash.TextFieldEditor,
     (valueNode) => {
       if (
