@@ -19,7 +19,9 @@ function emitUpdate() {
 }
 
 function handleBlur() {
-  emit('blur')
+  if (value.value !== '') {
+    emit('blur')
+  }
 }
 
 watch([value], () => emitUpdate())

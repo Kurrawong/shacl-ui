@@ -22,7 +22,9 @@ function emitUpdate() {
 }
 
 function handleBlur() {
-  emit('blur')
+  if (value.value !== '' && language.value !== '') {
+    emit('blur')
+  }
 }
 
 watch([value, datatype, language], () => emitUpdate())
