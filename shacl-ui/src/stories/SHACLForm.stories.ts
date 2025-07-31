@@ -1020,6 +1020,7 @@ PREFIX dash: <http://datashapes.org/dash#>
                   sh:path [
                       sh:inversePath skos:inScheme ;
                   ] ;
+                  sh:nodeKind sh:IRI ;
                   sh:class skos:Concept ;
               ],
               [

@@ -159,7 +159,7 @@ const propertyGroups = computed<
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div class="space-y-4 grow">
     <div v-if="isRootNode">
       <FocusNodeLabel :label="getFormLabel()" />
       <div class="text-xs text-gray-500 font-mono">IRI: {{ focusNode.value }}</div>
@@ -185,6 +185,7 @@ const propertyGroups = computed<
       :data-graph="dataGraph"
       :validator="validator"
       :predicates="getPredicates()"
+      :is-root-node="isRootNode"
     />
   </div>
 </template>

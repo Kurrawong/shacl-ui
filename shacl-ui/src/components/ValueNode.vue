@@ -15,6 +15,8 @@ import BooleanSelectEditor from '@/components/editors/BooleanSelectEditor.vue'
 import TextAreaEditor from '@/components/editors/TextAreaEditor.vue'
 import TextAreaWithLangEditor from '@/components/editors/TextAreaWithLangEditor.vue'
 import DatePickerEditor from '@/components/editors/DatePickerEditor.vue'
+import { sh } from '@/core/namespaces'
+import FocusNode from './FocusNode.vue'
 
 const { quad } = n3.DataFactory
 
@@ -101,6 +103,15 @@ const handleChangeEditorWidget = (editorWidget: NamedNode) => {
       :term="valueNode as Literal"
       @update="handleUpdate"
       @blur="handleSave"
+    />
+
+    <FocusNode
+      v-else-if="selectedEditorWidget?.term.equals(dash.DetailsEditor)"
+      :focus-node="valueNode as NamedNode"
+      :node-shape="propertyShape?.shapeNodePointer.out(sh.node).term as NamedNode"
+      :data-graph="dataGraph"
+      :validator="validator"
+      :is-root-node="false"
     />
 
     <TextAreaEditor

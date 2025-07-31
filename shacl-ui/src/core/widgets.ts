@@ -30,18 +30,10 @@ const editorWidgetsMap = new Map<
   (valueNode: NamedNode | BlankNode | Literal, propertyShape?: Shape) => number | null
 >([
   [
-    dash.DatePickerEditor,
-    (valueNode, propertyShape) => {
-      if (valueNode.termType === 'Literal' && valueNode.datatype.equals(xsd.date)) {
-        return 10
-      }
-
-      if (propertyShape) {
-        const shOrDatatypes = getSHOrDatatypes(propertyShape)
-        const datatype = propertyShape.shapeNodePointer.out(sh.datatype).term
-        if (datatype?.equals(xsd.date) || shOrDatatypes.has(xsd.date)) {
-          return 5
-        }
+    dash.AutoCompleteEditor,
+    (valueNode) => {
+      if (valueNode.termType === 'NamedNode') {
+        return 1
       }
 
       return 0
@@ -66,6 +58,34 @@ const editorWidgetsMap = new Map<
       }
 
       return null
+    },
+  ],
+  [
+    dash.DatePickerEditor,
+    (valueNode, propertyShape) => {
+      if (valueNode.termType === 'Literal' && valueNode.datatype.equals(xsd.date)) {
+        return 10
+      }
+
+      if (propertyShape) {
+        const shOrDatatypes = getSHOrDatatypes(propertyShape)
+        const datatype = propertyShape.shapeNodePointer.out(sh.datatype).term
+        if (datatype?.equals(xsd.date) || shOrDatatypes.has(xsd.date)) {
+          return 5
+        }
+      }
+
+      return 0
+    },
+  ],
+  [
+    dash.DetailsEditor,
+    (valueNode) => {
+      if (valueNode.termType !== 'Literal') {
+        return null
+      }
+
+      return 0
     },
   ],
   [
@@ -187,7 +207,7 @@ const editorWidgetsMap = new Map<
       if (
         propertyShape &&
         propertyShape.shapeNodePointer.out(sh.nodeKind).term?.equals(sh.IRI) &&
-        !propertyShape.shapeNodePointer.has(sh.class)
+        !propertyShape.shapeNodePointer.out(sh.class).term
       ) {
         return 10
       }
