@@ -123,6 +123,11 @@ export const Default: Story = {
                   ] ;
                   sh:class skos:Concept ;
               ] ;
+          sh:property [
+            sh:path schema:isAccessibleForFree ;
+            sh:datatype xsd:boolean ;
+            sh:group <Annotation-group> ;
+          ] ;
       .
 
       <Collection>

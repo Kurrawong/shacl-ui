@@ -21,10 +21,32 @@ export function getSHOrDatatypes(propertyShape: Shape) {
   )
 }
 
+// TODO: consider sh:nodeKind
 const editorWidgetsMap = new Map<
   NamedNode,
   (valueNode: NamedNode | BlankNode | Literal, propertyShape?: Shape) => number | null
 >([
+  [
+    dash.BooleanSelectEditor,
+    (valueNode, propertyShape) => {
+      if (valueNode.termType === 'Literal' && valueNode.datatype.equals(xsd.boolean)) {
+        return 10
+      }
+
+      if (valueNode.termType !== 'Literal') {
+        return 0
+      }
+
+      if (
+        propertyShape &&
+        !propertyShape.shapeNodePointer.out(sh.datatype).term?.equals(xsd.boolean)
+      ) {
+        return 0
+      }
+
+      return null
+    },
+  ],
   [
     dash.TextFieldEditor,
     (valueNode) => {

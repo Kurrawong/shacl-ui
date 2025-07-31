@@ -23,6 +23,7 @@ const props = defineProps<{
 }>()
 
 // TODO: consider sh:nodeKind
+// TODO use dash widgets to determine what new values are allowed.
 
 const containsXsdString = computed(() => {
   return props.datatypes.has(xsd.string)
@@ -33,7 +34,9 @@ const containsXsdLangString = computed(() => {
 })
 
 const otherXsdDatatypes = computed(() => {
-  return Array.from(props.datatypes).filter((term) => !term.equals(xsd.string) && !term.equals(rdf.langString))
+  return Array.from(props.datatypes).filter(
+    (term) => !term.equals(xsd.string) && !term.equals(rdf.langString),
+  )
 })
 </script>
 
@@ -47,17 +50,30 @@ const otherXsdDatatypes = computed(() => {
       <DropdownMenuLabel>Add new value</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
-        <DropdownMenuItem v-for="datatype in otherXsdDatatypes" :key="datatype.value" @click="emit('add-new-value', literal('', datatype))">
+        <DropdownMenuItem
+          v-for="datatype in otherXsdDatatypes"
+          :key="datatype.value"
+          @click="emit('add-new-value', literal('', datatype))"
+        >
           <span>{{ datatype.value.split('#').slice(-1)[0].split('/').slice(-1)[0] }}</span>
         </DropdownMenuItem>
 
-        <DropdownMenuItem v-if="props.datatypes.size === 0" @click="emit('add-new-value', namedNode(''))">
+        <DropdownMenuItem
+          v-if="props.datatypes.size === 0"
+          @click="emit('add-new-value', namedNode(''))"
+        >
           <span>IRI</span>
         </DropdownMenuItem>
-        <DropdownMenuItem v-if="containsXsdString || props.datatypes.size === 0" @click="emit('add-new-value', literal(''))">
+        <DropdownMenuItem
+          v-if="containsXsdString || props.datatypes.size === 0"
+          @click="emit('add-new-value', literal(''))"
+        >
           <span>Literal string</span>
         </DropdownMenuItem>
-        <DropdownMenuItem v-if="containsXsdLangString || props.datatypes.size === 0" @click="emit('add-new-value', literal('', ''))">
+        <DropdownMenuItem
+          v-if="containsXsdLangString || props.datatypes.size === 0"
+          @click="emit('add-new-value', literal('', ''))"
+        >
           <span>Literal with language</span>
         </DropdownMenuItem>
       </DropdownMenuGroup>

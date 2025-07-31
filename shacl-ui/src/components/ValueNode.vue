@@ -11,6 +11,7 @@ import TextFieldWithLangEditor from '@/components/editors/TextFieldWithLangEdito
 import { Input } from '@/components/ui/input'
 import URIEditor from '@/components/editors/URIEditor.vue'
 import ValueNodeMenu from '@/components/ValueNodeMenu.vue'
+import BooleanSelectEditor from '@/components/editors/BooleanSelectEditor.vue'
 
 const { quad } = n3.DataFactory
 
@@ -102,6 +103,13 @@ const handleChangeEditorWidget = (editorWidget: NamedNode) => {
     <URIEditor
       v-else-if="selectedEditorWidget?.term.equals(dash.URIEditor)"
       :term="valueNode as NamedNode"
+      @update="handleUpdate"
+      @blur="handleSave"
+    />
+
+    <BooleanSelectEditor
+      v-else-if="selectedEditorWidget?.term.equals(dash.BooleanSelectEditor)"
+      :term="valueNode as Literal"
       @update="handleUpdate"
       @blur="handleSave"
     />
