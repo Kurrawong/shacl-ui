@@ -120,60 +120,7 @@ This vocabulary was created by the Queensland Spatial Information services.""" ;
 .
     `
 
-export const VocPubNoShape: Story = {
-  render: (args) => {
-    // Transform string inputs to objects using factory functions
-    const transformedArgs = {
-      ...args,
-      focusNode: typeof args.focusNode === 'string' ? namedNode(args.focusNode) : args.focusNode,
-      nodeShape: typeof args.nodeShape === 'string' ? namedNode(args.nodeShape) : args.nodeShape,
-    }
-
-    return {
-      components: { SHACLForm },
-      setup() {
-        return { args: transformedArgs }
-      },
-      template: '<SHACLForm v-bind="args" />',
-    }
-  },
-  args: {
-    focusNode: 'https://linked.data.gov.au/def/record-access' as any,
-
-    dataGraph: data,
-
-    shapesGraph: `
-
-    `,
-
-    nodeShape: null,
-    isRootNode: true,
-  },
-}
-
-export const VocPubConceptSchemeShape: Story = {
-  render: (args) => {
-    // Transform string inputs to objects using factory functions
-    const transformedArgs = {
-      ...args,
-      focusNode: typeof args.focusNode === 'string' ? namedNode(args.focusNode) : args.focusNode,
-      nodeShape: typeof args.nodeShape === 'string' ? namedNode(args.nodeShape) : args.nodeShape,
-    }
-
-    return {
-      components: { SHACLForm },
-      setup() {
-        return { args: transformedArgs }
-      },
-      template: '<SHACLForm v-bind="args" />',
-    }
-  },
-  args: {
-    focusNode: 'https://linked.data.gov.au/def/record-access' as any,
-
-    dataGraph: data,
-
-    shapesGraph: `
+const shapesGraph = `
 PREFIX dash: <http://datashapes.org/dash#>
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
@@ -886,9 +833,93 @@ schema:dateModified rdfs:label "date modified" .
     rdfs:label "Concept relationships" ;
     sh:order 2 ;
 .
+    `
+
+export const VocPubNoShape: Story = {
+  render: (args) => {
+    // Transform string inputs to objects using factory functions
+    const transformedArgs = {
+      ...args,
+      focusNode: typeof args.focusNode === 'string' ? namedNode(args.focusNode) : args.focusNode,
+      nodeShape: typeof args.nodeShape === 'string' ? namedNode(args.nodeShape) : args.nodeShape,
+    }
+
+    return {
+      components: { SHACLForm },
+      setup() {
+        return { args: transformedArgs }
+      },
+      template: '<SHACLForm v-bind="args" />',
+    }
+  },
+  args: {
+    focusNode: 'https://linked.data.gov.au/def/record-access' as any,
+
+    dataGraph: data,
+
+    shapesGraph: `
+
     `,
 
+    nodeShape: null,
+    isRootNode: true,
+  },
+}
+
+export const VocPubConceptSchemeShape: Story = {
+  render: (args) => {
+    // Transform string inputs to objects using factory functions
+    const transformedArgs = {
+      ...args,
+      focusNode: typeof args.focusNode === 'string' ? namedNode(args.focusNode) : args.focusNode,
+      nodeShape: typeof args.nodeShape === 'string' ? namedNode(args.nodeShape) : args.nodeShape,
+    }
+
+    return {
+      components: { SHACLForm },
+      setup() {
+        return { args: transformedArgs }
+      },
+      template: '<SHACLForm v-bind="args" />',
+    }
+  },
+  args: {
+    focusNode: 'https://linked.data.gov.au/def/record-access' as any,
+
+    dataGraph: data,
+
+    shapesGraph: shapesGraph,
+
     nodeShape: 'https://linked.data.gov.au/def/vocpub/validator/Shui-ConceptScheme' as any,
+    isRootNode: true,
+  },
+}
+
+export const VocPubConceptShape: Story = {
+  render: (args) => {
+    // Transform string inputs to objects using factory functions
+    const transformedArgs = {
+      ...args,
+      focusNode: typeof args.focusNode === 'string' ? namedNode(args.focusNode) : args.focusNode,
+      nodeShape: typeof args.nodeShape === 'string' ? namedNode(args.nodeShape) : args.nodeShape,
+    }
+
+    return {
+      components: { SHACLForm },
+      setup() {
+        return { args: transformedArgs }
+      },
+      template: '<SHACLForm v-bind="args" />',
+    }
+  },
+  args: {
+    focusNode: 'https://linked.data.gov.au/def/record-access/emergency-services' as any,
+
+    dataGraph: data,
+
+    shapesGraph: shapesGraph,
+
+    nodeShape: 'https://linked.data.gov.au/def/vocpub/validator/Shui-Concept' as any,
     isRootNode: true,
   },
 }
