@@ -529,6 +529,7 @@ BASE <https://linked.data.gov.au/def/vocpub/validator/>
 
 <prefLabel>
     a sh:PropertyShape ;
+    dash:propertyRole dash:LabelRole ;
     sh:message "Requirement 2.1.4, 2.2.1 or 2.3.1 Each vocabulary, Collection or Concept MUST have exactly one title and at least one definition indicated using the skos:prefLabel and the skos:definition predicates respectively that must give textual literal values. Only one definition per language is allowed" ;
     sh:path skos:prefLabel ;
     sh:minCount 1 ;

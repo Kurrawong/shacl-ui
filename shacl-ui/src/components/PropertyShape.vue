@@ -21,6 +21,7 @@ const props = defineProps<{
 const { registerHandledPredicate } = usePredicateTrackerContext()
 const { dataGraphPointer, validator } = useResourceManagerContext()
 const { focusNode } = useFocusNodeContext()
+const { setResourceLabel } = useResourceLabelContext()
 
 onMounted(() => {
   const path = props.propertyShape.path
@@ -49,7 +50,6 @@ onMounted(() => {
     if (labels.length) {
       // TODO: get preferred language tag, then no language tag, then first label
       const label = labels[0]
-      const { setResourceLabel } = useResourceLabelContext()
       setResourceLabel(label)
     }
   }
