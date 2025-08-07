@@ -4,7 +4,7 @@ import TermSet from '@rdfjs/term-set'
 
 const PredicateTrackerKey = Symbol('PredicateTracker')
 
-export function useProvidePredicateTracker(initialPredicates: NamedNode[]) {
+export function providePredicateTracker(initialPredicates: NamedNode[]) {
   const predicatePaths = ref<TermSet<NamedNode>>(new TermSet(initialPredicates))
 
   function registerHandledPredicate(predicate: NamedNode) {
@@ -26,7 +26,7 @@ export function useProvidePredicateTracker(initialPredicates: NamedNode[]) {
   }
 }
 
-export function useInjectPredicateTracker() {
+export function usePredicateTrackerContext() {
   const predicateTracker = inject<{
     registerHandledPredicate: (predicate: NamedNode) => void
     getPredicates: () => NamedNode[]

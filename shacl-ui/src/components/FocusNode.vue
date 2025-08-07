@@ -6,11 +6,10 @@ import { UISHACLValidator } from '@/core/shapes-graph'
 import { sh, rdfs } from '@/core/namespaces'
 import { sortWithNulls } from '@/core/utils'
 import PropertyGroup from '@/components/PropertyGroup.vue'
-import { useProvidePredicateTracker } from '@/composables/predicate-tracking'
+import { providePredicateTracker } from '@/composables/predicate-tracking'
 import TermSet from '@rdfjs/term-set'
 import OtherPropertiesGroup from '@/components/OtherPropertiesGroup.vue'
-import { useProvideFormLabel } from '@/composables/form-label'
-import FocusNodeLabel from '@/components/FocusNodeLabel.vue'
+import { provideFocusNode } from '@/composables/focus-node'
 
 const props = withDefaults(
   defineProps<{
@@ -18,20 +17,19 @@ const props = withDefaults(
     nodeShape?: NamedNode | BlankNode | null
     dataGraph: DatasetCore
     validator: UISHACLValidator
-    isRootNode?: boolean
   }>(),
   {
     nodeShape: null,
-    isRootNode: false,
   },
 )
 
-const { getFormLabel } = useProvideFormLabel(props.focusNode)
+provideFocusNode(props.focusNode)
+
 const dataGraphPointer = computed(() =>
   props.validator.factory.clownface({ dataset: props.dataGraph }),
 )
 
-const { getPredicates } = useProvidePredicateTracker(
+const { getPredicates } = providePredicateTracker(
   Array.from(dataGraphPointer.value.dataset.match(props.focusNode, null, null)).map(
     (quad) => quad.predicate as NamedNode,
   ),
@@ -160,11 +158,6 @@ const propertyGroups = computed<
 
 <template>
   <div class="space-y-4 grow">
-    <div v-if="isRootNode">
-      <FocusNodeLabel :label="getFormLabel()" />
-      <div class="text-xs text-gray-500 font-mono">IRI: {{ focusNode.value }}</div>
-    </div>
-
     <template v-if="propertyGroups.length > 0">
       <div v-for="propertyGroup in propertyGroups" :key="propertyGroup.term?.value">
         <PropertyGroup
@@ -185,7 +178,6 @@ const propertyGroups = computed<
       :data-graph="dataGraph"
       :validator="validator"
       :predicates="getPredicates()"
-      :is-root-node="isRootNode"
     />
   </div>
 </template>

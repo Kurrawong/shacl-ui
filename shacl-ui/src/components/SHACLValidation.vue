@@ -1,52 +1,47 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, computed, provide } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import type { NamedNode, BlankNode } from '@rdfjs/types'
-import Serializer from '@rdfjs/serializer-turtle'
 import { PrefixMapFactory } from 'rdf-ext'
 import n3 from 'n3'
-import { useStore } from '@/composables/store'
 import FocusNode from '@/components/FocusNode.vue'
+import { useFocusNodeContext } from '@/composables/focus-node'
+import { useResourceManagerContext } from '@/composables/resource-manager'
 import { UISHACLValidator } from '@/core/shapes-graph'
+import Serializer from '@rdfjs/serializer-turtle'
 
 const { namedNode } = n3.DataFactory
 
-const props = withDefaults(
-  defineProps<{
-    focusNode: NamedNode | BlankNode
-    dataGraph: string
-    shapesGraph: string
-    nodeShape: NamedNode | BlankNode | null
-    isRootNode?: boolean
-  }>(),
-  {
-    isRootNode: false,
-  },
-)
+const props = defineProps<{
+  nodeShape: NamedNode | BlankNode | null
+}>()
 
-const { focusNode, nodeShape } = props
-
-const { store: dataGraph, addQuad, deleteQuad } = useStore(props.dataGraph)
-const { store: shapesGraph } = useStore(props.shapesGraph)
-
-provide<{ addQuad: (quad: n3.Quad) => void; deleteQuad: (quad: n3.Quad) => void }>(
-  'DataStoreActions',
-  {
-    addQuad,
-    deleteQuad,
-  },
-)
-
+const { focusNode } = useFocusNodeContext()
+const { dataGraph, shapesGraph } = useResourceManagerContext()
 const validator = computed(() => new UISHACLValidator(shapesGraph.value))
+const dataGraphString = ref('')
 const dataGraphPointer = computed(() =>
   validator.value.factory.clownface({ dataset: dataGraph.value }),
 )
-
 const report = ref('')
+
+onMounted(() => {
+  validateData()
+  setDataGraphString()
+})
+
+watch(
+  dataGraphPointer,
+  () => {
+    validateData()
+    setDataGraphString()
+  },
+  { deep: true },
+)
 
 async function validateData() {
   validator.value.validationEngine.initReport()
 
-  if (!nodeShape) {
+  if (!props.nodeShape) {
     return
   }
 
@@ -65,38 +60,25 @@ function setDataGraphString() {
   const result = serializer.transform(Array.from(dataGraph.value))
   dataGraphString.value = result
 }
-
-onMounted(() => {
-  validateData()
-  setDataGraphString()
-})
-
-const dataGraphString = ref('')
-
-watch(
-  dataGraphPointer,
-  () => {
-    validateData()
-    setDataGraphString()
-  },
-  { deep: true },
-)
 </script>
 
 <template>
-  <pre v-if="report" class="text-sm text-gray-800"
-    >{{ report }}
-  </pre>
-
   <FocusNode
     :focus-node="focusNode"
     :node-shape="nodeShape"
     :data-graph="dataGraph"
     :validator="validator"
-    :is-root-node="true"
   />
 
-  <pre v-if="dataGraphString" class="text-sm text-gray-800"
+  <h3 class="text-lg font-bold">Report</h3>
+
+  <pre v-if="report" class="text-sm text-gray-800 bg-gray-100 p-2 rounded-md"
+    >{{ report }}
+  </pre>
+
+  <h3 class="text-lg font-bold">Data Graph</h3>
+
+  <pre v-if="dataGraphString" class="text-sm text-gray-800 bg-gray-100 p-2 rounded-md"
     >{{ dataGraphString }}
   </pre>
 </template>

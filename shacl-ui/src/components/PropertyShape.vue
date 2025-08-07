@@ -4,9 +4,9 @@ import type { NamedNode, BlankNode, Literal, DatasetCore } from '@rdfjs/types'
 import type { UISHACLValidator } from '@/core/shapes-graph'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
 import { dash, sh } from '@/core/namespaces'
-import { useInjectPredicateTracker } from '@/composables/predicate-tracking'
+import { usePredicateTrackerContext } from '@/composables/predicate-tracking'
 import { extractPropertyPath } from 'rdf-validate-shacl/src/property-path'
-import { useInjectFormLabel } from '@/composables/form-label'
+import { useResourceLabelContext } from '@/composables/resource-label'
 import PredicatePath, { type PathType } from '@/components/PredicatePath.vue'
 import InversePath from '@/components/InversePath.vue'
 // import AlternativePath from '@/components/AlternativePath.vue'
@@ -18,7 +18,7 @@ const props = defineProps<{
   validator: UISHACLValidator
 }>()
 
-const { registerHandledPredicate } = useInjectPredicateTracker()
+const { registerHandledPredicate } = usePredicateTrackerContext()
 const dataGraphPointer = computed(() =>
   props.validator.factory.clownface({ dataset: props.dataGraph }),
 )
@@ -50,8 +50,8 @@ onMounted(() => {
     if (labels.length) {
       // TODO: get preferred language tag, then no language tag, then first label
       const label = labels[0]
-      const { setFormLabel } = useInjectFormLabel()
-      setFormLabel(label)
+      const { setResourceLabel } = useResourceLabelContext()
+      setResourceLabel(label)
     }
   }
 })

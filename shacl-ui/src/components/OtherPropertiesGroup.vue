@@ -12,7 +12,6 @@ defineProps<{
   dataGraph: DatasetCore
   validator: UISHACLValidator
   predicates: NamedNode[]
-  isRootNode: boolean
 }>()
 </script>
 
