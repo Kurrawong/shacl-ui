@@ -1,27 +1,26 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import type { NamedNode, BlankNode, Literal, DatasetCore } from '@rdfjs/types'
-import type { UISHACLValidator } from '@/core/shapes-graph'
+import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
 import { dash, sh } from '@/core/namespaces'
+import { useFocusNodeContext } from '@/composables/focus-node'
 import { usePredicateTrackerContext } from '@/composables/predicate-tracking'
 import { extractPropertyPath } from 'rdf-validate-shacl/src/property-path'
 import { useResourceLabelContext } from '@/composables/resource-label'
-import PredicatePath, { type PathType } from '@/components/PredicatePath.vue'
+import { useResourceManagerContext } from '@/composables/resource-manager'
+import PredicatePath from '@/components/PredicatePath.vue'
 import InversePath from '@/components/InversePath.vue'
 // import AlternativePath from '@/components/AlternativePath.vue'
 
+type PathType = 'predicate' | 'inverse' | 'alternative' | null
+
 const props = defineProps<{
   propertyShape: Shape
-  focusNode: NamedNode | BlankNode
-  dataGraph: DatasetCore
-  validator: UISHACLValidator
 }>()
 
 const { registerHandledPredicate } = usePredicateTrackerContext()
-const dataGraphPointer = computed(() =>
-  props.validator.factory.clownface({ dataset: props.dataGraph }),
-)
+const { dataGraphPointer, validator } = useResourceManagerContext()
+const { focusNode } = useFocusNodeContext()
 
 onMounted(() => {
   const path = props.propertyShape.path
@@ -30,7 +29,7 @@ onMounted(() => {
   } else if (path && path.term.termType === 'BlankNode') {
     // Check if it's an alternative path.
     // If so, add each predicate path to the tracker.
-    const _path = extractPropertyPath(path, props.validator.ns, true)
+    const _path = extractPropertyPath(path, validator.value.ns, true)
     if ('or' in _path) {
       const or = _path.or as NamedNode[]
       for (const alternativePath of or) {
@@ -44,7 +43,7 @@ onMounted(() => {
   const propertyRole = props.propertyShape.shapeNodePointer.out(dash.propertyRole).term
   if (propertyRole && propertyRole.equals(dash.LabelRole)) {
     const labels = dataGraphPointer.value
-      .node(props.focusNode)
+      .node(focusNode.value)
       .out(props.propertyShape.path)
       .terms.filter((label) => label.termType === 'Literal') as Literal[]
     if (labels.length) {
@@ -59,7 +58,7 @@ onMounted(() => {
 const propertyPath = computed(() => {
   const path = props.propertyShape.path
   if (path) {
-    return extractPropertyPath(path, props.validator.ns, true)
+    return extractPropertyPath(path, validator.value.ns, true)
   }
 
   return null
@@ -106,7 +105,7 @@ const pathLabel = computed(() => {
 
 const valueNodes = computed(() => {
   return props.propertyShape
-    .getValueNodes(props.focusNode, dataGraphPointer.value)
+    .getValueNodes(focusNode.value, dataGraphPointer.value)
     .sort((a, b) => a.value.localeCompare(b.value)) as (NamedNode | BlankNode | Literal)[]
 })
 </script>
@@ -114,34 +113,23 @@ const valueNodes = computed(() => {
 <template>
   <PredicatePath
     v-if="pathType === 'predicate'"
-    :focus-node="focusNode"
     :path="propertyPath! as NamedNode"
-    :path-type="pathType"
     :path-label="pathLabel"
     :value-nodes="valueNodes"
-    :data-graph="dataGraph"
-    :validator="validator"
     :property-shape="propertyShape"
   />
 
   <!-- <AlternativePath
     v-else-if="pathType === 'alternative'"
-    :focus-node="focusNode"
     :path="('or' in propertyPath! ? propertyPath.or : []) as NamedNode[]"
     :value-nodes="valueNodes"
-    :data-graph="dataGraph"
-    :validator="validator"
   /> -->
 
   <InversePath
     v-else-if="pathType === 'inverse' && propertyPath && 'inverse' in propertyPath"
-    :focus-node="focusNode"
     :path="propertyPath.inverse as NamedNode"
-    :path-type="pathType"
     :path-label="pathLabel"
     :value-nodes="valueNodes as (NamedNode | BlankNode)[]"
-    :data-graph="dataGraph"
-    :validator="validator"
     :property-shape="propertyShape"
   />
 

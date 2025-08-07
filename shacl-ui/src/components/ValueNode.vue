@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed, inject, ref } from 'vue'
-import type { NamedNode, BlankNode, Literal, DatasetCore } from '@rdfjs/types'
+import { computed, ref } from 'vue'
+import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
 import n3 from 'n3'
-import type { UISHACLValidator } from '@/core/shapes-graph'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
 import { getEditorWidgets } from '@/core/widgets'
 import TextFieldEditor from '@/components/editors/TextFieldEditor.vue'
@@ -17,16 +16,15 @@ import TextAreaWithLangEditor from '@/components/editors/TextAreaWithLangEditor.
 import DatePickerEditor from '@/components/editors/DatePickerEditor.vue'
 import { sh } from '@/core/namespaces'
 import FocusNode from './FocusNode.vue'
+import { useFocusNodeContext } from '@/composables/focus-node'
+import { useResourceManagerContext } from '@/composables/resource-manager'
 
 const { quad } = n3.DataFactory
 
 const props = withDefaults(
   defineProps<{
-    focusNode: NamedNode | BlankNode
     path: NamedNode
     valueNode: NamedNode | BlankNode | Literal
-    dataGraph: DatasetCore
-    validator: UISHACLValidator
     propertyShape?: Shape
     inverse?: boolean
   }>(),
@@ -35,10 +33,8 @@ const props = withDefaults(
   },
 )
 
-const { addQuad, deleteQuad } = inject<{
-  addQuad: (quad: n3.Quad) => void
-  deleteQuad: (quad: n3.Quad) => void
-}>('DataStoreActions')!
+const { focusNode } = useFocusNodeContext()
+const { addQuad, deleteQuad } = useResourceManagerContext()
 
 const updated = ref(false)
 const newValue = ref<NamedNode | BlankNode | Literal>(props.valueNode)
@@ -60,16 +56,16 @@ const handleSave = () => {
   updated.value = false
 
   if (props.inverse) {
-    deleteQuad(quad(props.valueNode as NamedNode, props.path, props.focusNode))
-    addQuad(quad(newValue.value as NamedNode, props.path, props.focusNode))
+    deleteQuad(quad(props.valueNode as NamedNode, props.path, focusNode.value))
+    addQuad(quad(newValue.value as NamedNode, props.path, focusNode.value))
     console.log(
-      `${props.valueNode.value} ${props.path.value} ${props.focusNode.value} -> ${newValue.value.value}`,
+      `${props.valueNode.value} ${props.path.value} ${focusNode.value} -> ${newValue.value.value}`,
     )
   } else {
-    deleteQuad(quad(props.focusNode, props.path, props.valueNode))
-    addQuad(quad(props.focusNode, props.path, newValue.value))
+    deleteQuad(quad(focusNode.value, props.path, props.valueNode))
+    addQuad(quad(focusNode.value, props.path, newValue.value))
     console.log(
-      `${props.focusNode.value} ${props.path.value} ${props.valueNode.value} -> ${newValue.value.value}`,
+      `${focusNode.value} ${props.path.value} ${props.valueNode.value} -> ${newValue.value.value}`,
     )
   }
 }
@@ -80,7 +76,7 @@ const handleUpdate = (term: NamedNode | BlankNode | Literal) => {
 }
 
 const handleDelete = () => {
-  deleteQuad(quad(props.focusNode, props.path, props.valueNode))
+  deleteQuad(quad(focusNode.value, props.path, props.valueNode))
 }
 
 const handleChangeEditorWidget = (editorWidget: NamedNode) => {
@@ -109,9 +105,6 @@ const handleChangeEditorWidget = (editorWidget: NamedNode) => {
       v-else-if="selectedEditorWidget?.term.equals(dash.DetailsEditor)"
       :focus-node="valueNode as NamedNode"
       :node-shape="propertyShape?.shapeNodePointer.out(sh.node).term as NamedNode"
-      :data-graph="dataGraph"
-      :validator="validator"
-      :is-root-node="false"
     />
 
     <TextAreaEditor

@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref, watch, computed, inject } from 'vue'
-import type { NamedNode, BlankNode, DatasetCore } from '@rdfjs/types'
-import type { UISHACLValidator } from '@/core/shapes-graph'
+import { ref, watch, computed } from 'vue'
+import type { NamedNode, BlankNode } from '@rdfjs/types'
 import PredicatePathLabel from '@/components/PredicatePathLabel.vue'
 import PropertyPathBase from '@/components/PropertyPathBase.vue'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
@@ -11,21 +10,20 @@ import { getSHOrDatatypes } from '@/core/widgets'
 import TermSet from '@rdfjs/term-set'
 import { sh } from '@/core/namespaces'
 import n3 from 'n3'
+import { useFocusNodeContext } from '@/composables/focus-node'
+import { useResourceManagerContext } from '@/composables/resource-manager'
 
 const { quad } = n3.DataFactory
 
-export type PathType = 'predicate' | 'inverse' | 'alternative' | null
-
 const props = defineProps<{
-  focusNode: NamedNode | BlankNode
   path: NamedNode
-  pathType: PathType
   pathLabel: string
   valueNodes: (NamedNode | BlankNode)[]
-  dataGraph: DatasetCore
-  validator: UISHACLValidator
   propertyShape?: Shape
 }>()
+
+const { focusNode } = useFocusNodeContext()
+const { addQuad } = useResourceManagerContext()
 
 const _valueNodes = ref<(NamedNode | BlankNode)[]>([...props.valueNodes])
 
@@ -36,14 +34,9 @@ watch(
   },
 )
 
-const { addQuad } = inject<{
-  addQuad: (quad: n3.Quad) => void
-  deleteQuad: (quad: n3.Quad) => void
-}>('DataStoreActions')!
-
 const addNewValue = (value: NamedNode | BlankNode) => {
   if (value.termType === 'BlankNode') {
-    addQuad(quad(value, props.path, props.focusNode))
+    addQuad(quad(value, props.path, focusNode.value))
   } else {
     _valueNodes.value.push(value)
   }
@@ -86,11 +79,8 @@ const datatypes = computed(() => {
       <div v-else class="space-y-1">
         <div v-for="valueNode in _valueNodes" :key="valueNode.value">
           <ValueNode
-            :focus-node="focusNode"
             :path="path"
             :value-node="valueNode"
-            :data-graph="dataGraph"
-            :validator="validator"
             :property-shape="propertyShape"
             :inverse="true"
           />

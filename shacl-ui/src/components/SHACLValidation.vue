@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import type { NamedNode, BlankNode } from '@rdfjs/types'
 import { PrefixMapFactory } from 'rdf-ext'
 import n3 from 'n3'
 import FocusNode from '@/components/FocusNode.vue'
 import { useFocusNodeContext } from '@/composables/focus-node'
 import { useResourceManagerContext } from '@/composables/resource-manager'
-import { UISHACLValidator } from '@/core/shapes-graph'
 import Serializer from '@rdfjs/serializer-turtle'
 
 const { namedNode } = n3.DataFactory
@@ -16,12 +15,8 @@ const props = defineProps<{
 }>()
 
 const { focusNode } = useFocusNodeContext()
-const { dataGraph, shapesGraph } = useResourceManagerContext()
-const validator = computed(() => new UISHACLValidator(shapesGraph.value))
+const { dataGraph, dataGraphPointer, validator } = useResourceManagerContext()
 const dataGraphString = ref('')
-const dataGraphPointer = computed(() =>
-  validator.value.factory.clownface({ dataset: dataGraph.value }),
-)
 const report = ref('')
 
 onMounted(() => {
@@ -66,8 +61,6 @@ function setDataGraphString() {
   <FocusNode
     :focus-node="focusNode"
     :node-shape="nodeShape"
-    :data-graph="dataGraph"
-    :validator="validator"
   />
 
   <h3 class="text-lg font-bold">Report</h3>

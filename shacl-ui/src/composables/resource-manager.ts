@@ -2,6 +2,8 @@ import { computed, inject, provide, ref, type ComputedRef, type Ref } from 'vue'
 
 import n3 from 'n3'
 import { useStore } from '@/composables/store'
+import { UISHACLValidator } from '@/core/shapes-graph'
+import type { AnyPointer } from 'clownface'
 
 const RESOURCE_MANAGER = Symbol('ResourceManager')
 
@@ -13,8 +15,19 @@ export function provideResourceManager(data?: string, shapes?: string) {
   const originalStoreManager = useStore()
   const workingStoreManager = useStore()
   const isEditing = ref(false)
-  const isDirty = computed(() => isEditing.value && hasChanges.value)
   resetDataGraph(data)
+
+  const validator = computed(() => new UISHACLValidator(shapesStoreManager.store.value))
+
+  const dataGraphPointer = computed(() =>
+    validator.value.factory.clownface({ dataset: workingStoreManager.store.value }),
+  )
+
+  const isDirty = computed(() => isEditing.value && hasChanges.value)
+
+  const hasChanges = computed(
+    () => !originalStoreManager.store.value.equals(workingStoreManager.store.value),
+  )
 
   function resetDataGraph(data?: string) {
     originalStoreManager.resetStore(data ? parser.parse(data) : [])
@@ -35,10 +48,6 @@ export function provideResourceManager(data?: string, shapes?: string) {
     isEditing.value = false
   }
 
-  const hasChanges = computed(
-    () => !originalStoreManager.store.value.equals(workingStoreManager.store.value),
-  )
-
   function save() {
     if (!isEditing.value || !hasChanges.value) {
       return
@@ -53,8 +62,12 @@ export function provideResourceManager(data?: string, shapes?: string) {
   }
 
   provide(RESOURCE_MANAGER, {
+    addQuad: workingStoreManager.addQuad,
+    deleteQuad: workingStoreManager.deleteQuad,
     dataGraph: workingStoreManager.store,
     shapesGraph: shapesStoreManager.store,
+    validator,
+    dataGraphPointer,
     isEditing,
     isDirty,
     resetDataGraph,
@@ -66,8 +79,12 @@ export function provideResourceManager(data?: string, shapes?: string) {
   })
 
   return {
+    addQuad: workingStoreManager.addQuad,
+    deleteQuad: workingStoreManager.deleteQuad,
     dataGraph: workingStoreManager.store,
     shapesGraph: shapesStoreManager.store,
+    validator,
+    dataGraphPointer,
     isEditing,
     isDirty,
     resetDataGraph,
@@ -81,8 +98,12 @@ export function provideResourceManager(data?: string, shapes?: string) {
 
 export function useResourceManagerContext() {
   const resourceManager = inject<{
+    addQuad: (quad: n3.Quad) => void
+    deleteQuad: (quad: n3.Quad) => void
     dataGraph: Ref<n3.Store>
     shapesGraph: Ref<n3.Store>
+    validator: ComputedRef<UISHACLValidator>
+    dataGraphPointer: ComputedRef<AnyPointer>
     isEditing: Ref<boolean>
     isDirty: ComputedRef<boolean>
     resetDataGraph: (data?: string) => void
