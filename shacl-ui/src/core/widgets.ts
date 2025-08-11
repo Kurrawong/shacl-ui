@@ -2,6 +2,7 @@ import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
 import type { Widget, WidgetsMap } from '@/core/types'
 import { editorWidgetsMap } from '@/core/editor-widgets-registry'
+import { viewerWidgetsMap } from '@/core/viewer-widgets-registry'
 
 function widgetSort(a: Widget, b: Widget) {
   if (a.score === null && b.score === null) return 0
@@ -38,4 +39,6 @@ export function getEditorWidgets(
 export function getViewerWidgets(
   valueNode: NamedNode | BlankNode | Literal,
   propertyShape?: Shape,
-) {}
+) {
+  return getWidgets(viewerWidgetsMap, valueNode, propertyShape)
+}
