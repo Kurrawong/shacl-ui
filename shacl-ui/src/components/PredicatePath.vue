@@ -12,6 +12,7 @@ import { sh } from '@/core/namespaces'
 import n3 from 'n3'
 import { useFocusNodeContext } from '@/composables/focus-node'
 import { useResourceManagerContext } from '@/composables/resource-manager'
+import NonEditableValueNow from '@/components/NonEditableValueNow.vue'
 
 const { quad } = n3.DataFactory
 
@@ -23,7 +24,7 @@ const props = defineProps<{
 }>()
 
 const { focusNode } = useFocusNodeContext()
-const { addQuad } = useResourceManagerContext()
+const { addQuad, isEditing } = useResourceManagerContext()
 
 const _valueNodes = ref<(NamedNode | BlankNode | Literal)[]>([...props.valueNodes])
 
@@ -66,24 +67,45 @@ const datatypes = computed(() => {
       <PredicatePathLabel :label="pathLabel" :predicate-path="path" />
     </template>
     <template #value-nodes>
-      <div
-        v-if="_valueNodes.length === 0"
-        class="text-sm text-gray-400 italic flex justify-between items-center"
-      >
-        No values
+      <template v-if="isEditing">
+        <div
+          v-if="_valueNodes.length === 0"
+          class="text-sm text-gray-400 italic flex justify-between items-center"
+        >
+          No values
 
-        <AddNewValueNode @add-new-value="addNewValue" :datatypes="datatypes" />
-      </div>
-
-      <div v-else class="space-y-1">
-        <div v-for="valueNode in _valueNodes" :key="valueNode.value">
-          <ValueNode :path="path" :value-node="valueNode" :property-shape="propertyShape" />
-        </div>
-
-        <div class="flex justify-end">
           <AddNewValueNode @add-new-value="addNewValue" :datatypes="datatypes" />
         </div>
-      </div>
+
+        <div v-else class="space-y-1">
+          <div v-for="valueNode in _valueNodes" :key="valueNode.value">
+            <ValueNode :path="path" :value-node="valueNode" :property-shape="propertyShape" />
+          </div>
+
+          <div class="flex justify-end">
+            <AddNewValueNode @add-new-value="addNewValue" :datatypes="datatypes" />
+          </div>
+        </div>
+      </template>
+
+      <template v-else>
+        <div
+          v-if="_valueNodes.length === 0"
+          class="text-sm text-gray-400 italic flex justify-between items-center"
+        >
+          No values
+        </div>
+
+        <div v-else class="space-y-1">
+          <div v-for="valueNode in _valueNodes" :key="valueNode.value">
+            <NonEditableValueNow
+              :path="path"
+              :value-node="valueNode"
+              :property-shape="propertyShape"
+            />
+          </div>
+        </div>
+      </template>
     </template>
   </PropertyPathBase>
 </template>

@@ -15,13 +15,15 @@ defineProps<{
   <PropertyGroupBase>
     <template #title>Other Properties</template>
     <template #content>
-      <div v-for="propertyShape in propertyShapes" :key="propertyShape.shapeNode.value">
-        <PropertyShape :property-shape="propertyShape" />
-      </div>
+      <div class="space-y-8">
+        <div v-for="propertyShape in propertyShapes" :key="propertyShape.shapeNode.value">
+          <PropertyShape :property-shape="propertyShape" />
+        </div>
 
-      <template v-for="predicate in predicates" :key="predicate.value">
-        <PredicatePathWrapper :path="predicate" />
-      </template>
+        <template v-for="predicate in predicates" :key="predicate.value">
+          <PredicatePathWrapper :path="predicate" />
+        </template>
+      </div>
     </template>
   </PropertyGroupBase>
 </template>

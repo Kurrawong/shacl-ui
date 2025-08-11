@@ -26,8 +26,10 @@ const propertyGroupLabel = computed(() => {
     </template>
 
     <template #content>
-      <div v-for="propertyShape in propertyShapes" :key="propertyShape.shapeNode.value">
-        <PropertyShape :property-shape="propertyShape" />
+      <div class="space-y-8">
+        <div v-for="propertyShape in propertyShapes" :key="propertyShape.shapeNode.value">
+          <PropertyShape :property-shape="propertyShape" />
+        </div>
       </div>
     </template>
   </PropertyGroupBase>

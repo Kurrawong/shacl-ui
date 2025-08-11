@@ -25,7 +25,6 @@ const df = new DateFormatter('en-US', {
 const value = ref<DateValue>(parseDate(props.term.value))
 
 function emitUpdate() {
-  console.log(value.value)
   if (value.value) {
     emit('update', literal(value.value.toString(), xsd.date))
     emit('blur')
