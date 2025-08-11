@@ -16,16 +16,19 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { DropdownMenuPortal } from 'reka-ui'
-import type { Widget } from '@/core/widgets'
+import type { Widget } from '@/core/types'
+import { useResourceManagerContext } from '@/composables/resource-manager'
 
-const emit = defineEmits(['change-editor-widget', 'delete'])
+const emit = defineEmits(['change-widget', 'delete'])
 
 defineProps<{
-  selectedEditorWidget: Widget
-  editorWidgets: Widget[]
+  selectedWidget: Widget
+  widgets: Widget[]
 }>()
 
 const { namedNode } = n3.DataFactory
+
+const { isEditing } = useResourceManagerContext()
 </script>
 
 <template>
@@ -40,32 +43,32 @@ const { namedNode } = n3.DataFactory
       <DropdownMenuGroup>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
-            <span>Editor widget</span>
+            <span>Widget</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
               <DropdownMenuRadioGroup
-                :model-value="selectedEditorWidget.term.value"
-                @update:model-value="emit('change-editor-widget', namedNode($event))"
+                :model-value="selectedWidget.term.value"
+                @update:model-value="emit('change-widget', namedNode($event))"
               >
                 <DropdownMenuRadioItem
-                  v-for="editorWidget in editorWidgets"
-                  :key="editorWidget.term.value"
-                  :value="editorWidget.term.value"
+                  v-for="widget in widgets"
+                  :key="widget.term.value"
+                  :value="widget.term.value"
                 >
-                  <span>{{
-                    editorWidget.term.value.split('#').slice(-1)[0].split('/').slice(-1)[0]
-                  }}</span>
+                  <span>{{ widget.term.value.split('#').at(-1)?.split('/').at(-1) }}</span>
                 </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
 
-        <DropdownMenuSeparator />
-        <DropdownMenuItem @click="emit('delete')">
-          <span>Delete</span>
-        </DropdownMenuItem>
+        <template v-if="isEditing">
+          <DropdownMenuSeparator />
+          <DropdownMenuItem @click="emit('delete')">
+            <span>Delete</span>
+          </DropdownMenuItem>
+        </template>
       </DropdownMenuGroup>
     </DropdownMenuContent>
   </DropdownMenu>

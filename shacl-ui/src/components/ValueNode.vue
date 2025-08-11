@@ -153,9 +153,9 @@ const handleChangeEditorWidget = (editorWidget: NamedNode) => {
     <div class="flex justify-end ml-auto">
       <ValueNodeMenu
         v-if="selectedEditorWidget"
-        :selected-editor-widget="selectedEditorWidget"
-        :editor-widgets="editorWidgets"
-        @change-editor-widget="handleChangeEditorWidget"
+        :selected-widget="selectedEditorWidget"
+        :widgets="editorWidgets"
+        @change-widget="handleChangeEditorWidget"
         @delete="handleDelete"
       />
     </div>

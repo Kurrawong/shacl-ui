@@ -3,13 +3,13 @@ import type { WidgetsMap } from '@/core/types'
 
 export const viewerWidgetsMap: WidgetsMap = new Map()
 
-viewerWidgetsMap.set(dash.BlankNodeViewer, (valueNode) => {
-  if (valueNode.termType === 'BlankNode') {
-    return 1
-  }
+// viewerWidgetsMap.set(dash.BlankNodeViewer, (valueNode) => {
+//   if (valueNode.termType === 'BlankNode') {
+//     return 1
+//   }
 
-  return 0
-})
+//   return 0
+// })
 
 viewerWidgetsMap.set(dash.DetailsViewer, (valueNode) => {
   if (valueNode.termType === 'Literal') {
