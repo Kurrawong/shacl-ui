@@ -16,13 +16,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { DropdownMenuPortal } from 'reka-ui'
-import type { EditorWidget } from '@/core/widgets'
+import type { Widget } from '@/core/widgets'
 
 const emit = defineEmits(['change-editor-widget', 'delete'])
 
 defineProps<{
-  selectedEditorWidget: EditorWidget
-  editorWidgets: EditorWidget[]
+  selectedEditorWidget: Widget
+  editorWidgets: Widget[]
 }>()
 
 const { namedNode } = n3.DataFactory

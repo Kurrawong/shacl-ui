@@ -9,3 +9,8 @@ export const foaf = $rdf.namespace('http://xmlns.com/foaf/0.1/')
 export const dcterms = $rdf.namespace('http://purl.org/dc/terms/')
 export const schema = $rdf.namespace('https://schema.org/')
 export const xsd = $rdf.namespace('http://www.w3.org/2001/XMLSchema#')
+
+export const TRUE_LITERAL = $rdf.literal('true', xsd.boolean)
+export const FALSE_LITERAL = $rdf.literal('false', xsd.boolean)
+export const RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+export const XSD = 'http://www.w3.org/2001/XMLSchema#'

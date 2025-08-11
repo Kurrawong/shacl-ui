@@ -1,241 +1,41 @@
 import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
-import n3 from 'n3'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
-import { dash, rdf, sh, xsd } from '@/core/namespaces'
-import TermSet from '@rdfjs/term-set'
+import type { Widget, WidgetsMap } from '@/core/types'
+import { editorWidgetsMap } from '@/core/editor-widgets-registry'
 
-const { literal } = n3.DataFactory
-
-const TRUE_LITERAL = literal('true', xsd.boolean)
-const FALSE_LITERAL = literal('false', xsd.boolean)
-const _RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
-const _XSD = 'http://www.w3.org/2001/XMLSchema#'
-
-export type EditorWidget = {
-  term: NamedNode
-  score: number | null
+function widgetSort(a: Widget, b: Widget) {
+  if (a.score === null && b.score === null) return 0
+  if (a.score === null) return 1
+  if (b.score === null) return -1
+  return b.score - a.score
 }
 
-export function getSHOrDatatypes(propertyShape: Shape) {
-  return new TermSet<NamedNode>(
-    Array.from(propertyShape.shapeNodePointer.out(sh.or).list() || [])
-      .map((pointer) => pointer.out(sh.datatype).term)
-      .filter((term) => term !== undefined && term.termType === 'NamedNode'),
-  )
-}
-
-// TODO: consider sh:nodeKind
-const editorWidgetsMap = new Map<
-  NamedNode,
-  (valueNode: NamedNode | BlankNode | Literal, propertyShape?: Shape) => number | null
->([
-  [
-    dash.AutoCompleteEditor,
-    (valueNode) => {
-      if (valueNode.termType === 'NamedNode') {
-        return 1
-      }
-
-      return 0
-    },
-  ],
-  [
-    dash.BooleanSelectEditor,
-    (valueNode, propertyShape) => {
-      if (valueNode.termType === 'Literal' && valueNode.datatype.equals(xsd.boolean)) {
-        return 10
-      }
-
-      if (valueNode.termType !== 'Literal') {
-        return 0
-      }
-
-      if (
-        propertyShape &&
-        !propertyShape.shapeNodePointer.out(sh.datatype).term?.equals(xsd.boolean)
-      ) {
-        return 0
-      }
-
-      return null
-    },
-  ],
-  [
-    dash.DatePickerEditor,
-    (valueNode, propertyShape) => {
-      if (valueNode.termType === 'Literal' && valueNode.datatype.equals(xsd.date)) {
-        return 10
-      }
-
-      if (propertyShape) {
-        const shOrDatatypes = getSHOrDatatypes(propertyShape)
-        const datatype = propertyShape.shapeNodePointer.out(sh.datatype).term
-        if (datatype?.equals(xsd.date) || shOrDatatypes.has(xsd.date)) {
-          return 5
-        }
-      }
-
-      return 0
-    },
-  ],
-  [
-    dash.DetailsEditor,
-    (valueNode) => {
-      if (valueNode.termType !== 'Literal') {
-        return null
-      }
-
-      return 0
-    },
-  ],
-  [
-    dash.TextAreaEditor,
-    (valueNode, propertyShape) => {
-      if (propertyShape) {
-        const singleLine = propertyShape.shapeNodePointer.out(dash.singleLine).term
-        if (singleLine?.equals(TRUE_LITERAL)) {
-          return 0
-        } else if (
-          singleLine?.equals(FALSE_LITERAL) &&
-          valueNode.termType === 'Literal' &&
-          valueNode.datatype.equals(xsd.string)
-        ) {
-          return 20
-        }
-      }
-
-      if (valueNode.termType === 'Literal' && valueNode.datatype.equals(xsd.string)) {
-        return 5
-      }
-
-      if (propertyShape) {
-        const shOrDatatypes = getSHOrDatatypes(propertyShape)
-        const datatype = propertyShape.shapeNodePointer.out(sh.datatype).term
-        if (datatype?.equals(xsd.string) || shOrDatatypes.has(xsd.string)) {
-          return 2
-        }
-
-        if (
-          datatype !== undefined &&
-          !datatype?.value.startsWith(_XSD) &&
-          !datatype?.value.startsWith(_RDF)
-        ) {
-          return null
-        }
-      }
-
-      return 0
-    },
-  ],
-  [
-    dash.TextAreaWithLangEditor,
-    (valueNode, propertyShape) => {
-      if (propertyShape) {
-        const singleLine = propertyShape.shapeNodePointer.out(dash.singleLine).term
-        if (singleLine?.equals(TRUE_LITERAL)) {
-          return 0
-        }
-
-        if (
-          valueNode.termType === 'Literal' &&
-          valueNode.datatype.equals(rdf.langString) &&
-          singleLine?.equals(FALSE_LITERAL)
-        ) {
-          return 15
-        }
-      }
-
-      if (valueNode.termType === 'Literal' && valueNode.datatype.equals(rdf.langString)) {
-        return 5
-      }
-
-      if (propertyShape) {
-        const shOrDatatypes = getSHOrDatatypes(propertyShape)
-        const datatype = propertyShape.shapeNodePointer.out(sh.datatype).term
-        if (datatype?.equals(xsd.string) || shOrDatatypes.has(xsd.string)) {
-          return 5
-        }
-      }
-
-      return 0
-    },
-  ],
-  [
-    dash.TextFieldEditor,
-    (valueNode) => {
-      if (
-        valueNode.termType === 'Literal' &&
-        !(valueNode.datatype.equals(rdf.langString) || valueNode.datatype.equals(xsd.boolean))
-      ) {
-        return 10
-      }
-
-      return 0
-    },
-  ],
-  [
-    dash.TextFieldWithLangEditor,
-    (valueNode, propertyShape) => {
-      if (valueNode.termType === 'Literal' && valueNode.datatype.equals(rdf.langString)) {
-        return 11
-      }
-
-      if (propertyShape) {
-        const shOrDatatypes = getSHOrDatatypes(propertyShape)
-        if (shOrDatatypes.has(rdf.langString) && shOrDatatypes.has(xsd.string)) {
-          return 11
-        }
-
-        if (
-          propertyShape.shapeNodePointer.out(dash.singleLine).term?.equals(FALSE_LITERAL) &&
-          propertyShape.shapeNodePointer.out(sh.datatype).term?.equals(rdf.langString)
-        ) {
-          return 5
-        }
-      }
-
-      return 0
-    },
-  ],
-  [
-    dash.URIEditor,
-    (valueNode, propertyShape) => {
-      if (valueNode.termType !== 'NamedNode') {
-        return 0
-      }
-
-      if (
-        propertyShape &&
-        propertyShape.shapeNodePointer.out(sh.nodeKind).term?.equals(sh.IRI) &&
-        !propertyShape.shapeNodePointer.out(sh.class).term
-      ) {
-        return 10
-      }
-
-      return null
-    },
-  ],
-])
-
-export const getEditorWidgets = (
+function getWidgets(
+  widgetsMap: WidgetsMap,
   valueNode: NamedNode | BlankNode | Literal,
   propertyShape?: Shape,
-) => {
-  const _editorWidgets: EditorWidget[] = []
+) {
+  const widgets: Widget[] = []
 
-  editorWidgetsMap.forEach((editorWidgetFactory, term) => {
-    const widget = editorWidgetFactory(valueNode, propertyShape)
-    _editorWidgets.push({
+  widgetsMap.forEach((widgetFactory, term) => {
+    const widget = widgetFactory(valueNode, propertyShape)
+    widgets.push({
       term,
       score: widget,
     })
   })
 
-  return _editorWidgets.sort((a, b) => {
-    if (a.score === null && b.score === null) return 0
-    if (a.score === null) return 1
-    if (b.score === null) return -1
-
-    return b.score - a.score
-  })
+  return widgets.sort(widgetSort)
 }
+
+export function getEditorWidgets(
+  valueNode: NamedNode | BlankNode | Literal,
+  propertyShape?: Shape,
+) {
+  return getWidgets(editorWidgetsMap, valueNode, propertyShape)
+}
+
+export function getViewerWidgets(
+  valueNode: NamedNode | BlankNode | Literal,
+  propertyShape?: Shape,
+) {}
