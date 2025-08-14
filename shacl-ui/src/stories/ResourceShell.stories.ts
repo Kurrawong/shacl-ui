@@ -864,3 +864,32 @@ export const Default: Story = {
     isRootNode: true,
   },
 }
+
+export const Concept: Story = {
+  render: (args) => {
+    // Transform string inputs to objects using factory functions
+    const transformedArgs = {
+      ...args,
+      focusNode: typeof args.focusNode === 'string' ? namedNode(args.focusNode) : args.focusNode,
+      nodeShape: typeof args.nodeShape === 'string' ? namedNode(args.nodeShape) : args.nodeShape,
+    }
+
+    return {
+      components: { ResourceShell },
+      setup() {
+        return { args: transformedArgs }
+      },
+      template: '<ResourceShell v-bind="args" />',
+    }
+  },
+  args: {
+    focusNode: 'https://linked.data.gov.au/def/record-access/closed' as any,
+
+    dataGraph: data,
+
+    shapesGraph: shapesGraph,
+
+    nodeShape: 'https://linked.data.gov.au/def/vocpub/validator/Shui-Concept' as any,
+    isRootNode: true,
+  },
+}

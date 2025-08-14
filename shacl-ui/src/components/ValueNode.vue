@@ -14,6 +14,7 @@ import BooleanSelectEditor from '@/components/editors/BooleanSelectEditor.vue'
 import TextAreaEditor from '@/components/editors/TextAreaEditor.vue'
 import TextAreaWithLangEditor from '@/components/editors/TextAreaWithLangEditor.vue'
 import DatePickerEditor from '@/components/editors/DatePickerEditor.vue'
+import AutoCompleteEditor from '@/components/editors/AutoCompleteEditor.vue'
 import { sh } from '@/core/namespaces'
 import FocusNode from './FocusNode.vue'
 import { useFocusNodeContext } from '@/composables/focus-node'
@@ -87,8 +88,16 @@ const handleChangeEditorWidget = (editorWidget: NamedNode) => {
 
 <template>
   <div class="flex items-start gap-2">
+    <AutoCompleteEditor
+      v-if="selectedEditorWidget?.term.equals(dash.AutoCompleteEditor)"
+      :term="valueNode as NamedNode"
+      :property-shape="propertyShape"
+      @update="handleUpdate"
+      @blur="handleSave"
+    />
+
     <BooleanSelectEditor
-      v-if="selectedEditorWidget?.term.equals(dash.BooleanSelectEditor)"
+      v-else-if="selectedEditorWidget?.term.equals(dash.BooleanSelectEditor)"
       :term="valueNode as Literal"
       @update="handleUpdate"
       @blur="handleSave"
