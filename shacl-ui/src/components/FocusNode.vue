@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, toRef } from 'vue'
 import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
 import { Shape } from 'rdf-validate-shacl/src/shapes-graph'
 import { sh, rdfs } from '@/core/namespaces'
@@ -23,7 +23,7 @@ const props = withDefaults(
 
 const { dataGraphPointer, validator } = useResourceManagerContext()
 
-provideFocusNode(props.focusNode)
+provideFocusNode(toRef(props, 'focusNode'))
 
 const predicates = computed(() => {
   return Array.from(dataGraphPointer.value.dataset.match(props.focusNode, null, null)).map(

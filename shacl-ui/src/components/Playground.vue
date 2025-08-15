@@ -9,6 +9,8 @@ import Serializer from '@rdfjs/serializer-turtle'
 import exampleData from '@/assets/data.ttl?raw'
 import exampleShapes from '@/assets/vocpub.ttl?raw'
 import { rdf, sh } from '@/core/namespaces'
+import TermSet from '@rdfjs/term-set'
+import NamedNodeCombobox from '@/components/NamedNodeCombobox.vue'
 
 const parser = new n3.Parser({ blankNodePrefix: '' })
 const { namedNode } = n3.DataFactory
@@ -20,17 +22,38 @@ const inputShapesError = ref('')
 const data = ref('')
 const shapes = ref('')
 const report = ref('')
-const focusNode = ref(namedNode('https://linked.data.gov.au/def/record-access/closed'))
-const nodeShape = ref(namedNode('https://linked.data.gov.au/def/vocpub/validator/Shui-Concept'))
+const unselectedOption = { value: null, label: '--Unselected--' }
+const focusNode = ref(unselectedOption)
+const nodeShape = ref(unselectedOption)
 
-const {
-  resetDataGraph,
-  resetShapesGraph,
-  dataGraphPointer,
-  validator,
-  dataGraph,
-  shapesGraphPointer,
-} = provideResourceManager()
+const prefixes = new PrefixMapFactory().prefixMap([
+  ['dash', namedNode('http://datashapes.org/dash#')],
+  ['dcat', namedNode('http://www.w3.org/ns/dcat#')],
+  ['dc', namedNode('http://purl.org/dc/elements/1.1/')],
+  ['dcterms', namedNode('http://purl.org/dc/terms/')],
+  ['foaf', namedNode('http://xmlns.com/foaf/0.1/')],
+  ['geo', namedNode('http://www.opengis.net/ont/geosparql#')],
+  ['owl', namedNode('http://www.w3.org/2002/07/owl#')],
+  ['prof', namedNode('http://www.w3.org/ns/dx/prof/')],
+  ['prov', namedNode('http://www.w3.org/ns/prov#')],
+  ['rdf', namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#')],
+  ['rdfs', namedNode('http://www.w3.org/2000/01/rdf-schema#')],
+  ['schema', namedNode('http://schema.org/')],
+  ['sh', namedNode('http://www.w3.org/ns/shacl#')],
+  ['skos', namedNode('http://www.w3.org/2004/02/skos/core#')],
+  ['skosxl', namedNode('http://www.w3.org/2008/05/skos-xl#')],
+  ['sosa', namedNode('http://www.w3.org/ns/sosa/')],
+  ['ssn', namedNode('http://www.w3.org/ns/ssn/')],
+  ['time', namedNode('http://www.w3.org/ns/time#')],
+  ['tosh', namedNode('http://topbraid.org/tosh#')],
+  ['vann', namedNode('http://purl.org/vocab/vann/')],
+  ['void', namedNode('http://rdfs.org/ns/void#')],
+  ['xsd', namedNode('http://www.w3.org/2001/XMLSchema#')],
+])
+const serializer = new Serializer({ prefixes })
+
+const { resetDataGraph, resetShapesGraph, dataGraphPointer, validator, dataGraph, shapesGraph } =
+  provideResourceManager()
 
 function setDataGraph() {
   parser.parse(inputData.value)
@@ -67,16 +90,11 @@ async function validateData() {
 
   const result = await validator.value.validate(dataGraphPointer.value)
 
-  const prefixes = new PrefixMapFactory().prefixMap([
-    ['sh', namedNode('http://www.w3.org/ns/shacl#')],
-  ])
-  const serializer = new Serializer({ prefixes })
   const resultString = serializer.transform(Array.from(result.dataset))
   report.value = resultString
 }
 
 watch(dataGraphPointer, () => {
-  const serializer = new Serializer()
   inputData.value = serializer.transform(Array.from(dataGraph.value))
   validateData()
 })
@@ -87,51 +105,79 @@ onMounted(() => {
   setShapesGraph()
 })
 
-const nodeShapes = computed(() => {
-  return shapesGraphPointer.value.has(rdf.type, sh.NodeShape).terms
+const focusNodes = computed(() => {
+  return [
+    unselectedOption,
+    ...Array.from(new TermSet(dataGraph.value.getSubjects(null, null, null)))
+      .filter((term) => term.termType === 'NamedNode')
+      .map((term) => ({
+        value: term,
+        label: term.value.split('#').at(-1)?.split('/').at(-1) ?? '',
+      })),
+  ]
 })
 
-const focusNodes = computed(() => {
-  return Array.from(dataGraph.value.match(null, null, null)).map((quad) => quad.subject)
+const nodeShapes = computed(() => {
+  return [
+    unselectedOption,
+    ...Array.from(new TermSet(shapesGraph.value.getSubjects(rdf.type, sh.NodeShape, null)))
+      .filter((term) => term.termType === 'NamedNode')
+      .map((term) => ({
+        value: term,
+        label: term.value.split('#').at(-1)?.split('/').at(-1) ?? '',
+      })),
+  ]
 })
 </script>
 
 <template>
   <div class="flex flex-row gap-4">
     <!-- left side -->
-    <div class="w-1/2 space-y-4">
-      <div class="space-y-2">
-        <h2 class="text-lg font-bold">Validation Report</h2>
-        <pre class="max-h-[33vh] overflow-y-auto text-sm">{{ report }}</pre>
-      </div>
+    <div class="w-1/2 space-y-4 flex flex-col h-[calc(100vh-2rem)]">
+      <div class="overflow-y-auto space-y-3">
+        <div class="space-y-2 pr-2">
+          <h2 class="text-lg font-semibold">Validation Report</h2>
+          <div class="overflow-y-auto border border-gray-300 rounded-md p-2">
+            <pre class="text-sm max-h-[32vh]">{{ report }}</pre>
+          </div>
+        </div>
 
-      <div class="space-y-2">
-        <h2 class="text-lg font-bold">Data Graph</h2>
-        <Textarea
-          v-model="inputData"
-          @blur="handleDataBlur"
-          class="h-[33vh]"
-          :class="inputDataError ? 'border-red-600 focus-visible:ring-red-300' : ''"
-        />
-        <div v-if="inputDataError" class="text-sm text-red-600">{{ inputDataError }}</div>
-      </div>
+        <div class="space-y-2 pr-2">
+          <h2 class="text-lg font-semibold">Data Graph</h2>
+          <Textarea
+            v-model="inputData"
+            @blur="handleDataBlur"
+            class="h-[32vh]"
+            :class="inputDataError ? 'border-red-600 focus-visible:ring-red-300' : ''"
+          />
+          <div v-if="inputDataError" class="text-sm text-red-600">{{ inputDataError }}</div>
+        </div>
 
-      <div class="space-y-2">
-        <h2 class="text-lg font-bold">Shapes Graph</h2>
-        <Textarea
-          v-model="inputShapes"
-          @blur="handleShapesBlur"
-          class="h-[33vh]"
-          :class="inputShapesError ? 'border-red-600 focus-visible:ring-red-300' : ''"
-        />
-        <div v-if="inputShapesError" class="text-sm text-red-600">{{ inputShapesError }}</div>
+        <div class="space-y-2 pr-2">
+          <h2 class="text-lg font-semibold">Shapes Graph</h2>
+          <Textarea
+            v-model="inputShapes"
+            @blur="handleShapesBlur"
+            class="h-[32vh]"
+            :class="inputShapesError ? 'border-red-600 focus-visible:ring-red-300' : ''"
+          />
+          <div v-if="inputShapesError" class="text-sm text-red-600">{{ inputShapesError }}</div>
+        </div>
       </div>
     </div>
 
     <!-- right side -->
     <div class="w-1/2 flex flex-row h-[calc(100vh-2rem)]">
       <div class="overflow-y-auto w-full">
-        <ResourceShell :focus-node="focusNode" :node-shape="nodeShape" />
+        <div class="flex flex-row gap-2">
+          <NamedNodeCombobox v-model="focusNode" :values="focusNodes" label="focus node" />
+          <NamedNodeCombobox v-model="nodeShape" :values="nodeShapes" label="node shape" />
+        </div>
+        <ResourceShell
+          v-if="focusNode.value !== null"
+          :focus-node="focusNode.value"
+          :node-shape="nodeShape.value"
+        />
       </div>
     </div>
   </div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { NamedNode, BlankNode } from '@rdfjs/types'
+import { toRef } from 'vue'
 import Button from '@/components/ui/button/Button.vue'
 import { useResourceManagerContext } from '@/composables/resource-manager'
 import { provideResourceLabel } from '@/composables/resource-label'
@@ -14,7 +15,7 @@ const props = defineProps<{
 
 const { isEditing, isDirty, save, cancelEditing, startEditing } = useResourceManagerContext()
 const { getResourceLabel } = provideResourceLabel(props.focusNode)
-provideFocusNode(props.focusNode)
+provideFocusNode(toRef(props, 'focusNode'))
 </script>
 
 <template>

@@ -1,17 +1,15 @@
-import { inject, provide, ref, type Ref } from 'vue'
+import { inject, provide, type Ref } from 'vue'
 import type { NamedNode, BlankNode } from '@rdfjs/types'
 
 const FocusNodeKey = Symbol('FocusNode')
 
-export const provideFocusNode = (initialFocusNode: NamedNode | BlankNode) => {
-  const focusNode = ref(initialFocusNode)
-
+export const provideFocusNode = (focusNode: Ref<NamedNode | BlankNode>) => {
   provide(FocusNodeKey, {
-    focusNode: focusNode,
+    focusNode,
   })
 
   return {
-    focusNode: focusNode,
+    focusNode,
   }
 }
 

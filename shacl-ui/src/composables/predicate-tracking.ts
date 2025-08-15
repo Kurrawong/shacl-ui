@@ -8,9 +8,7 @@ export function providePredicateTracker(initialPredicates: Readonly<Ref<NamedNod
   const predicatePaths = ref<TermSet<NamedNode>>(new TermSet(initialPredicates.value))
 
   watch(initialPredicates, (newPredicates) => {
-    predicatePaths.value = new TermSet(
-      newPredicates.concat(Array.from(predicatePaths.value) as NamedNode[]),
-    )
+    predicatePaths.value = new TermSet(newPredicates)
   })
 
   function registerHandledPredicate(predicate: NamedNode) {
