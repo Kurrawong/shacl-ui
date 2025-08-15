@@ -1,0 +1,85 @@
+PREFIX : <https://linked.data.gov.au/def/record-access/>
+PREFIX cs: <https://linked.data.gov.au/def/record-access>
+PREFIX droles: <https://linked.data.gov.au/def/data-roles/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX reg: <http://purl.org/linked-data/registry#>
+PREFIX schema: <https://schema.org/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX unggim: <https://linked.data.gov.au/def/unggim-themes/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+:closed
+    a skos:Concept ;
+    skos:definition "Internal use only"@en ;
+    skos:historyNote "Queensland Roads and Tracks dataset" ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Closed"@en ;
+.
+
+:emergency-services
+    a skos:Concept ;
+    skos:altLabel "ES"@en ;
+    skos:definition "Emergency services use only"@en ;
+    skos:historyNote "Queensland Roads and Tracks dataset" ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Emergency Services"@en ;
+.
+
+:open
+    a skos:Concept ;
+    skos:definition "Suitable for open data"@en ;
+    skos:historyNote "Queensland Roads and Tracks dataset" ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Open"@en ;
+.
+
+:restricted
+    a skos:Concept ;
+    skos:definition "Restricted usage"@en ;
+    skos:historyNote "Queensland Roads and Tracks dataset" ;
+    skos:inScheme cs: ;
+    skos:prefLabel "Restricted"@en ;
+.
+
+:1.0 schema:name "1.0" .
+
+cs:
+    a skos:ConceptScheme ;
+    reg:status <https://linked.data.gov.au/def/reg-statuses/experimental> ;
+    owl:versionIRI :1.0 ;
+    owl:versionInfo "1.0" ;
+    skos:definition "This vocabulary describes the access suitability of a record"@en ;
+    skos:hasTopConcept
+        :closed ,
+        :emergency-services ,
+        :open ,
+        :restricted ;
+    skos:historyNote """2025-05 NJC: Added status experimental
+
+This vocabulary was created by the Queensland Spatial Information services.""" ;
+    skos:prefLabel "Record Access"@en ;
+    prov:qualifiedAttribution
+        [
+            prov:agent <https://linked.data.gov.au/org/icsm> ;
+            prov:hadRole droles:custodian ;
+        ] ;
+    schema:creator <https://linked.data.gov.au/org/qsi> ;
+    schema:dateCreated "2023-05-17"^^xsd:date ;
+    schema:dateModified "2025-05-23"^^xsd:date ;
+    schema:keywords unggim:Addresses ;
+    schema:publisher <https://linked.data.gov.au/org/icsm> ;
+    schema:status <https://linked.data.gov.au/def/reg-statuses/experimental> ;
+.
+
+<https://linked.data.gov.au/org/qsi>
+    a schema:Organization ;
+    schema:name "Queensland Spatial Information" ;
+    schema:url "https://www.resources.qld.gov.au/data-mapping"^^xsd:anyURI ;
+.
+
+<https://linked.data.gov.au/org/icsm>
+    a schema:Organization ;
+    schema:name "Intergovernmental Committee on Surveying & Mapping" ;
+    schema:url "https://icsm.gov.au"^^xsd:anyURI ;
+.

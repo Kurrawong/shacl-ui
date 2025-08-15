@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, watchEffect } from 'vue'
 import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
 import { dash, sh } from '@/core/namespaces'
@@ -23,7 +23,7 @@ const { dataGraphPointer, validator } = useResourceManagerContext()
 const { focusNode } = useFocusNodeContext()
 const { setResourceLabel } = useResourceLabelContext()
 
-onMounted(() => {
+watchEffect(() => {
   const path = props.propertyShape.path
   if (path && path.term.termType === 'NamedNode') {
     registerHandledPredicate(path.term)
@@ -40,7 +40,7 @@ onMounted(() => {
   }
 })
 
-onMounted(() => {
+watchEffect(() => {
   const propertyRole = props.propertyShape.shapeNodePointer.out(dash.propertyRole).term
   if (propertyRole && propertyRole.equals(dash.LabelRole)) {
     const labels = dataGraphPointer.value

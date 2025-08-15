@@ -3,7 +3,7 @@ import type { Quad } from '@rdfjs/types'
 import n3 from 'n3'
 
 export function useStore(data?: string) {
-  const parser = new n3.Parser()
+  const parser = new n3.Parser({ blankNodePrefix: '' })
   const store = ref(new n3.Store())
   resetStore(data ? parser.parse(data) : [])
 

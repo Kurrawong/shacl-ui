@@ -25,11 +25,13 @@ const { dataGraphPointer, validator } = useResourceManagerContext()
 
 provideFocusNode(props.focusNode)
 
-const { getPredicates } = providePredicateTracker(
-  Array.from(dataGraphPointer.value.dataset.match(props.focusNode, null, null)).map(
+const predicates = computed(() => {
+  return Array.from(dataGraphPointer.value.dataset.match(props.focusNode, null, null)).map(
     (quad) => quad.predicate as NamedNode,
-  ),
-)
+  )
+})
+
+const { getPredicates } = providePredicateTracker(predicates)
 
 const propertyShapesWithoutGroups = computed<Shape[]>(() => {
   if (!props.nodeShape) {
@@ -166,6 +168,7 @@ const propertyGroups = computed<
     </template>
 
     <OtherPropertiesGroup
+      v-if="propertyShapesWithoutGroups.length > 0 || getPredicates().length > 0"
       :property-shapes="propertyShapesWithoutGroups"
       :predicates="getPredicates()"
     />

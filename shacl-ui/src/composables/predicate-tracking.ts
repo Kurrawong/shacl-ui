@@ -1,11 +1,17 @@
-import { ref, provide, inject } from 'vue'
+import { ref, provide, inject, type Ref, watch } from 'vue'
 import type { NamedNode } from '@rdfjs/types'
 import TermSet from '@rdfjs/term-set'
 
 const PredicateTrackerKey = Symbol('PredicateTracker')
 
-export function providePredicateTracker(initialPredicates: NamedNode[]) {
-  const predicatePaths = ref<TermSet<NamedNode>>(new TermSet(initialPredicates))
+export function providePredicateTracker(initialPredicates: Readonly<Ref<NamedNode[]>>) {
+  const predicatePaths = ref<TermSet<NamedNode>>(new TermSet(initialPredicates.value))
+
+  watch(initialPredicates, (newPredicates) => {
+    predicatePaths.value = new TermSet(
+      newPredicates.concat(Array.from(predicatePaths.value) as NamedNode[]),
+    )
+  })
 
   function registerHandledPredicate(predicate: NamedNode) {
     predicatePaths.value.delete(predicate)

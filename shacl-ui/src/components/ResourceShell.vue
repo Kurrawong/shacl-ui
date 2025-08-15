@@ -1,29 +1,18 @@
 <script setup lang="ts">
 import type { NamedNode, BlankNode } from '@rdfjs/types'
 import Button from '@/components/ui/button/Button.vue'
-import { provideResourceManager } from '@/composables/resource-manager'
+import { useResourceManagerContext } from '@/composables/resource-manager'
 import { provideResourceLabel } from '@/composables/resource-label'
 import FocusNodeLabel from '@/components/FocusNodeLabel.vue'
 import { provideFocusNode } from '@/composables/focus-node'
-import SHACLValidation from '@/components/SHACLValidation.vue'
+import FocusNode from '@/components/FocusNode.vue'
 
-const props = withDefaults(
-  defineProps<{
-    focusNode: NamedNode | BlankNode
-    dataGraph: string
-    shapesGraph: string
-    nodeShape: NamedNode | BlankNode | null
-    isRootNode?: boolean
-  }>(),
-  {
-    isRootNode: false,
-  },
-)
+const props = defineProps<{
+  focusNode: NamedNode | BlankNode
+  nodeShape: NamedNode | BlankNode | null
+}>()
 
-const { isEditing, isDirty, save, cancelEditing, startEditing } = provideResourceManager(
-  props.dataGraph,
-  props.shapesGraph,
-)
+const { isEditing, isDirty, save, cancelEditing, startEditing } = useResourceManagerContext()
 const { getResourceLabel } = provideResourceLabel(props.focusNode)
 provideFocusNode(props.focusNode)
 </script>
@@ -44,6 +33,6 @@ provideFocusNode(props.focusNode)
   </div>
 
   <div class="py-4">
-    <SHACLValidation :nodeShape="nodeShape" />
+    <FocusNode :focus-node="focusNode" :node-shape="nodeShape" />
   </div>
 </template>

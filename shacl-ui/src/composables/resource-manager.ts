@@ -10,7 +10,7 @@ const RESOURCE_MANAGER = Symbol('ResourceManager')
 // TODO: constructor specifies the backend store to use (in-memory, remote).
 
 export function provideResourceManager(data?: string, shapes?: string) {
-  const parser = new n3.Parser()
+  const parser = new n3.Parser({ blankNodePrefix: '' })
   const shapesStoreManager = useStore(shapes)
   const originalStoreManager = useStore()
   const workingStoreManager = useStore()
@@ -23,6 +23,10 @@ export function provideResourceManager(data?: string, shapes?: string) {
     validator.value.factory.clownface({ dataset: workingStoreManager.store.value }),
   )
 
+  const shapesGraphPointer = computed(() =>
+    validator.value.factory.clownface({ dataset: shapesStoreManager.store.value }),
+  )
+
   const isDirty = computed(() => isEditing.value && hasChanges.value)
 
   const hasChanges = computed(
@@ -31,7 +35,8 @@ export function provideResourceManager(data?: string, shapes?: string) {
 
   function resetDataGraph(data?: string) {
     originalStoreManager.resetStore(data ? parser.parse(data) : [])
-    workingStoreManager.addQuads(Array.from(originalStoreManager.store.value))
+    // Store is only equal 
+    workingStoreManager.store.value = new n3.Store(Array.from(originalStoreManager.store.value))
   }
 
   function resetShapesGraph(shapes?: string) {
@@ -66,6 +71,7 @@ export function provideResourceManager(data?: string, shapes?: string) {
     deleteQuad: workingStoreManager.deleteQuad,
     dataGraph: workingStoreManager.store,
     shapesGraph: shapesStoreManager.store,
+    shapesGraphPointer,
     validator,
     dataGraphPointer,
     isEditing,
@@ -83,6 +89,7 @@ export function provideResourceManager(data?: string, shapes?: string) {
     deleteQuad: workingStoreManager.deleteQuad,
     dataGraph: workingStoreManager.store,
     shapesGraph: shapesStoreManager.store,
+    shapesGraphPointer,
     validator,
     dataGraphPointer,
     isEditing,
@@ -102,6 +109,7 @@ export function useResourceManagerContext() {
     deleteQuad: (quad: n3.Quad) => void
     dataGraph: Ref<n3.Store>
     shapesGraph: Ref<n3.Store>
+    shapesGraphPointer: ComputedRef<AnyPointer>
     validator: ComputedRef<UISHACLValidator>
     dataGraphPointer: ComputedRef<AnyPointer>
     isEditing: Ref<boolean>
