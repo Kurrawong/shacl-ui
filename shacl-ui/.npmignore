@@ -1,0 +1,55 @@
+# Source files
+src/
+stories/
+tests/
+*.config.*
+*.config.js
+*.config.ts
+
+# Development files
+.vscode/
+.idea/
+*.log
+.DS_Store
+node_modules/
+
+# Build artifacts (except dist)
+coverage/
+.nyc_output/
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Git
+.git/
+.gitignore
+
+# Environment files
+.env*
+!.env.example
+
+# Storybook
+.storybook/
+storybook-static/
+
+# Test files
+__tests__/
+*.test.*
+*.spec.*
+
+# TypeScript config (keep only what's needed)
+tsconfig.*.json
+!tsconfig.json
+
+# ESLint
+.eslintrc*
+.eslintignore
+
+# Prettier
+.prettierrc*
+.prettierignore
+
+# Vite
+vite.config.ts

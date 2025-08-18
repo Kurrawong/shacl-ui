@@ -1,6 +1,6 @@
-# shacl-ui
+# SHACL UI
 
-This template should help get you started developing with Vue 3 in Vite.
+This package publishes a collection of SHACL UI components for Vue 3. It is based on SHACL 1.0 and DASH and may include elements in the next SHACL version currently under development in the SHACL Working Group.
 
 ## Recommended IDE Setup
 
@@ -23,13 +23,13 @@ pnpm install
 ### Compile and Hot-Reload for Development
 
 ```sh
-pnpm dev
+pnpm storybook
 ```
 
 ### Type-Check, Compile and Minify for Production
 
 ```sh
-pnpm build
+pnpm build:lib
 ```
 
 ### Run Unit Tests with [Vitest](https://vitest.dev/)
@@ -42,4 +42,10 @@ pnpm test:unit
 
 ```sh
 pnpm lint
+```
+
+### Publish
+
+```sh
+pnpm publish --access public --no-git-checks
 ```
