@@ -37,7 +37,7 @@ const predicates = computed(() => {
     .concat(newPredicates.value)
 })
 
-const { getPredicates } = providePredicateTracker(predicates)
+const { getPredicates } = providePredicateTracker(predicates, toRef(props, 'nodeShape'))
 
 const propertyShapesWithoutGroups = computed<Shape[]>(() => {
   if (!props.nodeShape) {

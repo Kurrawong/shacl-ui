@@ -4,12 +4,19 @@ import TermSet from '@rdfjs/term-set'
 
 const PredicateTrackerKey = Symbol('PredicateTracker')
 
-export function providePredicateTracker(initialPredicates: Readonly<Ref<NamedNode[]>>) {
+export function providePredicateTracker(
+  initialPredicates: Readonly<Ref<NamedNode[]>>,
+  nodeShape: Readonly<Ref<NamedNode | null>>,
+) {
   const predicatePaths = ref<TermSet<NamedNode>>(new TermSet(initialPredicates.value))
 
-  watch(initialPredicates, (newPredicates) => {
-    predicatePaths.value = new TermSet(newPredicates)
-  })
+  watch(
+    [initialPredicates, nodeShape],
+    ([newPredicates]) => {
+      predicatePaths.value = new TermSet(newPredicates)
+    },
+    { immediate: true },
+  )
 
   function registerHandledPredicate(predicate: NamedNode) {
     predicatePaths.value.delete(predicate)
