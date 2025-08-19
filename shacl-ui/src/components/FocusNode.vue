@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, toRef } from 'vue'
+import { computed, ref, toRef, watch } from 'vue'
 import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
 import { Shape } from 'rdf-validate-shacl/src/shapes-graph'
+import n3 from 'n3'
 import { sh, rdfs } from '@/core/namespaces'
 import { sortWithNulls } from '@/core/utils'
 import PropertyGroup from '@/components/PropertyGroup.vue'
@@ -10,6 +11,7 @@ import TermSet from '@rdfjs/term-set'
 import OtherPropertiesGroup from '@/components/OtherPropertiesGroup.vue'
 import { provideFocusNode } from '@/composables/focus-node'
 import { useResourceManagerContext } from '@/composables/resource-manager'
+import FocusNodeAddNewPredicate from '@/FocusNodeAddNewPredicate.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -21,14 +23,18 @@ const props = withDefaults(
   },
 )
 
-const { dataGraphPointer, validator } = useResourceManagerContext()
+const { namedNode } = n3.DataFactory
+
+const { dataGraphPointer, validator, isEditing } = useResourceManagerContext()
 
 provideFocusNode(toRef(props, 'focusNode'))
 
+const newPredicates = ref<NamedNode[]>([])
+
 const predicates = computed(() => {
-  return Array.from(dataGraphPointer.value.dataset.match(props.focusNode, null, null)).map(
-    (quad) => quad.predicate as NamedNode,
-  )
+  return Array.from(dataGraphPointer.value.dataset.match(props.focusNode, null, null))
+    .map((quad) => quad.predicate as NamedNode)
+    .concat(newPredicates.value)
 })
 
 const { getPredicates } = providePredicateTracker(predicates)
@@ -152,6 +158,17 @@ const propertyGroups = computed<
     })
     .sort((a, b) => sortWithNulls(a.order, b.order))
 })
+
+function addNewPredicate(predicate: string) {
+  newPredicates.value.push(namedNode(predicate))
+}
+
+watch(
+  () => props.focusNode,
+  () => {
+    newPredicates.value = []
+  },
+)
 </script>
 
 <template>
@@ -183,5 +200,7 @@ const propertyGroups = computed<
     >
       No properties found in details view
     </p>
+
+    <FocusNodeAddNewPredicate v-if="isEditing" @add-new-predicate="addNewPredicate" />
   </div>
 </template>
