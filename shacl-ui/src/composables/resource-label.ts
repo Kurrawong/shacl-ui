@@ -1,10 +1,14 @@
-import { ref, provide, inject } from 'vue'
+import { ref, provide, inject, watch, type Ref } from 'vue'
 import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
 
 const ResourceLabelKey = Symbol('ResourceLabel')
 
-export function provideResourceLabel(initialResourceLabel: NamedNode | BlankNode | Literal) {
-  const resourceLabel = ref<NamedNode | BlankNode | Literal>(initialResourceLabel)
+export function provideResourceLabel(initialResourceLabel: Ref<NamedNode | BlankNode | Literal>) {
+  const resourceLabel = ref<NamedNode | BlankNode | Literal>(initialResourceLabel.value)
+
+  watch(initialResourceLabel, (newValue) => {
+    resourceLabel.value = newValue
+  })
 
   function getResourceLabel() {
     return resourceLabel.value

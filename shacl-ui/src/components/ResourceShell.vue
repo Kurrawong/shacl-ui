@@ -14,8 +14,9 @@ const props = defineProps<{
 }>()
 
 const { isEditing, isDirty, save, cancelEditing, startEditing } = useResourceManagerContext()
-const { getResourceLabel } = provideResourceLabel(props.focusNode)
-provideFocusNode(toRef(props, 'focusNode'))
+const focusNode = toRef(props, 'focusNode')
+const { getResourceLabel } = provideResourceLabel(focusNode)
+provideFocusNode(focusNode)
 </script>
 
 <template>
