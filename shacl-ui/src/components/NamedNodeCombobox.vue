@@ -20,7 +20,7 @@ defineProps<{
   values: { value: NamedNode | null; label: string }[]
 }>()
 
-const value = defineModel<{ value: NamedNode; label: string } | null>('value')
+const value = defineModel<{ value: NamedNode | null; label: string }>()
 </script>
 
 <template>

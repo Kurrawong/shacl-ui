@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import n3 from 'n3'
 import { provideResourceManager } from '@/composables/resource-manager'
+import type { NamedNode } from '@rdfjs/types'
 import ResourceShell from '@/components/ResourceShell.vue'
 import Textarea from '@/components/ui/textarea/Textarea.vue'
 import { PrefixMapFactory } from 'rdf-ext'
@@ -127,6 +128,17 @@ const nodeShapes = computed(() => {
         label: term.value.split('#').at(-1)?.split('/').at(-1) ?? '',
       })),
   ]
+})
+
+watch(focusNodes, () => {
+  if (
+    focusNode.value.value !== null &&
+    focusNodes.value.filter((node) =>
+      node.value?.equals(focusNode.value.value as unknown as NamedNode),
+    ).length === 0
+  ) {
+    focusNode.value = unselectedOption
+  }
 })
 </script>
 
