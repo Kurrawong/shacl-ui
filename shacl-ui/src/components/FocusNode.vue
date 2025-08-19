@@ -155,7 +155,7 @@ const propertyGroups = computed<
 </script>
 
 <template>
-  <div class="space-y-4 grow">
+  <div class="space-y-4 grow place-self-center">
     <template v-if="propertyGroups.length > 0">
       <div v-for="propertyGroup in propertyGroups" :key="propertyGroup.term?.value">
         <PropertyGroup
@@ -172,5 +172,16 @@ const propertyGroups = computed<
       :property-shapes="propertyShapesWithoutGroups"
       :predicates="getPredicates()"
     />
+
+    <p
+      v-if="
+        propertyGroups.length === 0 &&
+        propertyShapesWithoutGroups.length === 0 &&
+        getPredicates().length === 0
+      "
+      class="text-xs text-gray-500"
+    >
+      No properties found in details view
+    </p>
   </div>
 </template>

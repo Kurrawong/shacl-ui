@@ -32,7 +32,7 @@ const handleChangeViewerWidget = (viewerWidget: NamedNode) => {
 </script>
 
 <template>
-  <div class="flex items-start gap-2">
+  <div class="flex items-center gap-2">
     <FocusNode
       v-if="selectedViewerWidget?.term.equals(dash.DetailsViewer)"
       :focus-node="valueNode as NamedNode"

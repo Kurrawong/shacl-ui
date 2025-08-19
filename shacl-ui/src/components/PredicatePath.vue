@@ -12,7 +12,7 @@ import { sh } from '@/core/namespaces'
 import n3 from 'n3'
 import { useFocusNodeContext } from '@/composables/focus-node'
 import { useResourceManagerContext } from '@/composables/resource-manager'
-import NonEditableValueNow from '@/components/NonEditableValueNow.vue'
+import NonEditableValueNode from '@/components/NonEditableValueNode.vue'
 
 const { quad } = n3.DataFactory
 
@@ -98,7 +98,7 @@ const datatypes = computed(() => {
 
         <div v-else class="space-y-1">
           <div v-for="valueNode in _valueNodes" :key="valueNode.value">
-            <NonEditableValueNow
+            <NonEditableValueNode
               :path="path"
               :value-node="valueNode"
               :property-shape="propertyShape"
