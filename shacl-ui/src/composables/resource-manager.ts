@@ -35,7 +35,7 @@ export function provideResourceManager(data?: string, shapes?: string) {
 
   function resetDataGraph(data?: string) {
     originalStoreManager.resetStore(data ? parser.parse(data) : [])
-    // Store is only equal 
+    // Store is only equal
     workingStoreManager.store.value = new n3.Store(Array.from(originalStoreManager.store.value))
   }
 

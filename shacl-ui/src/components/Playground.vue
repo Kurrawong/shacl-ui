@@ -5,8 +5,6 @@ import { provideResourceManager } from '@/composables/resource-manager'
 import type { NamedNode } from '@rdfjs/types'
 import ResourceShell from '@/components/ResourceShell.vue'
 import Textarea from '@/components/ui/textarea/Textarea.vue'
-import { PrefixMapFactory } from 'rdf-ext'
-import Serializer from '@rdfjs/serializer-turtle'
 import exampleData from '@/assets/data.ttl?raw'
 import exampleShapes from '@/assets/vocpub.ttl?raw'
 import { rdf, sh } from '@/core/namespaces'
@@ -14,7 +12,6 @@ import TermSet from '@rdfjs/term-set'
 import NamedNodeCombobox from '@/components/NamedNodeCombobox.vue'
 
 const parser = new n3.Parser({ blankNodePrefix: '' })
-const { namedNode } = n3.DataFactory
 
 const inputData = ref(exampleData)
 const inputShapes = ref(exampleShapes)
@@ -27,31 +24,30 @@ const unselectedOption = { value: null, label: '--Unselected--' }
 const focusNode = ref(unselectedOption)
 const nodeShape = ref(unselectedOption)
 
-const prefixes = new PrefixMapFactory().prefixMap([
-  ['dash', namedNode('http://datashapes.org/dash#')],
-  ['dcat', namedNode('http://www.w3.org/ns/dcat#')],
-  ['dc', namedNode('http://purl.org/dc/elements/1.1/')],
-  ['dcterms', namedNode('http://purl.org/dc/terms/')],
-  ['foaf', namedNode('http://xmlns.com/foaf/0.1/')],
-  ['geo', namedNode('http://www.opengis.net/ont/geosparql#')],
-  ['owl', namedNode('http://www.w3.org/2002/07/owl#')],
-  ['prof', namedNode('http://www.w3.org/ns/dx/prof/')],
-  ['prov', namedNode('http://www.w3.org/ns/prov#')],
-  ['rdf', namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#')],
-  ['rdfs', namedNode('http://www.w3.org/2000/01/rdf-schema#')],
-  ['schema', namedNode('http://schema.org/')],
-  ['sh', namedNode('http://www.w3.org/ns/shacl#')],
-  ['skos', namedNode('http://www.w3.org/2004/02/skos/core#')],
-  ['skosxl', namedNode('http://www.w3.org/2008/05/skos-xl#')],
-  ['sosa', namedNode('http://www.w3.org/ns/sosa/')],
-  ['ssn', namedNode('http://www.w3.org/ns/ssn/')],
-  ['time', namedNode('http://www.w3.org/ns/time#')],
-  ['tosh', namedNode('http://topbraid.org/tosh#')],
-  ['vann', namedNode('http://purl.org/vocab/vann/')],
-  ['void', namedNode('http://rdfs.org/ns/void#')],
-  ['xsd', namedNode('http://www.w3.org/2001/XMLSchema#')],
-])
-const serializer = new Serializer({ prefixes })
+const prefixes = {
+  dash: 'http://datashapes.org/dash#',
+  dcat: 'http://www.w3.org/ns/dcat#',
+  dc: 'http://purl.org/dc/elements/1.1/',
+  dcterms: 'http://purl.org/dc/terms/',
+  foaf: 'http://xmlns.com/foaf/0.1/',
+  geo: 'http://www.opengis.net/ont/geosparql#',
+  owl: 'http://www.w3.org/2002/07/owl#',
+  prof: 'http://www.w3.org/ns/dx/prof/',
+  prov: 'http://www.w3.org/ns/prov#',
+  rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+  rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
+  schema: 'http://schema.org/',
+  sh: 'http://www.w3.org/ns/shacl#',
+  skos: 'http://www.w3.org/2004/02/skos/core#',
+  skosxl: 'http://www.w3.org/2008/05/skos-xl#',
+  sosa: 'http://www.w3.org/ns/sosa/',
+  ssn: 'http://www.w3.org/ns/ssn/',
+  time: 'http://www.w3.org/ns/time#',
+  tosh: 'http://topbraid.org/tosh#',
+  vann: 'http://purl.org/vocab/vann/',
+  void: 'http://rdfs.org/ns/void#',
+  xsd: 'http://www.w3.org/2001/XMLSchema#',
+}
 
 const { resetDataGraph, resetShapesGraph, dataGraphPointer, validator, dataGraph, shapesGraph } =
   provideResourceManager()
@@ -91,12 +87,37 @@ async function validateData() {
 
   const result = await validator.value.validate(dataGraphPointer.value)
 
-  const resultString = serializer.transform(Array.from(result.dataset))
-  report.value = resultString
+  const writer = new n3.Writer({
+    format: 'text/turtle',
+    prefixes: {
+      rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+      sh: 'http://www.w3.org/ns/shacl#',
+      xsd: 'http://www.w3.org/2001/XMLSchema#',
+    },
+  })
+  writer.addQuads(Array.from(result.dataset))
+  writer.end((err, result) => {
+    if (err) {
+      console.error(err)
+    } else {
+      report.value = result
+    }
+  })
 }
 
 watch(dataGraphPointer, () => {
-  inputData.value = serializer.transform(Array.from(dataGraph.value))
+  const writer = new n3.Writer({
+    format: 'text/turtle',
+    prefixes: prefixes,
+  })
+  writer.addQuads(Array.from(dataGraph.value))
+  writer.end((err, result) => {
+    if (err) {
+      console.error(err)
+    } else {
+      inputData.value = result
+    }
+  })
   validateData()
 })
 

@@ -1,6 +1,6 @@
 {
   "name": "@kurrawongai/shacl-ui",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": false,
   "type": "module",
   "sideEffects": false,
@@ -58,7 +58,6 @@
     "@comunica/query-sparql-rdfjs-lite": "^4.3.0",
     "@formkit/auto-animate": "^0.8.2",
     "@internationalized/date": "^3.8.2",
-    "@rdfjs/serializer-turtle": "^1.1.5",
     "@rdfjs/term-set": "^2.0.3",
     "@vocabulary/dash": "^1.0.5",
     "@vocabulary/sh": "^1.1.6",
@@ -85,7 +84,6 @@
     "@types/n3": "^1.26.0",
     "@types/node": "^22.15.32",
     "@types/rdf-ext": "^2.5.2",
-    "@types/rdfjs__serializer-turtle": "^1.1.0",
     "@types/rdfjs__term-set": "^2.0.9",
     "@vitejs/plugin-vue": "^6.0.0",
     "@vitest/eslint-plugin": "^1.2.7",

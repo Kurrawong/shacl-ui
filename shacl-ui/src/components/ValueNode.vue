@@ -66,7 +66,7 @@ const handleSave = () => {
     deleteQuad(quad(focusNode.value, props.path, props.valueNode))
     addQuad(quad(focusNode.value, props.path, newValue.value))
     console.log(
-      `${focusNode.value} ${props.path.value} ${props.valueNode.value} -> ${newValue.value.value}`,
+      `${focusNode.value.value} ${props.path.value} ${props.valueNode.value} -> ${newValue.value.value}`,
     )
   }
 }
