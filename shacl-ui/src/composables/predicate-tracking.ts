@@ -1,12 +1,12 @@
 import { ref, provide, inject, type Ref, watch } from 'vue'
-import type { NamedNode } from '@rdfjs/types'
+import type { NamedNode, BlankNode } from '@rdfjs/types'
 import TermSet from '@rdfjs/term-set'
 
 const PredicateTrackerKey = Symbol('PredicateTracker')
 
 export function providePredicateTracker(
   initialPredicates: Readonly<Ref<NamedNode[]>>,
-  nodeShape: Readonly<Ref<NamedNode | null>>,
+  nodeShape: Readonly<Ref<NamedNode | BlankNode | null>>,
 ) {
   const predicatePaths = ref<TermSet<NamedNode>>(new TermSet(initialPredicates.value))
 
