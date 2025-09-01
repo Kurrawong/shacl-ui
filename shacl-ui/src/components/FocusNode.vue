@@ -172,7 +172,7 @@ watch(
 </script>
 
 <template>
-  <div class="space-y-4 grow place-self-center">
+  <div class="space-y-4 w-full place-self-center">
     <template v-if="propertyGroups.length > 0">
       <div v-for="propertyGroup in propertyGroups" :key="propertyGroup.term?.value">
         <PropertyGroup
