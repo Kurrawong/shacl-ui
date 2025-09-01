@@ -6,7 +6,7 @@ import n3 from 'n3'
 import { sh, rdfs } from '@/core/namespaces'
 import { sortWithNulls } from '@/core/utils'
 import PropertyGroup from '@/components/PropertyGroup.vue'
-import { providePredicateTracker } from '@/composables/predicate-tracking'
+import { createPredicateTracker } from '@/composables/predicate-tracking'
 import TermSet from '@rdfjs/term-set'
 import OtherPropertiesGroup from '@/components/OtherPropertiesGroup.vue'
 import { provideFocusNode } from '@/composables/focus-node'
@@ -37,7 +37,7 @@ const predicates = computed(() => {
     .concat(newPredicates.value)
 })
 
-const { getPredicates } = providePredicateTracker(predicates, toRef(props, 'nodeShape'))
+const { getPredicates } = createPredicateTracker(predicates, toRef(props, 'nodeShape'))
 
 const propertyShapesWithoutGroups = computed<Shape[]>(() => {
   if (!props.nodeShape) {

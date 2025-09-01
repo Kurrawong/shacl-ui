@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import n3 from 'n3'
-import { provideResourceManager } from '@/composables/resource-manager'
+import { createResourceManager } from '@/composables/resource-manager'
 import type { NamedNode } from '@rdfjs/types'
 import ResourceShell from '@/components/ResourceShell.vue'
 import Textarea from '@/components/ui/textarea/Textarea.vue'
@@ -50,7 +50,7 @@ const prefixes = {
 }
 
 const { resetDataGraph, resetShapesGraph, dataGraphPointer, validator, dataGraph, shapesGraph } =
-  provideResourceManager()
+  createResourceManager()
 
 function setDataGraph() {
   parser.parse(inputData.value)

@@ -4,7 +4,7 @@ import TermSet from '@rdfjs/term-set'
 
 const PredicateTrackerKey = Symbol('PredicateTracker')
 
-export function providePredicateTracker(
+export function createPredicateTracker(
   initialPredicates: Readonly<Ref<NamedNode[]>>,
   nodeShape: Readonly<Ref<NamedNode | BlankNode | null>>,
 ) {

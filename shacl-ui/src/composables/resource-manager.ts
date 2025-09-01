@@ -1,15 +1,16 @@
 import { computed, inject, provide, ref, type ComputedRef, type Ref } from 'vue'
 
+import type { DatasetCore, Quad } from '@rdfjs/types'
 import n3 from 'n3'
 import { useStore } from '@/composables/store'
 import { UISHACLValidator } from '@/core/shapes-graph'
-import type { AnyPointer } from 'clownface'
+import type { AnyContext, AnyPointer } from 'clownface'
 
 const RESOURCE_MANAGER = Symbol('ResourceManager')
 
 // TODO: constructor specifies the backend store to use (in-memory, remote).
 
-export function provideResourceManager(data?: string, shapes?: string) {
+export function createResourceManager(data?: string, shapes?: string) {
   const parser = new n3.Parser({ blankNodePrefix: '' })
   const shapesStoreManager = useStore(shapes)
   const originalStoreManager = useStore()
@@ -111,7 +112,7 @@ export function useResourceManagerContext() {
     shapesGraph: Ref<n3.Store>
     shapesGraphPointer: ComputedRef<AnyPointer>
     validator: ComputedRef<UISHACLValidator>
-    dataGraphPointer: ComputedRef<AnyPointer>
+    dataGraphPointer: ComputedRef<AnyPointer<AnyContext, DatasetCore<Quad, Quad>>>
     isEditing: Ref<boolean>
     isDirty: ComputedRef<boolean>
     resetDataGraph: (data?: string) => void

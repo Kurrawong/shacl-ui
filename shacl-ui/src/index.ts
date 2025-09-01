@@ -1,5 +1,8 @@
 import '@/assets/main.css'
 
-import Playground from '@/components/Playground.vue'
+import { createResourceManager, useResourceManagerContext } from '@/composables/resource-manager'
 
-export { Playground }
+import Playground from '@/components/Playground.vue'
+import ResourceShell from '@/components/ResourceShell.vue'
+
+export { createResourceManager, useResourceManagerContext, Playground, ResourceShell }
