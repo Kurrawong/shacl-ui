@@ -75,5 +75,6 @@ pnpm add ~/kurrawong/shacl-ui/shacl-ui/kurrawongai-shacl-ui-0.3.0.tgz
 ### Publish
 
 ```sh
+pnpm build:lib
 pnpm publish --access public --no-git-checks
 ```
