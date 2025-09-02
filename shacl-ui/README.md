@@ -4,7 +4,7 @@ This package publishes a collection of SHACL UI components for Vue 3. It is base
 
 ## Changelog
 
-### 0.3.0
+### 0.3.0, 0.3.1
 
 - Add `ResourceShell` component.
 - Add `createResourceManager` and `useResourceManagerContext` composables.
