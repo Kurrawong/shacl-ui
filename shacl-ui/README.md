@@ -8,6 +8,8 @@ This package publishes a collection of SHACL UI components for Vue 3. It is base
 
 - Add `ResourceShell` component.
 - Add `createResourceManager` and `useResourceManagerContext` composables.
+- Fix Property Groups not matching the parent width.
+- Fix AutoCompleteEditor not showing the search field for very long list of terms.
 
 ### 0.2.x
 

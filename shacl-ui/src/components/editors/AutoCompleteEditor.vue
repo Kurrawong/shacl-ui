@@ -3,20 +3,20 @@ import { computed, ref, watch } from 'vue'
 import type { NamedNode } from '@rdfjs/types'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
 import { Check, ChevronsUpDown, Search } from 'lucide-vue-next'
-import { Button } from '@/components/ui/button'
 import {
   Combobox,
   ComboboxAnchor,
   ComboboxEmpty,
   ComboboxGroup,
-  ComboboxInput,
   ComboboxItem,
   ComboboxItemIndicator,
   ComboboxList,
   ComboboxTrigger,
 } from '@/components/ui/combobox'
+import { ComboboxViewport, ComboboxInput } from '@/components/ui/combobox'
 import { useAutocomplete } from '@/composables/autocomplete'
 import { cn } from '@/core/utils'
+import { Button } from '@/components/ui/button'
 
 const props = defineProps<{
   term: NamedNode
@@ -50,11 +50,11 @@ watch(selectedValue, (newValue) => {
   <Combobox v-model="selectedValue" by="label">
     <ComboboxAnchor as-child>
       <ComboboxTrigger as-child>
-        <Button variant="outline" class="justify-between">
-          <div v-if="selectedValue.value.value !== ''">
+        <Button variant="outline" class="justify-between min-w-0 flex-1">
+          <div v-if="selectedValue.value.value !== ''" class="truncate">
             {{ selectedValue.label }}
           </div>
-          <div v-else>--Select a value--</div>
+          <div v-else class="truncate">--Select a value--</div>
 
           <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -72,22 +72,23 @@ watch(selectedValue, (newValue) => {
           <Search class="size-4 text-muted-foreground" />
         </span>
       </div>
+      <ComboboxViewport class="max-h-[300px]">
+        <ComboboxEmpty> No terms found. </ComboboxEmpty>
 
-      <ComboboxEmpty> No terms found. </ComboboxEmpty>
+        <ComboboxGroup>
+          <ComboboxItem
+            v-for="autoCompleteTerm in autocompleteTerms"
+            :key="autoCompleteTerm.value.value"
+            :value="autoCompleteTerm"
+          >
+            {{ autoCompleteTerm.label }}
 
-      <ComboboxGroup>
-        <ComboboxItem
-          v-for="autoCompleteTerm in autocompleteTerms"
-          :key="autoCompleteTerm.value.value"
-          :value="autoCompleteTerm"
-        >
-          {{ autoCompleteTerm.label }}
-
-          <ComboboxItemIndicator>
-            <Check :class="cn('ml-auto h-4 w-4')" />
-          </ComboboxItemIndicator>
-        </ComboboxItem>
-      </ComboboxGroup>
+            <ComboboxItemIndicator>
+              <Check :class="cn('ml-auto h-4 w-4')" />
+            </ComboboxItemIndicator>
+          </ComboboxItem>
+        </ComboboxGroup>
+      </ComboboxViewport>
     </ComboboxList>
   </Combobox>
 </template>
