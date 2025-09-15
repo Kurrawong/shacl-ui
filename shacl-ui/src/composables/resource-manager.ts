@@ -1,7 +1,7 @@
 import { computed, inject, provide, ref, type ComputedRef, type Ref } from 'vue'
 
 import type { DatasetCore, Quad } from '@rdfjs/types'
-import n3 from 'n3'
+import n3, { type NamedNode, type BlankNode } from 'n3'
 import { useStore } from '@/composables/store'
 import { UISHACLValidator } from '@/core/shapes-graph'
 import type { AnyContext, AnyPointer } from 'clownface'
@@ -59,12 +59,31 @@ export function createResourceManager(data?: string, shapes?: string) {
       return
     }
 
+    _save()
+  }
+
+  function _save() {
     const quads = Array.from(workingStoreManager.store.value)
     originalStoreManager.resetStore(quads)
     isEditing.value = false
     workingStoreManager.resetStore(quads)
 
     // TODO: save to server
+  }
+
+  function deleteResource(resource: NamedNode | BlankNode) {
+    if (isEditing.value) {
+      cancelEditing()
+    }
+
+    // Collect all quads relating to the resource.
+    const quads = [
+      ...Array.from(workingStoreManager.store.value.match(resource, null, null)),
+      ...Array.from(workingStoreManager.store.value.match(null, null, resource)),
+    ]
+
+    workingStoreManager.deleteQuads(quads)
+    _save()
   }
 
   provide(RESOURCE_MANAGER, {
@@ -83,6 +102,7 @@ export function createResourceManager(data?: string, shapes?: string) {
     cancelEditing,
     hasChanges,
     save,
+    deleteResource,
   })
 
   return {
@@ -101,6 +121,7 @@ export function createResourceManager(data?: string, shapes?: string) {
     cancelEditing,
     hasChanges,
     save,
+    deleteResource,
   }
 }
 
@@ -121,6 +142,7 @@ export function useResourceManagerContext() {
     cancelEditing: () => void
     hasChanges: ComputedRef<boolean>
     save: () => void
+    deleteResource: (resource: NamedNode | BlankNode) => void
   }>(RESOURCE_MANAGER)
   if (!resourceManager) {
     throw new Error('ResourceManager not found')
