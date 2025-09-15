@@ -78,7 +78,7 @@ const datatypes = computed(() => {
         </div>
 
         <div v-else class="space-y-1">
-          <div v-for="valueNode in _valueNodes" :key="valueNode.value">
+          <div v-for="valueNode in _valueNodes" :key="valueNode.toString()">
             <ValueNode :path="path" :value-node="valueNode" :property-shape="propertyShape" />
           </div>
 
@@ -97,7 +97,7 @@ const datatypes = computed(() => {
         </div>
 
         <div v-else class="space-y-1">
-          <div v-for="valueNode in _valueNodes" :key="valueNode.value">
+          <div v-for="valueNode in _valueNodes" :key="valueNode.toString()">
             <NonEditableValueNode
               :path="path"
               :value-node="valueNode"
