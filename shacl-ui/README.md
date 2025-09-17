@@ -4,6 +4,11 @@ This package publishes a collection of SHACL UI components for Vue 3. It is base
 
 ## Changelog
 
+### 0.4.0
+
+- Add delete resource to resource manager.
+- Fix duplicate key for value nodes in vue for-loop templating.
+
 ### 0.3.0, 0.3.1
 
 - Add `ResourceShell` component.
