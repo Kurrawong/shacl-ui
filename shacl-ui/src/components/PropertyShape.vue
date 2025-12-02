@@ -2,7 +2,7 @@
 import { computed, watchEffect } from 'vue'
 import type { NamedNode, BlankNode, Literal } from '@rdfjs/types'
 import type { Shape } from 'rdf-validate-shacl/src/shapes-graph'
-import { dash, sh } from '@/core/namespaces'
+import { dash, rdfs, sh } from '@/core/namespaces'
 import { useFocusNodeContext } from '@/composables/focus-node'
 import { usePredicateTrackerContext } from '@/composables/predicate-tracking'
 import { extractPropertyPath } from 'rdf-validate-shacl/src/property-path'
@@ -19,7 +19,7 @@ const props = defineProps<{
 }>()
 
 const { registerHandledPredicate } = usePredicateTrackerContext()
-const { dataGraphPointer, validator } = useResourceManagerContext()
+const { dataGraphPointer, shapesGraphPointer, validator } = useResourceManagerContext()
 const { focusNode } = useFocusNodeContext()
 const { setResourceLabel } = useResourceLabelContext()
 
@@ -85,14 +85,30 @@ const pathType = computed<PathType>(() => {
 })
 
 const pathLabel = computed(() => {
+  // 1. Try to get rdfs:label from the property path
+  let pathNode: NamedNode | null = null
+  if (propertyPath.value && 'inverse' in propertyPath.value) {
+    pathNode = propertyPath.value.inverse as NamedNode
+  } else if (propertyPath.value && 'termType' in propertyPath.value) {
+    pathNode = propertyPath.value as NamedNode
+  }
+
+  if (pathNode) {
+    const rdfsLabels = shapesGraphPointer.value.node(pathNode).out(rdfs.label).terms
+    if (rdfsLabels.length) {
+      // TODO: preference language tag, then no language tag, then first label
+      return rdfsLabels[0].value
+    }
+  }
+
+  // 2. Fall back to shName
   const shName = props.propertyShape.shapeNodePointer.out(sh`name`).terms
   if (shName.length) {
     // TODO: preference language tag, then no language tag, then first label
     return shName[0].value
   }
 
-  // TODO: labels graph?
-
+  // 3. Last resort: create a label using the current technique of stripping the local name
   if (propertyPath.value && 'inverse' in propertyPath.value) {
     const path = propertyPath.value.inverse as NamedNode
     return path.value.split('#').slice(-1)[0].split('/').slice(-1)[0]
