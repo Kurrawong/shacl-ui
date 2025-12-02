@@ -39,7 +39,7 @@ const classTypes = computed(() => {
         <div class="text-xs text-gray-500 font-mono">IRI: {{ focusNode.value }}</div>
       </div>
       <div class="ml-auto flex w-full space-x-2 sm:justify-end">
-        <Button v-if="isEditing" variant="default" @click="save" :disabled="!isDirty">Save</Button>
+        <Button v-if="isEditing" variant="default" @click="save" :disabled="!isDirty">Apply changes</Button>
         <Button v-else variant="default" @click="startEditing">Edit</Button>
         <Button v-if="isEditing" variant="secondary" @click="cancelEditing">Cancel</Button>
       </div>
