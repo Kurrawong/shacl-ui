@@ -13,6 +13,7 @@ export type PropertyGroupType = {
 }
 
 const props = defineProps<PropertyGroupType>()
+
 const propertyGroupLabel = computed(() => {
   // TODO: preference language tag, then no language tag, then first label
   return props.labels[0]?.value || props.term?.value.split('#').slice(-1)[0].split('/').slice(-1)[0]
