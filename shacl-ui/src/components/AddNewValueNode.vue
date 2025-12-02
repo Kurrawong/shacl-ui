@@ -47,7 +47,7 @@ const otherXsdDatatypes = computed(() => {
     </DropdownMenuTrigger>
 
     <DropdownMenuContent class="w-56">
-      <DropdownMenuLabel>Add new value</DropdownMenuLabel>
+      <DropdownMenuLabel>Add new</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
         <DropdownMenuItem
