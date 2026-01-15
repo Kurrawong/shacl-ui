@@ -1,6 +1,6 @@
 {
   "name": "@kurrawongai/shacl-ui",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": false,
   "type": "module",
   "sideEffects": false,
