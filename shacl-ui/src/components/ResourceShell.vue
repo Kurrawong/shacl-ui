@@ -10,10 +10,16 @@ import FocusNode from '@/components/FocusNode.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { rdf } from '@/core/namespaces'
+import { provideNavigation } from '@/composables/navigation'
 
 const props = defineProps<{
   focusNode: NamedNode | BlankNode
   nodeShape: NamedNode | BlankNode | null
+}>()
+
+const emit = defineEmits<{
+  save: []
+  navigate: [resource: NamedNode]
 }>()
 
 const { isEditing, isDirty, save, cancelEditing, startEditing, dataGraphPointer } =
@@ -21,12 +27,18 @@ const { isEditing, isDirty, save, cancelEditing, startEditing, dataGraphPointer 
 const focusNode = toRef(props, 'focusNode')
 const { getResourceLabel } = provideResourceLabel(focusNode)
 provideFocusNode(focusNode)
+provideNavigation((resource) => emit('navigate', resource))
 
 const classTypes = computed(() => {
   return Array.from(dataGraphPointer.value.dataset.match(focusNode.value, rdf.type, null)).map(
     (quad) => quad.object as NamedNode,
   )
 })
+
+function handleSave() {
+  save()
+  emit('save')
+}
 </script>
 
 <template>
@@ -39,7 +51,9 @@ const classTypes = computed(() => {
         <div class="text-xs text-gray-500 font-mono">IRI: {{ focusNode.value }}</div>
       </div>
       <div class="ml-auto flex w-full space-x-2 sm:justify-end">
-        <Button v-if="isEditing" variant="default" @click="save" :disabled="!isDirty">Save</Button>
+        <Button v-if="isEditing" variant="default" @click="handleSave" :disabled="!isDirty"
+          >Save</Button
+        >
         <Button v-else variant="default" @click="startEditing">Edit</Button>
         <Button v-if="isEditing" variant="secondary" @click="cancelEditing">Cancel</Button>
       </div>
