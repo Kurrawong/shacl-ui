@@ -36,7 +36,7 @@ services:
   kafka:
     profiles:
       - stack
-    image: "bitnami/kafka:3.6.1"
+    image: "soldevelo/kafka:3.6.2"
     container_name: kafka
     ports:
       - 9997:9997
